@@ -40,6 +40,13 @@ export class SystemComponent implements OnInit {
     pasteFile = false;
     // open folder or hhd path (name)
     openFolderName = '';
+    // open folder or hhd path
+    openFolderPath = '';
+
+    //  crete  folder  name
+    createFolderName = '';
+//createFolderNameErrorMsg
+    createFolderNameErrorMsg = '';
     /**
      * User Info
      */
@@ -169,28 +176,22 @@ export class SystemComponent implements OnInit {
                 () => {
                 });
 
-    }
+        this.socket.on('folderCreateCallbackToWeb', function (data) {
 
-    startIntro() {
-       /* const intro = introJs();
-        intro.setOptions({
-            steps: [{
-                element: '.intro-step-1', intro: 'List Down All Your Online Pc that Belong To your Account '
-            }, {
-                element: '.intro-step-2',
-                intro: 'You can Connect to another  pc using this Public PC Key',
-                position: 'right'
-            }, {
-                element: '.intro-step-3',
-                intro: 'All the  hard drives list  down  here.',
-                position: 'left'
-            }, {
-                element: '.intro-step-4',
-                intro: 'You can manage all your pc,  your account password, etc',
-                position: 'bottom'
-            }]
+            mainThis.alert.openAlert = true;
+
+            if (data.status) {
+                mainThis.alert.class = 'alert-success';
+                mainThis.alert.massage = ` <strong> ${data.message} </strong> `;
+
+            } else {
+
+                mainThis.alert.class = 'alert-danger';
+                mainThis.alert.massage = ` <strong> ${data.message}  </strong> `;
+
+            }
         });
-        intro.start();*/
+
     }
 
     /**
@@ -207,6 +208,7 @@ export class SystemComponent implements OnInit {
         $('#click_' + i).addClass('box-active');
         console.log(path);
         this.openFolderName = path;
+        this.openFolderPath = path;
         const ioSocketID = sessionStorage.getItem('ioSocketID');
         const id = sessionStorage.getItem('id');
         const auth = sessionStorage.getItem('auth');
@@ -221,7 +223,8 @@ export class SystemComponent implements OnInit {
         this.processAlert(true);
         const pcKeyPublic = this.publicPcKey;
         this.openFolderName = fileName;
-        console.log(path);
+        this.openFolderPath = path;
+        console.log(fileName);
         const ioSocketID = sessionStorage.getItem('ioSocketID');
         const id = sessionStorage.getItem('id');
         const auth = sessionStorage.getItem('auth');
@@ -427,6 +430,37 @@ export class SystemComponent implements OnInit {
                 (val: any) => {
 
                     console.log(val);
+                },
+                response => {
+                },
+                () => {
+                });
+
+    }
+
+    validateFolder(e) {
+
+        const sendData = {};
+        sendData['pcKeyPublic'] = this.publicPcKey;
+        sendData['id'] = sessionStorage.getItem('id');
+        sendData['createFolderName'] = this.createFolderName;
+        sendData['path'] = this.openFolderPath;
+        console.log(JSON.stringify(sendData));
+        const headers = new HttpHeaders()
+            .set('Content-Type', 'application/json')
+            .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
+
+        this.http.post('http://thismypc.com:5000/validateFolderName',
+            JSON.stringify(sendData), {
+                headers
+            })
+            .subscribe(
+                (val: any) => {
+
+                    console.log(val);
+
+                    this.createFolderNameErrorMsg = val.message;
+
                 },
                 response => {
                 },

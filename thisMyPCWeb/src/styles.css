@@ -196,6 +196,9 @@ html {
     overflow      : hidden;
     text-overflow : ellipsis;
     }
+
+
+.btn-big{ height: 48px !important; }
 /**System Block End**/
 /**
 Account Block
