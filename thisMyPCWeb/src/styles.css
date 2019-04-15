@@ -245,6 +245,16 @@ Account Block  End
 /**
 Home  block
  */
+
+
+
+
+.platform .on-platform { font-size: 37px; color: #ffffff;}
+.platform .done-dev {  color: #ffffff;}
+.platform .platform-dev {right: 16px;
+    position: absolute;
+    bottom: 2px;
+    font-size: 19px;}
 .circle {
     padding          : 13px 20px;
     border-radius    : 50%;
@@ -560,9 +570,6 @@ Home  block
 
 
 
-
-.on-platform{     font-size: 37px;
-    padding-left: 25px; }
 
 
 
