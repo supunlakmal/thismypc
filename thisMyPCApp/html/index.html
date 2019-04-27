@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ThisMyPC</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+        integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <script src="../assets/js/socket.io.js"></script>
+    <link rel="icon" type="image/x-icon" href="../assets/icon/logo.ico">
+</head>
+<body>
+    <section>
+        <div class="container-fluid">
+            <nav class="navbar navbar-expand-lg navbar-light nav-bar-bg">
+                <a class="navbar-brand" href="#" style="cursor:default;"><img class="logo"
+                        src="../assets/images/logo/logo.png" alt="logo"> <span class="software_venison">(0.1.2)</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+                    aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarText">
+                    <ul class="navbar-nav mr-auto">
+                    </ul>
+                    <span class="navbar-text">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item active">
+                                <div class="nav-link mouse">
+                                    <div class="dropdown">
+                                        <div id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="false">
+                                            Welcome back, <span id="userName"></span>! <i class="fas fa-angle-down"></i>
+                                        </div>
+                                        <div class="dropdown-menu dropdown-menu-right system-font"
+                                            aria-labelledby="dropdownMenuButton">
+                                            <!--
+                  <div class="dropdown-divider"></div>-->
+                                            <a class="dropdown-item" href="#" data-toggle="modal"
+                                                data-target="#logout">Logout</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </span>
+                </div>
+            </nav>
+            <div class="row">
+                <div class="col-md-12" id="notifications_live"></div>
+                <div class="col-md-12 top_alert_position" id="notifications_api">
+                    <!--<div class="alert alert-warning >
+                alert-dismissible"
+                     role="alert">
+                    <a href="#"
+                       class="close"
+                       data-dismiss="alert"
+                       aria-label="close">&times;</a>
+                    This is a Testing app and it will not work after <strong>2019-04-18</strong>
+                </div>-->
+                </div>
+                <div class="col-md-12">
+                    <!--              <div class="row download-box"
+                                   id="download-box">
+                              </div>-->
+                    <div class="row">
+                        <div class="col-xl-12">
+                            <div class="row">
+                                <div class="col-xl-2 col-md-2 app-store">
+                                    <div class="box mouse " data-toggle="modal" data-target="#app-store">
+                                        <div class="row">
+                                            <div class="col-xl-4 col-md-4">
+                                                <i class=" align-middle fas fa-store app-store-icon"></i></div>
+                                            <div class="col-xl-8 col-md-8 app-store-text">App Store</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 col-md-4">
+                                    <div class="box">
+                                        <div class="card-subtitle font-weight-normal  text-muted">Remote User</div>
+                                        <span id="remoteUserBox">
+                                            <div class="font-weight-bolder">User Not Available</div>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 col-md-4"></div>
+                                <div class="col-xl-4 col-md-4"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-12">
+                            <h6>Apps</h6>
+
+                            <hr>
+
+
+                            <div class="row" id="myApps"></div>
+
+
+
+                        </div>
+
+                        <div class="col-xl-12">
+                            <span>
+                                <h3 class="mt-5 font-weight-light text-center">More Option Coming Soon..</h3>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Modal -->
+    <!-- Modal -->
+    <div class="modal fade" id="logout" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">LogOut</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to log out?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                    </button>
+                    <button type="button" class="btn btn-primary" id="submit-logout">LogOut
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="app-store" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header app-store-model-header">
+                    <h5 class="modal-title">App Store</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+
+
+
+
+                    <div class="row" id="app_store_data">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../assets/js/home.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+    </script>
+</body>
+</html>
