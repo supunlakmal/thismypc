@@ -14,21 +14,21 @@
   "license": "MIT",
   "devDependencies": {
     "@types/socket.io-client": "^1.4.32",
-    "electron": "^3.0.9",
+    "electron": "^3.1.8",
+    "electron-builder": "^20.39.0",
     "electron-packager": "^12.2.0",
     "electron-winstaller": "^2.7.0",
-    "socket.io-client": "^2.2.0",
-    "electron-builder": "^20.38.5"
+    "socket.io-client": "^2.2.0"
   },
   "dependencies": {
-    "electron-reload": "^1.3.0",
+    "electron-reload": "^1.4.0",
     "electron-updater": "^4.0.6",
     "file-api": "^0.10.4",
     "fs-extra": "^7.0.1",
     "hdd-space": "^1.2.0",
-    "jquery": "^3.3.1",
+    "jquery": "^3.4.0",
     "junk": "^2.1.0",
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^2.4.1",
     "node-machine-id": "^1.1.10",
     "socket.io-stream": "^0.9.1",
     "split-file": "^2.1.1"
@@ -36,7 +36,7 @@
   "build": {
     "appId": "com.thismypc.thismypc",
     "productName": "This My PC",
-    "copyright":"Copyright © 2019 ${author}",
+    "copyright": "Copyright © 2019 ${author}",
     "target": "NSIS",
     "directories": {
       "output": "build"
