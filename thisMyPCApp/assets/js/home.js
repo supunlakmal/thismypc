@@ -409,8 +409,8 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
             }
 
             install() {
-               // this.appStore();
-               // this.appStoreInstalled();
+                this.appStore();
+                this.appStoreInstalled();
                 this.getUserInfo();
                 this.startScreen();
                 this.clickEvents();
