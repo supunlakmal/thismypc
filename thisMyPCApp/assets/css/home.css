@@ -1,0 +1,67 @@
+.click-btn{ cursor: pointer;}
+.frontside .card,
+.backside .card {
+    min-height: 100%;
+}
+.frontside .card .card-title,
+.backside .card .card-title {
+    color: #007b5e !important;
+}
+.frontside .card .card-body img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+}
+.progress{ width: 100%; }
+.progress-bar{     display: inline;     text-align: left; }
+.download-box{ padding: 20px}
+img.logo {
+    width: 163px;
+    }
+.top_alert_position .alert {
+    position : fixed;
+    z-index  : 1;
+    right    : 10px;
+    bottom      : 10px;
+    z-index  : 2000;
+    }
+.mouse {
+    cursor : pointer;
+    }
+.software_venison{ font-size: 14px; color: gray;}
+.box {
+    border: 1px solid #DCDEE0;
+    vertical-align: middle;
+    border-radius: 3px;
+    height: auto;
+    padding: 10px 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    font-size: 14px;
+    min-height: 60px;
+    }
+.box:hover {
+    border: 1px solid #1e88e5;
+    background-color: #f8f8f8;
+    }
+.box .card-subtitle{ font-size: 13px;}
+#remoteUserBox i{
+    font-size: 28px;
+    color: #1e88e5;
+    }
+.app-store-icon{font-size: 20px ; color: #0080ff;   line-height: 39px !important; }
+.app-store-text{font-size: 14px ;   line-height: 39px !important; }
+.app-store-model-header{ border: none;}
+.app-store-title{    font-size: 18px;
+    font-weight: 600;
+}
+.app-store-info{   color: #5f6368;     font-weight: 600;
+}
+.btn-circle {
+    width: 87px;
+    height: 30px;
+    padding: 5px 8px;
+    border-radius: 100px;
+    font-size: 14px;
+    line-height: 1.33;
+}
