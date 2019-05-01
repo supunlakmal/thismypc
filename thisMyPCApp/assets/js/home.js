@@ -318,7 +318,40 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                           //   $("#userName").text(response.data.name+' '+ response.data.nameLast);
                       }*/
                 });
-            } //  get app store
+            }
+
+
+            //  Uninstall  app store
+            appUninstall(appID, callback) {
+                let data = {};
+                data['id'] = id;
+                data['pcKey'] = pcKey;
+                data['appKey'] = appKey;
+                data['appID'] = appID;
+                fetch('http://thismypc.com:5000/store/app/uninstall', {
+                    method: "POST", // *GET, POST, PUT, DELETE, etc.
+                    mode: "cors", // no-cors, cors, *same-origin
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8", "token": auth,
+                    }, body: JSON.stringify(data), // body data type must match "Content-Type" header
+                })
+                    .then(response => response.json()).then(function (response) {
+                    console.log(response);
+                    callback(response);
+                    /*  if (response.status) {
+
+
+
+                          //   $("#userName").text(response.data.name+' '+ response.data.nameLast);
+                      }*/
+                });
+            }
+
+
+
+
+
+            //  get app store
             appStore() {
                 let data = {};
                 data['id'] = id;
@@ -387,7 +420,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                    let html = '';
                     response.data.forEach(function (item) {
                         // console.log(item);
-                        html += `        <div class="col-xl-3 col-md-3 app ">
+                        html += `        <div class="col-xl-3 col-md-3 app  " id="${item.apps[0]._id}">
                                     <div class="box mouse ">
                                         <div class="row">
                                             <div class="col-xl-3 col-md-3">
@@ -397,7 +430,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                                             <div class="col-xl-7 col-md-7 app-store-text">${item.apps[0].appName}</div>
                                             
                                             
-                                            <div class="col-xl-2 col-md-2 align-self-center"><i class="fas fa-trash-alt"></i></div>
+                                            <div class="col-xl-2 col-md-2 align-self-center"><i class="fas fa-trash-alt delete-btn" data-appID="${item.apps[0]._id}"></i></div>
                                             
                                         </div>
                                     </div>
@@ -674,6 +707,8 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
             });
         });
         // app center
+
+        // install app
         $('body').on('click', '.install-btn', function (e) {
             //code
             let self = $(this);
@@ -683,6 +718,29 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
             $(this).prepend(`<i class="fas fa-sync-alt fa-spin  on-install"></i>`);
             homeClass.appInstall(appID, function (data) {
                 self.html('<i class="fas fa-check-circle"></i> Done');
+                homeClass.appStoreInstalled();
+            });
+
+
+
+        });
+
+        // uninstall app
+
+        $('body').on('click', '.delete-btn', function (e) {
+            //code
+            let self = $(this);
+            let appID = $(this).attr('data-appID');
+            $(this).removeClass('install-btn');
+
+
+            homeClass.appUninstall(appID, function (data) {
+                $("#"+appID).remove();
+
+
+
+
+
             });
         });
         $('#submit-logout').click(function name(params) {
