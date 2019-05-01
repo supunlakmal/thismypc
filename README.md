@@ -12,10 +12,7 @@
 ![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)  [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/your/your-project/blob/master/LICENSE)
 </div>
 
-
-
 This project helps you access your PC  from a web browser in any device.
-
 
 ## Developing
 
@@ -39,8 +36,6 @@ npm i
 `cd thisMyPCWeb` Move into angular Project Folder 
 `npm i` install all  dependency.
 
-
-
 ### Setting up Electron Project
 
 ```shell
@@ -50,8 +45,6 @@ npm i
 
 `cd thisMyPCWeb` Move into  Electron  Project Folder 
 `npm i` install all  dependency.
-
-
 
 ### Building Anguler Project
 
@@ -64,7 +57,6 @@ Run `npm run start` start electron app in debug mode
 ## Api Reference
 
 Coming Soon..
-
 
 ## Database
 
