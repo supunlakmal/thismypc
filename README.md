@@ -1,27 +1,68 @@
-# ThisMyPCWeb
+# This My PC
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
+<div align="center">
+    <a href="http://thismypc.com/">
+        <img src="http://thismypc.com/assets/images/logo/logo-mini.png">
+    </a>
+</div>
+<br />
 
-## Development server
+<div align="center">
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5b677e607def4466b8084eb76be4f0d7)](https://app.codacy.com/app/supunlakmal/thismypc?utm_source=github.com&utm_medium=referral&utm_content=supunlakmal/thismypc&utm_campaign=Badge_Grade_Dashboard)
+![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)  [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/your/your-project/blob/master/LICENSE)
+</div>
+
+This project helps you access your PC  from a web browser in any device.
+
+## Developing
+
+### Built With
+Node JS , Angular , Electron JS , Mongodb
+
+### Clone Project
+
+```shell
+git clone https://github.com/supunlakmal/thismypc.git
+```
+This Command  will copy a full  project  to your local  environment 
+
+### Setting up Anguler Project
+
+```shell
+cd thisMyPCWeb/
+npm i
+```
+
+`cd thisMyPCWeb` Move into angular Project Folder 
+`npm i` install all  dependency.
+
+### Setting up Electron Project
+
+```shell
+cd thisMyPCApp/
+npm i
+```
+
+`cd thisMyPCWeb` Move into  Electron  Project Folder 
+`npm i` install all  dependency.
+
+### Building Anguler Project
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Code scaffolding
+### Building Electron  Project
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Run `npm run start` start electron app in debug mode
 
-## Build
+## Api Reference
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-ng build --prod --base-href /
-## Running unit tests
+Coming Soon..
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Database
 
-## Running end-to-end tests
+MongoDB us as Databace. 
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+## Licensing
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+The MIT License 2019 Supun Lakmal
