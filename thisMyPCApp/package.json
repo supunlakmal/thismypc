@@ -1,0 +1,49 @@
+{
+  "name": "ThisMyPC",
+  "version": "0.1.2",
+  "description": "This is Electron JS , Node JS and  Angular    project (ThisMyPC)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "windose": "electron-packager . --asar --icon=assets/icon/logo.ico",
+    "package-win": "electron-packager . ThisMyPC --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icon/logo.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"ThisMyPC\"",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "author": "Supun Lakmal",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/socket.io-client": "^1.4.32",
+    "electron": "^3.1.8",
+    "electron-builder": "^20.39.0",
+    "electron-packager": "^12.2.0",
+    "electron-winstaller": "^2.7.0",
+    "socket.io-client": "^2.2.0"
+  },
+  "dependencies": {
+    "electron-reload": "^1.4.0",
+    "electron-updater": "^4.0.6",
+    "file-api": "^0.10.4",
+    "fs-extra": "^7.0.1",
+    "hdd-space": "^1.2.0",
+    "jquery": "^3.4.0",
+    "junk": "^2.1.0",
+    "node-fetch": "^2.4.1",
+    "node-machine-id": "^1.1.10",
+    "socket.io-stream": "^0.9.1",
+    "split-file": "^2.1.1"
+  },
+  "build": {
+    "appId": "com.thismypc.thismypc",
+    "productName": "This My PC",
+    "copyright": "Copyright © 2019 ${author}",
+    "target": "NSIS",
+    "directories": {
+      "output": "build"
+    },
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false
+    }
+  }
+}

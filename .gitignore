@@ -1,0 +1,8 @@
+thisMyPCApp/Desktop-win32-x64/
+thisMyPCApp/node_modules/
+thisMyPCServer/node_modules/
+thisMyPCWeb/node_modules/
+thisMyPCApp/ThisMyPC-win32-x64/
+thisMyPCWeb/firebase/node_modules/
+thisMyPCApp/ThisMyPC-win32-x64.zip
+.idea
