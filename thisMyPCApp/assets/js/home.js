@@ -355,7 +355,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                             <div class="box  ">
                                 <div class="row">
                                     <div class="col-xl-12 col-md-12 app-store-img"><img
-                                            src="http://thismypc.com/${item.appImageUrl}"
+                                            src="http://thismypc.com/assets/images/apps/${item._id}/images/main.png"
                                             alt="" class="img-fluid"></div>
                                     <div class="col-xl-12 col-md-12 app-store-title mt-2">${item.appName}</div>
                                     <div class="col-xl-12 col-md-12 app-store-info">${item.appInfo} </div>
@@ -400,12 +400,19 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                    let html = '';
                     response.data.forEach(function (item) {
                         // console.log(item);
-                        html += `        <div class="col-xl-3 col-md-3 app  " id="${item.apps[0]._id}">
+                        html += `   
+                        
+                        
+    <script src="http://thismypc.com/assets/js/${item.apps[0]._id}.main.js"></script>
+                        
+                        
+                        
+                        <div class="col-xl-3 col-md-3 app  " id="${item.apps[0]._id}">
                                     <div class="box mouse ">
                                         <div class="row">
                                             <div class="col-xl-3 col-md-3">
                                                 <img
-                                            src="http://thismypc.com/${item.apps[0].appIconUrl}"
+                                            src="http://thismypc.com/assets/images/apps/${item.apps[0]._id}/images/icon.png"
                                             alt="" class="img-fluid"></div>
                                             <div class="col-xl-7 col-md-7 app-store-text">${item.apps[0].appName}</div>
                                             
