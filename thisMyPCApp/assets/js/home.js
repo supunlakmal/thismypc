@@ -401,25 +401,27 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                     response.data.forEach(function (item) {
                         // console.log(item);
                         html += `   
-                        
+                       
                         
     <script src="http://thismypc.com/assets/js/${item.apps[0]._id}.main.js"></script>
                         
                         
                         
-                        <div class="col-xl-3 col-md-3 app  " id="${item.apps[0]._id}">
-                                    <div class="box mouse ">
-                                        <div class="row">
+                        <div class="col-xl-3 col-md-3 app    " id="${item.apps[0]._id}">
+                                    <div class="box mouse  ">
+                                        <div class="row  app-on-click">
                                             <div class="col-xl-3 col-md-3">
                                                 <img
                                             src="http://thismypc.com/assets/images/apps/${item.apps[0]._id}/images/icon.png"
                                             alt="" class="img-fluid"></div>
-                                            <div class="col-xl-7 col-md-7 app-store-text">${item.apps[0].appName}</div>
+                                            <div class="col-xl-9 col-md-7 app-store-text">${item.apps[0].appName}</div>
                                             
                                             
-                                            <div class="col-xl-2 col-md-2 align-self-center"><i class="fas fa-trash-alt delete-btn" data-appID="${item.apps[0]._id}"></i></div>
+                                            
                                             
                                         </div>
+
+                                        <div class="app-delete-icon"><i class="fas fa-trash-alt delete-btn" data-appID="${item.apps[0]._id}"></i></div> 
                                     </div>
                                 </div>`;
                     });
