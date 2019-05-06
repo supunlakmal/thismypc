@@ -65,3 +65,19 @@ img.logo {
     font-size: 14px;
     line-height: 1.33;
 }
+
+.app-delete-icon{
+    right: 4px;
+    top: -9px;
+position:absolute;
+
+width: 25px;
+height: 25px;
+border: 1px solid #0080ff;
+border-radius: 50%;
+text-align: center;
+background: #ffffff;
+
+
+
+}
