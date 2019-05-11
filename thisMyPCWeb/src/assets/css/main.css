@@ -479,6 +479,14 @@ a.linkd_in_link {
   color: #0080ff;
 }
 
+.c-title-h {
+  font-size: 25px !important;
+}
+
+.border-c {
+  border-top: 1px solid #dee2e659;
+}
+
 /*Slide Alert*/
 @keyframes slideUp {
   from {
