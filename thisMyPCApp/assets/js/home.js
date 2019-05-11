@@ -1,6 +1,6 @@
 "use strict";
 let socket = io.connect('http://thismypc.com:5000');
-//var socket = io.connect('http://127.0.0.1:3000');
+let remoteServer = 'http://thismypc.com:5000';
 const {
     ipcRenderer
 } = require('electron');
@@ -47,9 +47,6 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
         class home {
             constructor(e) {
                 this.homedir = os.homedir();
-                this.fileIcon = '<i class="fas fa-file"></i>'
-                this.folderIcon = '<i class="fas fa-folder"></i>'
-                this.c = 0;
             }
 
             // get  all file and folder  from path  as  list  to main  left side screen #file-dr-list
@@ -148,29 +145,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 }
             }
 
-// no need for  now
-            /* openFolderRequest(data, callback) {
-                 let homedir = data.path;
-                 let mainThis = this;
-                 fse.readdir(homedir, function (err, content) {
-         //console.log(content);
-                     if (err) {
-                         return callback(err)
-                     } else {
-                         let list = [];
-                         for (let file of content) {
-                             let path = homedir + '\\' + file;
-                             let filetype = mainThis.isFile(path);
-                             let fileObject = {
-                                 path: `${homedir}\\${file}`, file: filetype, fileName: file
-                             }
-                             list.push(fileObject);
-                         }
-                         callback(null, list);
-                     }
-                 })
-                 // return await  list ;
-             }*/
+
             getHDDList(callback) {
                 hddSpace({format: 'auto'}, function (info) {
                     callback(info);
@@ -187,7 +162,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 let data = {};
                 data['id'] = id;
                 data['pcKey'] = pcKey;
-                fetch('http://thismypc.com:5000/app/myInfo', {
+                fetch(remoteServer+'/app/myInfo', {
                     method: "POST", // *GET, POST, PUT, DELETE, etc.
                     mode: "cors", // no-cors, cors, *same-origin
                     headers: {
@@ -207,7 +182,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 data['id'] = id;
                 data['pcKey'] = pcKey;
                 data['appKey'] = appKey;
-                fetch('http://thismypc.com:5000/app/notification', {
+                fetch(remoteServer+'/app/notification', {
                     method: "POST", // *GET, POST, PUT, DELETE, etc.
                     mode: "cors", // no-cors, cors, *same-origin
                     headers: {
@@ -230,7 +205,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 data['pcKey'] = pcKey;
                 data['appKey'] = appKey;
                 data['appID'] = appID;
-                fetch('http://thismypc.com:5000/store/app/install', {
+                fetch(remoteServer+'/store/app/install', {
                     method: "POST", // *GET, POST, PUT, DELETE, etc.
                     mode: "cors", // no-cors, cors, *same-origin
                     headers: {
@@ -254,7 +229,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 data['pcKey'] = pcKey;
                 data['appKey'] = appKey;
                 data['limit'] = 6;
-                fetch('http://thismypc.com:5000/store/app', {
+                fetch(remoteServer+'/store/app', {
                     method: "POST", // *GET, POST, PUT, DELETE, etc.
                     mode: "cors", // no-cors, cors, *same-origin
                     headers: {
@@ -303,7 +278,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 data['pcKey'] = pcKey;
                 data['appKey'] = appKey;
                 data['limit'] = 6;
-                fetch('http://thismypc.com:5000/store/app/myApp', {
+                fetch(remoteServer+'/store/app/myApp', {
                     method: "POST", // *GET, POST, PUT, DELETE, etc.
                     mode: "cors", // no-cors, cors, *same-origin
                     headers: {
@@ -545,7 +520,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
             //console.log(data);
             homeClass.progressDownload(data);
         });
-// remort    user ask fro  some  file to  download
+// remote user ask for  some  file to  download
         socket.on('downloadFileRequest', function (data) {
             console.log(data);
             /* //let file = fs.statSync(data.path);
@@ -617,7 +592,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
             let data = {};
             data['id'] = id;
             data['auth'] = auth;
-            fetch('http://thismypc.com:5000/app/logout', {
+            fetch(remoteServer+'/app/logout', {
                 method: "POST", // *GET, POST, PUT, DELETE, etc.
                 mode: "cors", // no-cors, cors, *same-origin
                 headers: {
