@@ -27,7 +27,7 @@ git clone https://github.com/supunlakmal/thismypc.git
 ```
 This Command  will copy a full  project  to your local  environment 
 
-### Setting up Anguler Project
+### Setting up Angular Project
 
 ```shell
 cd thisMyPCWeb/
@@ -47,7 +47,7 @@ npm i
 `cd thisMyPCWeb` Move into  Electron  Project Folder 
 `npm i` install all  dependency.
 
-### Building Anguler Project
+### Building Angular Project
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
@@ -61,7 +61,7 @@ Coming Soon..
 
 ## Database
 
-MongoDB us as Databace. 
+MongoDB use as Database. 
 
 ## Licensing
 
