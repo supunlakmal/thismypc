@@ -106,28 +106,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 return true;
             }
 
-            //returnFileObject(){}
-            allFileAndFolderDrList(homedir) {
-                let mainThis = this;
-                fse.readdir(homedir, (err, files) => {
-                    let html = '';
-                    for (let file of files) {
-                        // const extension = path.extname(file);
-                        //  console.log(extension);
-                        // const fileInfo = fs.statSync(homedir + '\\' + file).size;
-                        //  mainThis.isFile(homedir + '\\' + file);
-                        let icon = '';
-                        if (mainThis.isFile(homedir + '\\' + file)) {
-                            icon = this.fileIcon;
-                        } else {
-                            icon = this.folderIcon;
-                        }
-                        html += `<div class="col-md-12 click-btn" data-path="${homedir}\\${file}">${icon} ${file}</div>`;
-                    }
-                    // $("#file-dr-list").html(`<div class="row">${html}</div>`);
-                    //  mainThis.clickEvents();
-                });
-            }
+
 
 
             clickEvents() {
@@ -139,26 +118,8 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 });
             }
 
-            getList(callback) {
-                let homedir = this.homedir;
-                let mainThis = this;
-                fse.readdir(homedir, function (err, content) {
-                    if (err) {
-                        return callback(err);
-                    } else {
-                        let list = [];
-                        for (let file of content) {
-                            let filetype = mainThis.isFile(homedir + '\\' + file);
-                            let fileObject = {
-                                path: `${homedir}\\${file}`, file: filetype, fileName: file
-                            }
-                            list.push(fileObject);
-                        }
-                        callback(null, list);
-                    }
-                })
-                // return await  list ;
-            }
+
+
 
             startDownload(data) {
                 incomingFileInfo = JSON.parse(data.toString());
@@ -226,9 +187,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 });
             }
 
-            startScreen() {
-                this.allFileAndFolderDrList(this.homedir);
-            }
+
 
             logOut() {
             }
@@ -434,8 +393,6 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 this.appStore();
                 this.appStoreInstalled();
                 this.getUserInfo();
-                this.startScreen();
-                this.clickEvents();
                 this.logOut();
             }
         }
