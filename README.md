@@ -13,7 +13,7 @@
 ![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)  [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/your/your-project/blob/master/LICENSE)
 </div>
 
-ThisMyPC is a next-generation open source solution for remote pc. It's a full stake based project that starts as an experiment.
+ThisMyPC is a next-generation open source solution for remote pc. It's a full stack based project that starts as an experiment.
 
 ## Developing
 
