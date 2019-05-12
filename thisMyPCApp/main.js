@@ -17,7 +17,9 @@ function createWindow() {
     });
     // and load the index.html of the app.
     win.loadFile('html/login.html');// Open the DevTools.
- win.webContents.openDevTools();
+    if(process.argv.indexOf('--debug') !== -1) {
+        win.webContents.openDevTools();
+    }
     /*    var menu = Menu.buildFromTemplate([{
             label: '', submenu: [{
                 label: 'Log out'
