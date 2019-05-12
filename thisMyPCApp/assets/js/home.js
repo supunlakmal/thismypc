@@ -1,6 +1,6 @@
 "use strict";
 let socket = io.connect('http://thismypc.com:5000');
-let remoteServer = 'http://thismypc.com:5000';
+let remoteServer = "http://thismypc.com:5000";
 const {
     ipcRenderer
 } = require('electron');
@@ -162,7 +162,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 let data = {};
                 data['id'] = id;
                 data['pcKey'] = pcKey;
-                fetch(remoteServer+'/app/myInfo', {
+                fetch(remoteServer+"/app/myInfo", {
                     method: "POST", // *GET, POST, PUT, DELETE, etc.
                     mode: "cors", // no-cors, cors, *same-origin
                     headers: {
@@ -182,7 +182,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 data['id'] = id;
                 data['pcKey'] = pcKey;
                 data['appKey'] = appKey;
-                fetch(remoteServer+'/app/notification', {
+                fetch(remoteServer+"/app/notification", {
                     method: "POST", // *GET, POST, PUT, DELETE, etc.
                     mode: "cors", // no-cors, cors, *same-origin
                     headers: {
@@ -205,7 +205,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 data['pcKey'] = pcKey;
                 data['appKey'] = appKey;
                 data['appID'] = appID;
-                fetch(remoteServer+'/store/app/install', {
+                fetch(remoteServer+"/store/app/install", {
                     method: "POST", // *GET, POST, PUT, DELETE, etc.
                     mode: "cors", // no-cors, cors, *same-origin
                     headers: {
@@ -229,7 +229,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 data['pcKey'] = pcKey;
                 data['appKey'] = appKey;
                 data['limit'] = 6;
-                fetch(remoteServer+'/store/app', {
+                fetch(remoteServer+"/store/app", {
                     method: "POST", // *GET, POST, PUT, DELETE, etc.
                     mode: "cors", // no-cors, cors, *same-origin
                     headers: {
@@ -278,7 +278,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 data['pcKey'] = pcKey;
                 data['appKey'] = appKey;
                 data['limit'] = 6;
-                fetch(remoteServer+'/store/app/myApp', {
+                fetch(remoteServer+"/store/app/myApp", {
                     method: "POST", // *GET, POST, PUT, DELETE, etc.
                     mode: "cors", // no-cors, cors, *same-origin
                     headers: {
@@ -592,7 +592,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
             let data = {};
             data['id'] = id;
             data['auth'] = auth;
-            fetch(remoteServer+'/app/logout', {
+            fetch(remoteServer+"/app/logout", {
                 method: "POST", // *GET, POST, PUT, DELETE, etc.
                 mode: "cors", // no-cors, cors, *same-origin
                 headers: {
