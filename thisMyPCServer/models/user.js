@@ -2,28 +2,46 @@ let mongoose = require('mongoose');
 //db.users.update({},{ $set: {"created_date": '' ,'last_login':'' ,'socketID':''} },false,true)
 var userSchema = mongoose.Schema({
     name: {
-        type: String, required: true
-    }, nameLast: {
+        type: String,
+        required: true
+    },
+    nameLast: {
         type: String
-    }, email: {
-        type: String, required: true
-    }, password: {
-        type: String, required: true
-    }, created_date: {
-        type: Date, default: Date.now
-    }, last_login: {
-        type: Date, default: Date.now
-    }, auth: {
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    created_date: {
+        type: Date,
+        default: Date.now
+    },
+    last_login: {
+        type: Date,
+        default: Date.now
+    },
+    auth: {
         type: String
-    }, ioSocketID: {
+    },
+    ioSocketID: {
         type: String
-    }, authApp: {
+    },
+    authApp: {
         type: String
-    }, status: {
-        type: Number, required: true, default: 1 //
-    }, userNowAccessPCID: {
+    },
+    status: {
+        type: Number,
+        required: true,
+        default: 1 //
+    },
+    userNowAccessPCID: {
         type: String
-    }, userCurrentSocketId: {
+    },
+    userCurrentSocketId: {
         type: String
     }
 })
@@ -35,7 +53,7 @@ module.exports.getUsers = function (limit, callback) {
 //  get  user using id
 module.exports.getUser = function (id, callback) {
     User.findOne().where("_id", id).exec(callback);
-}//  get  user using id for  public  use
+} //  get  user using id for  public  use
 module.exports.getUserPublic = function (id, callback) {
     User.findOne().select('_id name nameLast email').where("_id", id).exec(callback);
 }
@@ -45,19 +63,33 @@ module.exports.searchEmailUser = function (email, callback) {
 }
 // login  user
 module.exports.loginUser = function (email, password, callback) {
-    User.findOne().where({"email": email, "password": password, 'status': 1}).exec(callback);
+    User.findOne().where({
+        "email": email,
+        "password": password,
+        'status': 1
+    }).exec(callback);
 }
 // confirm user  password
 module.exports.passwordConfirm = function (id, password, callback) {
-    User.findOne().where({"_id": id, "password": password, 'status': 1}).exec(callback);
+    User.findOne().where({
+        "_id": id,
+        "password": password,
+        'status': 1
+    }).exec(callback);
 }
 // auth  user
 module.exports.authUser = function (id, auth, callback) {
-    User.findOne().where({"_id": id, "auth": auth}).exec(callback);
+    User.findOne().where({
+        "_id": id,
+        "auth": auth
+    }).exec(callback);
 }
 // auth  App
 module.exports.authApp = function (id, auth, callback) {
-    User.findOne().where({"_id": id, "authApp": auth}).exec(callback);
+    User.findOne().where({
+        "_id": id,
+        "authApp": auth
+    }).exec(callback);
 }
 // create   user
 module.exports.createUser = function (user, callback) {
@@ -70,37 +102,33 @@ module.exports.createUser = function (user, callback) {
 }
 //  update  user  info
 module.exports.updateUserInfo = function (id, user, option, callback) {
-    var query = {_id: id};
+    var query = {
+        _id: id
+    };
     var update = {
-        name: user.name, nameLast: user.nameLast
+        name: user.name,
+        nameLast: user.nameLast
     }
     User.findOneAndUpdate(query, update, option, callback);
-}//  update  user  userCurrentSocketId
+} //  update  user  userCurrentSocketId
 module.exports.updateUserCurrentSocketId = function (id, user, option, callback) {
-    var query = {_id: id};
+    var query = {
+        _id: id
+    };
     var update = {
         userCurrentSocketId: user.userCurrentSocketId
     }
     User.findOneAndUpdate(query, update, option, callback);
 }
-
-
-
 //  get  user using SocketId
 module.exports.getUserSocketId = function (userCurrentSocketId, callback) {
     User.findOne().where("userCurrentSocketId", userCurrentSocketId).exec(callback);
 }
-
-
-
-
-
-
-
-
 //  update  user  password
 module.exports.updateUserPassword = function (id, user, option, callback) {
-    var query = {_id: id};
+    var query = {
+        _id: id
+    };
     var update = {
         password: user.password
     }
@@ -108,7 +136,9 @@ module.exports.updateUserPassword = function (id, user, option, callback) {
 }
 // user update auth
 module.exports.updateUserAuth = function (id, user, option, callback) {
-    var query = {_id: id};
+    var query = {
+        _id: id
+    };
     var update = {
         auth: user.auth
     }
@@ -127,14 +157,18 @@ module.exports.updateUserAuthApp = function (id, user, option, callback) {
 }*/
 //// user update  status
 module.exports.updateUserStatus = function (id, user, option, callback) {
-    var query = {_id: id};
+    var query = {
+        _id: id
+    };
     var update = {
         status: user.status,
     }
     User.findOneAndUpdate(query, update, option, callback);
-}//// user update  current pc id
+} //// user update  current pc id
 module.exports.updateUserNowAccessPCID = function (id, user, option, callback) {
-    var query = {_id: id};
+    var query = {
+        _id: id
+    };
     var update = {
         userNowAccessPCID: user.pcID,
     }
@@ -143,11 +177,19 @@ module.exports.updateUserNowAccessPCID = function (id, user, option, callback) {
 // user  info  (My account)
 // auth  user
 module.exports.userInfo = function (id, auth, callback) {
-    User.findOne().select({name: 1, email: 1, status: 1, nameLast: 1}).where({"_id": id, "auth": auth}).exec(callback);
+    User.findOne().select({
+        name: 1,
+        email: 1,
+        status: 1,
+        nameLast: 1
+    }).where({
+        "_id": id,
+        "auth": auth
+    }).exec(callback);
 }
-
 // all active   user
 module.exports.countUsers = function (callback) {
-    User.findOne().where({ 'status': 1}).count(callback);
+    User.findOne().where({
+        'status': 1
+    }).count(callback);
 }
-
