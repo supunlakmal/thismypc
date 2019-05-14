@@ -19,7 +19,7 @@ function respond(type, msg, data) {
     res.data = data;
     return res;
 }
-// mongoDB
+// mongoDB models
 User = require('./models/user');
 // admin module
 Admin = require('./models/admin');
