@@ -665,6 +665,10 @@ a.linkd_in_link {
 }
 
 /*Slide Alert END*/
+.side-alert-text {
+  color: #fff;
+}
+
 .ftco-navbar-light .navbar-nav>.nav-item>.nav-link {
   font-size: 14px;
   padding-top: .9rem;
