@@ -73,9 +73,19 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 Run `npm run start` start electron app in debug mode
 
-## Api Reference
+## REST  API Reference
 
-Coming Soon..
+### Web API
+
+[User Register](thismypc/api/UserRegister.md)
+
+[User Login](thismypc/api/LoginFromWeb.md)
+
+
+
+---
+### App API
+---
 
 ## Database
 
