@@ -77,9 +77,9 @@ Run `npm run start` start electron app in debug mode
 
 ### Web API
 
-[User Register](thismypc/api/UserRegister.md)
+[User Register](api/UserRegister.md)
 
-[User Login](thismypc/api/LoginFromWeb.md)
+[User Login](api/LoginFromWeb.md)
 
 
 
