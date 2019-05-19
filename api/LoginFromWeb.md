@@ -1,5 +1,4 @@
 
-
 # Login From Web 
 Loging for web site
 
@@ -30,7 +29,7 @@ Loging for web site
 ```json
 { "status": true, "message": "Hello!", "data": { "name": "Supun", "auth": "bfc6f0295bbab0c80b3d3cfb55dfe5", "id": "5c3d6a25221d01eba0afc9", "ioSocketID": "room1" } }
 ```
->
+
 ## 401 Unauthorized
 
 **Code** : `401`
@@ -40,4 +39,4 @@ Loging for web site
 ```json
 { "status": false, "message": "Invalid User", "data": null }
 ```
-> 
+
