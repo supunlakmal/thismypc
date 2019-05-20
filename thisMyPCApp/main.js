@@ -1,6 +1,9 @@
 'use strict';
 const {
-    app, BrowserWindow, Menu, ipcMain
+    app,
+    BrowserWindow,
+    Menu,
+    ipcMain
 } = require('electron');
 const fetch = require("node-fetch");
 // reload  application   while   coding
@@ -13,11 +16,16 @@ let main_menu;
 function createWindow() {
     // Create the browser window.
     win = new BrowserWindow({
-        width: 1200, height: 1000, minWidth: 800 ,minHeight :800 ,  icon:  'assets/images/logo/logo-icon.png',    show: false /*, frame: false*/
+        width: 1200,
+        height: 1000,
+        minWidth: 800,
+        minHeight: 800,
+        icon: 'assets/images/logo/logo-icon.png',
+        show: false /*, frame: false*/
     });
     // and load the index.html of the app.
-    win.loadFile('html/login.html');// Open the DevTools.
- win.webContents.openDevTools();
+    win.loadFile('html/login.html'); // Open the DevTools.
+    win.webContents.openDevTools();
     /*    var menu = Menu.buildFromTemplate([{
             label: '', submenu: [{
                 label: 'Log out'
@@ -28,7 +36,6 @@ function createWindow() {
         win.show()
     })
 }
-
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 ipcMain.on('systemPage', () => {
     win.loadFile('html/index.html');
@@ -40,11 +47,6 @@ ipcMain.on('loginPage', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
-
-
-
-
-
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
