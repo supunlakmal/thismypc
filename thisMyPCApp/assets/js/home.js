@@ -13,17 +13,9 @@ const path = require('path');
 const ioStream = require('socket.io-stream');
 const $ = window.jQuery = require("jquery");
 let hddSpace = require('hdd-space');
-const {
-    machineId,
-    machineIdSync
-} = require('node-machine-id');
-var FileAPI = require('file-api'),
-    File = FileAPI.File,
-    FileList = FileAPI.FileList,
-    FileReader = FileAPI.FileReader;
-const pcID = machineIdSync({
-    original: true
-});
+const {machineId, machineIdSync} = require('node-machine-id');
+var FileAPI = require('file-api'), File = FileAPI.File, FileList = FileAPI.FileList, FileReader = FileAPI.FileReader;
+const pcID = machineIdSync({original: true});
 const pcID2 = machineIdSync();
 //console.log(pcID2);
 const pcKey = pcID2 + pcID;
@@ -50,17 +42,19 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
         id = userInfo.id;
         auth = userInfo.auth;
         appKey = userInfo.appKey;
-        //let a = 0;
-        //setInterval(function(){  socket.emit('folderList', { my: a });  a++;}, 3000);
+//let a = 0;
+//setInterval(function(){  socket.emit('folderList', { my: a });  a++;}, 3000);
         class home {
             constructor(e) {
                 this.homedir = os.homedir();
             }
+
             // get  all file and folder  from path  as  list  to main  left side screen #file-dr-list
             isFile(pathFile) {
                 return fs.statSync(pathFile).isFile();
             }
-            // get  file all info
+
+// get  file all info
             fileSize(bytes, si) {
                 var thresh = si ? 1000 : 1024;
                 if (Math.abs(bytes) < thresh) {
@@ -74,7 +68,12 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 } while (Math.abs(bytes) >= thresh && u < units.length - 1);
                 return bytes.toFixed(1) + ' ' + units[u];
             }
+
             timeStampToDateTimeText(t) {
+
+
+
+
                 //  console.log(t);
                 /*
                         console.log(t.getFullYear());
@@ -82,9 +81,11 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                         console.log(t.getDay());
                         console.log(t.getHours());
                         console.log(t.getMinutes());
+
                         */
                 return t.getFullYear() + '-' + t.getMonth() + '-' + t.getDay() + ' ' + t.getHours() + ':' + t.getMinutes();
             }
+
             fileInfo(pathFile) {
                 let property = {};
                 let info = fs.statSync(pathFile);
@@ -94,12 +95,19 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 property.modified = this.timeStampToDateTimeText(info.mtime);
                 return property;
             }
+
             //is  file  exist  on  paste  location
             checkFileOnPasteLocation(src, dest) {
                 // your logic here
                 // it will be copied if return true
                 return true;
             }
+
+
+
+
+
+
             startDownload(data) {
                 incomingFileInfo = JSON.parse(data.toString());
                 incomingFileData = [];
@@ -110,6 +118,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                     <div id="progress-bar-download" class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">${incomingFileInfo.fileName} <span id="download-percentage">0%</span></div>
                 </div>`);
             }
+
             endDownload() {
                 downloadInProgress = false;
                 var a = document.createElement("a");
@@ -122,67 +131,73 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 a.click();
                 window.URL.revokeObjectURL(url);
             }
+
             progressDownload(data) {
                 let self = this;
                 bytesReceived += data.byteLength;
                 incomingFileData.push(data);
                 //  console.log('progress: ' + ((bytesReceived / incomingFileInfo.fileSize ) * 100).toFixed(2) + '%');
-                let progress = ((bytesReceived / incomingFileInfo.fileSize) * 100).toFixed(2);
+                let progress = ((bytesReceived / incomingFileInfo.fileSize ) * 100).toFixed(2);
                 $("body #download-percentage").text(progress + '%');
                 $("body #progress-bar-download").css('width', progress + '%');
                 if (bytesReceived === incomingFileInfo.fileSize) {
                     self.endDownload();
                 }
             }
+
+
             getHDDList(callback) {
-                hddSpace({
-                    format: 'auto'
-                }, function (info) {
+                hddSpace({format: 'auto'}, function (info) {
                     callback(info);
                 });
             }
-            logOut() {}
+
+
+
+            logOut() {
+            }
+
             // get user  info
             getUserInfo() {
                 let data = {};
                 data['id'] = id;
                 data['pcKey'] = pcKey;
-                fetch(remoteServer + "/app/myInfo", {
-                        method: "POST", // *GET, POST, PUT, DELETE, etc.
-                        mode: "cors", // no-cors, cors, *same-origin
-                        headers: {
-                            "Content-Type": "application/json; charset=utf-8",
-                            "token": auth,
-                        },
-                        body: JSON.stringify(data), // body data type must match "Content-Type" header
-                    })
+                fetch(remoteServer+"/app/myInfo", {
+                    method: "POST", // *GET, POST, PUT, DELETE, etc.
+                    mode: "cors", // no-cors, cors, *same-origin
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8", "token": auth,
+                    }, body: JSON.stringify(data), // body data type must match "Content-Type" header
+                })
                     .then(response => response.json()).then(function (response) {
-                        if (response.status) {
-                            $("#userName").text(response.data.name + ' ' + response.data.nameLast);
-                        }
-                    });
+                    if (response.status) {
+                        $("#userName").text(response.data.name + ' ' + response.data.nameLast);
+                    }
+                });
             }
+
             // get  notification  for  user  and   app
             appNotifcation() {
                 let data = {};
                 data['id'] = id;
                 data['pcKey'] = pcKey;
                 data['appKey'] = appKey;
-                fetch(remoteServer + "/app/notification", {
-                        method: "POST", // *GET, POST, PUT, DELETE, etc.
-                        mode: "cors", // no-cors, cors, *same-origin
-                        headers: {
-                            "Content-Type": "application/json; charset=utf-8",
-                            "token": auth,
-                        },
-                        body: JSON.stringify(data), // body data type must match "Content-Type" header
-                    })
+                fetch(remoteServer+"/app/notification", {
+                    method: "POST", // *GET, POST, PUT, DELETE, etc.
+                    mode: "cors", // no-cors, cors, *same-origin
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8", "token": auth,
+                    }, body: JSON.stringify(data), // body data type must match "Content-Type" header
+                })
                     .then(response => response.json()).then(function (response) {
-                        if (response.status) {
-                            //   $("#userName").text(response.data.name+' '+ response.data.nameLast);
-                        }
-                    });
+                    if (response.status) {
+
+
+                        //   $("#userName").text(response.data.name+' '+ response.data.nameLast);
+                    }
+                });
             }
+
             //  Install  app store
             appInstall(appID, callback) {
                 let data = {};
@@ -190,22 +205,23 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 data['pcKey'] = pcKey;
                 data['appKey'] = appKey;
                 data['appID'] = appID;
-                fetch(remoteServer + "/store/app/install", {
-                        method: "POST", // *GET, POST, PUT, DELETE, etc.
-                        mode: "cors", // no-cors, cors, *same-origin
-                        headers: {
-                            "Content-Type": "application/json; charset=utf-8",
-                            "token": auth,
-                        },
-                        body: JSON.stringify(data), // body data type must match "Content-Type" header
-                    })
+                fetch(remoteServer+"/store/app/install", {
+                    method: "POST", // *GET, POST, PUT, DELETE, etc.
+                    mode: "cors", // no-cors, cors, *same-origin
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8", "token": auth,
+                    }, body: JSON.stringify(data), // body data type must match "Content-Type" header
+                })
                     .then(response => response.json()).then(function (response) {
-                        console.log(response);
-                        callback(response);
-                        /*  if (response.status) {
-                              //   $("#userName").text(response.data.name+' '+ response.data.nameLast);
-                          }*/
-                    });
+                    console.log(response);
+                    callback(response);
+                    /*  if (response.status) {
+
+
+
+                          //   $("#userName").text(response.data.name+' '+ response.data.nameLast);
+                      }*/
+                });
             } //  get app store
             appStore() {
                 let data = {};
@@ -213,21 +229,20 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 data['pcKey'] = pcKey;
                 data['appKey'] = appKey;
                 data['limit'] = 6;
-                fetch(remoteServer + "/store/app", {
-                        method: "POST", // *GET, POST, PUT, DELETE, etc.
-                        mode: "cors", // no-cors, cors, *same-origin
-                        headers: {
-                            "Content-Type": "application/json; charset=utf-8",
-                            "token": auth,
-                        },
-                        body: JSON.stringify(data), // body data type must match "Content-Type" header
-                    })
+                fetch(remoteServer+"/store/app", {
+                    method: "POST", // *GET, POST, PUT, DELETE, etc.
+                    mode: "cors", // no-cors, cors, *same-origin
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8", "token": auth,
+                    }, body: JSON.stringify(data), // body data type must match "Content-Type" header
+                })
                     .then(response => response.json()).then(function (response) {
-                        // console.log(response);
-                        let html = '';
-                        response.data.forEach(function (item) {
-                            // console.log(item);
-                            html += ` <div class="col-xl-4 col-md-4 ">
+
+                    // console.log(response);
+                    let html = '';
+                    response.data.forEach(function (item) {
+                        // console.log(item);
+                        html += ` <div class="col-xl-4 col-md-4 ">
                             <div class="box  ">
                                 <div class="row">
                                     <div class="col-xl-12 col-md-12 app-store-img"><img
@@ -235,6 +250,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                                             alt="" class="img-fluid"></div>
                                     <div class="col-xl-12 col-md-12 app-store-title mt-2">${item.appName}</div>
                                     <div class="col-xl-12 col-md-12 app-store-info">${item.appInfo} </div>
+
                                     <div class="col-xl-12 col-md-12 app-store-install mt-2">
                                         <div class="row">
                                             <div class="col-md-6"><i class="fas fa-user"></i> ${item.appInstallCount}+</div>
@@ -246,12 +262,15 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                                 </div>
                             </div>
                         </div>`;
-                        });
-                        $("#app_store_data").html(html);
-                        /*  if (response.status) {
-                              //   $("#userName").text(response.data.name+' '+ response.data.nameLast);
-                          }*/
                     });
+                    $("#app_store_data").html(html);
+                    /*  if (response.status) {
+
+
+
+                          //   $("#userName").text(response.data.name+' '+ response.data.nameLast);
+                      }*/
+                });
             }
             appStoreInstalled() {
                 let data = {};
@@ -259,21 +278,20 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 data['pcKey'] = pcKey;
                 data['appKey'] = appKey;
                 data['limit'] = 6;
-                fetch(remoteServer + "/store/app/myApp", {
-                        method: "POST", // *GET, POST, PUT, DELETE, etc.
-                        mode: "cors", // no-cors, cors, *same-origin
-                        headers: {
-                            "Content-Type": "application/json; charset=utf-8",
-                            "token": auth,
-                        },
-                        body: JSON.stringify(data), // body data type must match "Content-Type" header
-                    })
+                fetch(remoteServer+"/store/app/myApp", {
+                    method: "POST", // *GET, POST, PUT, DELETE, etc.
+                    mode: "cors", // no-cors, cors, *same-origin
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8", "token": auth,
+                    }, body: JSON.stringify(data), // body data type must match "Content-Type" header
+                })
                     .then(response => response.json()).then(function (response) {
-                        console.log(response);
-                        let html = '';
-                        response.data.forEach(function (item) {
-                            // console.log(item);
-                            html += `        <div class="col-xl-3 col-md-3 app ">
+
+                    console.log(response);
+                   let html = '';
+                    response.data.forEach(function (item) {
+                        // console.log(item);
+                        html += `        <div class="col-xl-3 col-md-3 app ">
                                     <div class="box mouse ">
                                         <div class="row">
                                             <div class="col-xl-3 col-md-3">
@@ -281,21 +299,27 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                                             src="http://thismypc.com/${item.apps[0].appIconUrl}"
                                             alt="" class="img-fluid"></div>
                                             <div class="col-xl-7 col-md-7 app-store-text">${item.apps[0].appName}</div>
+                                            
+                                            
                                             <div class="col-xl-2 col-md-2 align-self-center"><i class="fas fa-trash-alt"></i></div>
+                                            
                                         </div>
                                     </div>
                                 </div>`;
-                        });
-                        $("#myApps").html(html);
                     });
+                    $("#myApps").html(html);
+
+                });
             }
+
             install() {
-                // this.appStore();
-                // this.appStoreInstalled();
+               // this.appStore();
+               // this.appStoreInstalled();
                 this.getUserInfo();
                 this.logOut();
             }
         }
+
         let config = {
             'os': os
         }
@@ -303,15 +327,11 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
         console.log(os);
         console.log(os.platform());
         homeClass.install();
-        socket.emit('joinFromApp', {
-            data: {
-                id: id,
-                auth: auth,
-                ioSocketID: ioSocketID,
-                pcKey: pcKey
-            }
-        });
+        socket.emit('joinFromApp', {data: {id: id, auth: auth, ioSocketID: ioSocketID, pcKey: pcKey}});
         /*
+
+
+
         socket.on('getAppData', function (data) {
             console.log("appDATA Start");
             // homeClass.getList(function (err, callback) {
@@ -332,7 +352,10 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 } else {
                     for (let file of content) {
                         let path = homedir + '\\' + file;
+
+
                         // test if  path folder  or file
+
                         fse.readdir(path, function (err, content) {
                             let fileObject = {}
                             if (err) {
@@ -396,17 +419,23 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
             //console.log(data);
             homeClass.progressDownload(data);
         });*/
-        // this is  privet   message
+// this is  privet   message
         socket.on('pcAccessRequest', function (data) {
             console.log(data);
             if (data.status) {
                 $("#remoteUserBox").html(`
+
+
 <div class="row align-items-center">
+
 <div class="col-2"><i class="fas fa-circle-notch  fa-spin"></i></div>
+
 <div class="col-10">
   <div class="font-weight-bolder">${data.name} ${data.nameLast}   ${data.userID === id ? '<span class="badge badge-pill badge-success">You</span>' : ''}</div>
                                         <div class="font-weight-light">${data.email}</div></div>
+
 </div>
+
 `);
                 // homeClass.getList(function (err, callback) {
                 //socket.emit('sendList', {id: id, auth: auth, room: ioSocketID, data: callback});
@@ -414,12 +443,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                 homeClass.getHDDList(function (callback) {
                     //  console.log(callback);
                     // socket.emit('hDDList', callback);
-                    socket.emit('hDDList', {
-                        id: id,
-                        auth: auth,
-                        pcKey: pcKey,
-                        data: callback
-                    });
+                    socket.emit('hDDList', {id: id, auth: auth, pcKey: pcKey, data: callback});
                 });
             } else {
                 $("#remoteUserBox").html(`<div class="font-weight-bolder">User Not Available</div>`);
@@ -429,7 +453,8 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
             // homeClass.openFolderRequest(data, function (err, callback) {
             let homedir = data.path;
             fse.readdir(homedir, function (err, content) {
-                if (err) {} else {
+                if (err) {
+                } else {
                     for (let file of content) {
                         let path = homedir + '\\' + file;
                         // test if  path folder  or file
@@ -446,11 +471,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                                         fileObject.fileName = file;
                                         fileObject.fileInfo = fileInfo;
                                         socket.emit('sendOpenFolderRequest', {
-                                            id: id,
-                                            auth: auth,
-                                            room: ioSocketID,
-                                            pcKey: pcKey,
-                                            data: fileObject
+                                            id: id, auth: auth, room: ioSocketID, pcKey: pcKey, data: fileObject
                                         });
                                         console.log('new emit 2', fileObject);
                                     }
@@ -464,11 +485,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                                 fileObject.fileName = file;
                                 fileObject.fileInfo = fileInfo;
                                 socket.emit('sendOpenFolderRequest', {
-                                    id: id,
-                                    auth: auth,
-                                    room: ioSocketID,
-                                    pcKey: pcKey,
-                                    data: fileObject
+                                    id: id, auth: auth, room: ioSocketID, pcKey: pcKey, data: fileObject
                                 });
                                 console.log('new emit', fileObject);
                             }
@@ -480,19 +497,14 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
         });
         socket.on('copyPasteToPCApp', function (data) {
             console.log(data);
-            // ToDO  only files can be copy
+// ToDO  only files can be copy
             //{filter:homeClass.checkFileOnPasteLocation()}
             fse.copy(data.copyPathSet, data.pastePathSet, err => {
                 if (err) {
                     return console.error(err)
                 } else {
-                    //copy done Emit
-                    socket.emit('pasteDone', {
-                        id: id,
-                        auth: auth,
-                        pcKey: pcKey,
-                        data: true
-                    });
+//copy done Emit
+                    socket.emit('pasteDone', {id: id, auth: auth, pcKey: pcKey, data: true});
                     console.log('success!')
                 }
             })
@@ -508,7 +520,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
             //console.log(data);
             homeClass.progressDownload(data);
         });
-        // remote user ask for  some  file to  download
+// remote user ask for  some  file to  download
         socket.on('downloadFileRequest', function (data) {
             console.log(data);
             /* //let file = fs.statSync(data.path);
@@ -519,6 +531,9 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                  .catch((err) => {
                      console.log('Error: ', err);
                  });
+
+
+
              splitFile.mergeFiles(names, __dirname + '/testfile-output.bin')
                  .then(() => {
                      console.log('Done!');
@@ -526,6 +541,7 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                  .catch((err) => {
                      console.log('Error: ', err);
                  });
+
             */
         });
         //validate folder name before  create
@@ -542,23 +558,18 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
                                 id: id,
                                 auth: auth,
                                 pcKey: pcKey,
-                                data: {
-                                    status: true,
-                                    message: 'Folder Create Successful'
-                                }
+                                data: {status: true, message: 'Folder Create Successful'}
                             });
                         })
-                        .catch(err => {})
+                        .catch(err => {
+                        })
                 } else {
                     if (stats.isDirectory()) {
                         socket.emit('folderCreateCallback', {
                             id: id,
                             auth: auth,
                             pcKey: pcKey,
-                            data: {
-                                status: false,
-                                message: 'Please try different folder name'
-                            }
+                            data: {status: false, message: 'Please try different folder name'}
                         });
                     }
                 }
@@ -581,17 +592,17 @@ fs.readFile(dir + '\/thisMyPC.json', 'utf8', function readFileCallback(err, data
             let data = {};
             data['id'] = id;
             data['auth'] = auth;
-            fetch(remoteServer + "/app/logout", {
-                    method: "POST", // *GET, POST, PUT, DELETE, etc.
-                    mode: "cors", // no-cors, cors, *same-origin
-                    headers: {
-                        "Content-Type": "application/json; charset=utf-8", // "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                    body: JSON.stringify(data), // body data type must match "Content-Type" header
-                })
+            fetch(remoteServer+"/app/logout", {
+                method: "POST", // *GET, POST, PUT, DELETE, etc.
+                mode: "cors", // no-cors, cors, *same-origin
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8", // "Content-Type": "application/x-www-form-urlencoded",
+                }, body: JSON.stringify(data), // body data type must match "Content-Type" header
+            })
                 .then(response => response.json()).then(function (response) {
-                    if (response.status) {}
-                });
+                if (response.status) {
+                }
+            });
         });
     }
 });
