@@ -1,44 +1,44 @@
-let mongoose = require('mongoose');
-var softwareSchema = mongoose.Schema({
-    version: {
-        type: String,
-        required: true
-    },
-    versionKey: {
-        type: String,
-        required: true
-    },
-    status: {
-        type: Number,
-        required: true,
-        default: 1 //
-    },
-    released_date: {
-        type: Date,
-        default: Date.now
-    }
-})
-let Software = module.exports = mongoose.model('software', softwareSchema);
+const mongoose = require('mongoose');
+const softwareSchema = mongoose.Schema({
+  version: {
+    type: String,
+    required: true,
+  },
+  versionKey: {
+    type: String,
+    required: true,
+  },
+  status: {
+    type: Number,
+    required: true,
+    default: 1, //
+  },
+  released_date: {
+    type: Date,
+    default: Date.now,
+  },
+});
+const Software = module.exports = mongoose.model('software', softwareSchema);
 // create   software
-module.exports.createSoftwareVersion = function (software, callback) {
-    Software.create({
-        'version': software.version,
-        'versionKey': software.versionKey,
-        'status': software.status
-    }, callback);
-}
+module.exports.createSoftwareVersion = function(software, callback) {
+  Software.create({
+    'version': software.version,
+    'versionKey': software.versionKey,
+    'status': software.status,
+  }, callback);
+};
 //  get  software using id
-module.exports.getSoftware = function (key, callback) {
-    Software.findOne().where("versionKey", key).exec(callback);
-}
+module.exports.getSoftware = function(key, callback) {
+  Software.findOne().where('versionKey', key).exec(callback);
+};
 //  get active   software using id
-module.exports.getActiveSoftware = function (key, callback) {
-    Software.findOne().where({
-        "versionKey": key,
-        'status': 1
-    }).exec(callback);
-}
+module.exports.getActiveSoftware = function(key, callback) {
+  Software.findOne().where({
+    'versionKey': key,
+    'status': 1,
+  }).exec(callback);
+};
 //  get  all software
-module.exports.getSoftwares = function (data, callback) {
-    Software.find(callback).limit(data.limit);
-}
+module.exports.getSoftwares = function(data, callback) {
+  Software.find(callback).limit(data.limit);
+};
