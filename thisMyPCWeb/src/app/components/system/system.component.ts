@@ -13,6 +13,7 @@ import {
 } from '@angular/common/http';
 import * as io from 'socket.io-client';
 import * as $ from 'jquery';
+import {config} from '../config/config'
 import {
   ConnectionService
 } from 'ng-connection-service';
@@ -74,7 +75,7 @@ export class SystemComponent implements OnInit {
    * param {Router} router
    */
   constructor(private http: HttpClient, private router: Router, private connectionService: ConnectionService) {
-    this.socket = io.connect('http://thismypc.com:5000');
+    this.socket = io.connect(`${config.url}${config.port}`);
     const self = this;
     this.connectionService.monitor().subscribe(isConnected => {
       this.isConnected = isConnected;
@@ -104,7 +105,7 @@ export class SystemComponent implements OnInit {
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    this.http.post('http://thismypc.com:5000/auth',
+    this.http.post(`${config.url}${config.port}/auth`,
         JSON.stringify(sendData), {
           headers
         })
@@ -117,7 +118,7 @@ export class SystemComponent implements OnInit {
         () => {
           console.log('The POST observable is now completed.');
         });
-    this.http.post('http://thismypc.com:5000/myInfo',
+    this.http.post(`${config.url}${config.port}/myInfo`,
         JSON.stringify(sendData), {
           headers
         })
@@ -155,7 +156,7 @@ export class SystemComponent implements OnInit {
       mainThis.alert.class = 'alert-success';
       mainThis.alert.massage = ` <strong> Paste Done </strong> `;
     });
-    this.http.post('http://thismypc.com:5000/myInfo/myPC/online',
+    this.http.post(`${config.url}${config.port}/myInfo/myPC/online`,
         JSON.stringify(sendData), {
           headers
         })
@@ -336,7 +337,7 @@ export class SystemComponent implements OnInit {
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    this.http.post('http://thismypc.com:5000/logout',
+    this.http.post(`${config.url}${config.port}/logout`,
         JSON.stringify(data), {
           headers
         })
@@ -377,7 +378,7 @@ export class SystemComponent implements OnInit {
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    this.http.post('http://thismypc.com:5000/public/pc/access',
+    this.http.post(`${config.url}${config.port}/public/pc/access`,
         JSON.stringify(sendData), {
           headers
         })
@@ -400,7 +401,7 @@ export class SystemComponent implements OnInit {
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    this.http.post('http://thismypc.com:5000/pc/downloadFileRequest',
+    this.http.post(`${config.url}${config.port}/pc/downloadFileRequest`,
         JSON.stringify(sendData), {
           headers
         })
@@ -421,7 +422,7 @@ export class SystemComponent implements OnInit {
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    this.http.post('http://thismypc.com:5000/validateFolderName',
+    this.http.post(`${config.url}${config.port}/validateFolderName`,
         JSON.stringify(sendData), {
           headers
         })
