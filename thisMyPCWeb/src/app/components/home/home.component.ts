@@ -11,6 +11,10 @@ import {
   RouterModule,
   Routes
 } from '@angular/router';
+
+import {config} from '../config/config'
+
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -32,23 +36,9 @@ export class HomeComponent implements OnInit {
   contribute_alert_show = true;
   constructor(private http: HttpClient, private router: Router) {}
   ngOnInit() {
+
     console.log('%c My code DOESN’T work, I have no idea why. My code WORKS, I have no idea why! ', 'font-size: 20px; background: #0080ff; color: #fff');
     const self = this;
-    // send  user auth and  test
-    /*this.http.get('http://thismypc.com:5000/siteInfo')
-            .subscribe(
-                (val: any) => {
-                   // console.log(val);
-                    self.userCount = val.data.userCount;
-                    self.pcCount = val.data.pcCount;
-                },
-                response => {
-                    // if offline
-                },
-                () => {
-                    console.log('The POST observable is now completed.');
-                });
-*/
   }
   resetModel() {
     this.error_message = false;
@@ -68,7 +58,7 @@ export class HomeComponent implements OnInit {
       //  console.log(JSON.stringify(sendData));
       const headers = new HttpHeaders()
         .set('Content-Type', 'application/json');
-      this.http.post('http://thismypc.com:5000/login',
+      this.http.post(`${config.url}${config.port}/login`,
           JSON.stringify(sendData), {
             headers
           })
@@ -104,7 +94,7 @@ export class HomeComponent implements OnInit {
       /// console.log(JSON.stringify(sendData));
       const headers = new HttpHeaders()
         .set('Content-Type', 'application/json');
-      this.http.post('http://thismypc.com:5000/register',
+      this.http.post(`${config.url}${config.port}/register`,
           JSON.stringify(sendData), {
             headers
           })
@@ -127,33 +117,5 @@ export class HomeComponent implements OnInit {
           });
     }
   }
-  onContribute(e) {
-    e.preventDefault();
-    if (this.email_contribute === '' || this.fullName === '') {
-      this.error_message_contribute = true;
-      this.error_message_contribute_text = 'Email / Name required';
-    } else {
-      const sendData = {};
-      sendData['email'] = this.email_contribute;
-      sendData['fullName'] = this.fullName;
-      const headers = new HttpHeaders()
-        .set('Content-Type', 'application/json');
-      this.http.post('http://thismypc.com:5000/contribute',
-          JSON.stringify(sendData), {
-            headers
-          })
-        .subscribe(
-          (val: any) => {
-            this.message_contribute_done = true;
-          },
-          response => {
-            this.error_message_contribute = true;
-            this.error_message_contribute_text = response.error.message;
-            //  console.log("POST call in error", response);
-          },
-          () => {
-            //  console.log("The POST observable is now completed.");
-          });
-    }
-  }
+  
 }

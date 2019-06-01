@@ -16,6 +16,7 @@ import * as $ from 'jquery';
 import {
   ConnectionService
 } from 'ng-connection-service';
+import {config} from '../config/config'
 @Component({
   selector: 'app-account',
   templateUrl: './account.component.html',
@@ -52,7 +53,7 @@ export class AccountComponent implements OnInit {
   // post Header
   headers: any = '';
   constructor(private http: HttpClient, private router: Router, private connectionService: ConnectionService) {
-    this.socket = io.connect('http://thismypc.com:5000');
+    this.socket = io.connect(`${config.url}${config.port}`);
     const self = this;
     this.connectionService.monitor().subscribe(isConnected => {
       this.isConnected = isConnected;
@@ -77,7 +78,7 @@ export class AccountComponent implements OnInit {
       .set('Content-Type', 'application/json')
       .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
     const headers = this.headers;
-    this.http.post('http://thismypc.com:5000/auth',
+    this.http.post(`${config.url}${config.port}/auth`,
         JSON.stringify(sendData), {
           headers
         })
@@ -90,7 +91,7 @@ export class AccountComponent implements OnInit {
         () => {
           console.log('The POST observable is now completed.');
         });
-    this.http.post('http://thismypc.com:5000/myInfo',
+    this.http.post(`${config.url}${config.port}/myInfo`,
         JSON.stringify(sendData), {
           headers
         })
@@ -101,7 +102,7 @@ export class AccountComponent implements OnInit {
         },
         response => {},
         () => {});
-    this.http.post('http://thismypc.com:5000/myInfo/myPC',
+    this.http.post(`${config.url}${config.port}/myInfo/myPC`,
         JSON.stringify(sendData), {
           headers
         })
@@ -130,7 +131,7 @@ export class AccountComponent implements OnInit {
       /*const headers = new HttpHeaders()
           .set('Content-Type', 'application/json')
           .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');*/
-      this.http.post('http://thismypc.com:5000/account/myInfo/update',
+      this.http.post(`${config.url}${config.port}/account/myInfo/update`,
           JSON.stringify(sendData), {
             headers
           })
@@ -163,7 +164,7 @@ export class AccountComponent implements OnInit {
     /*        const headers = new HttpHeaders()
                 .set('Content-Type', 'application/json')
                 .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');*/
-    this.http.post('http://thismypc.com:5000/account/password/update',
+    this.http.post(`${config.url}${config.port}/account/password/update`,
         JSON.stringify(sendData), {
           headers
         })
@@ -196,7 +197,7 @@ export class AccountComponent implements OnInit {
     sendData['status'] = status;
     console.log(JSON.stringify(sendData));
     const headers = this.headers;
-    this.http.post('http://thismypc.com:5000/myInfo/myPc/update',
+    this.http.post(`${config.url}${config.port}/myInfo/myPc/update`,
         JSON.stringify(sendData), {
           headers
         })
@@ -214,7 +215,7 @@ export class AccountComponent implements OnInit {
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    this.http.post('http://thismypc.com:5000/logout',
+    this.http.post(`${config.url}${config.port}/logout`,
         JSON.stringify(data), {
           headers
         })
