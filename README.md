@@ -16,19 +16,20 @@
 ThisMyPC is a next-generation open source solution for remote pc. It's a full stack based project that starts as an experiment.
 
 ### Desktop App  Login
-![Desktop App  Login ](https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/app-login.PNG)
+<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/app-login.PNG" title="Desktop App  Login " width="80%">
 
 ### Desktop App Open
 
-![Desktop App Open](https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/app-home.PNG)
+
+<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/app-home.PNG" title="Desktop App Open" width="80%">
 
 ### Web App  PC  Drivers
 
-![Web App  PC  Drivers ](https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/web-system.PNG)
+<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="80%">
 
 ### Web App PC Drivers Open
 
-![Web App PC Drivers Open](https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/open-drive.PNG)
+<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/open-drive.PNG" title="Web App PC Drivers Open" width="80%">
 
 
 ## Developing
