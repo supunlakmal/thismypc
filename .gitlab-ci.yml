@@ -1,0 +1,30 @@
+    image: node:10.9.0
+
+    stages:
+      - build
+      - test
+
+    cache:
+      paths:
+        - thisMyPCWeb/node_modules
+        - thisMyPCApp/node_modules/
+        - thisMyPCServer/node_modules/
+
+    install_dependencies:
+      stage: build
+      script:
+        - cd thisMyPCWeb
+        - npm i
+        - npm i -g @angular/cli
+        - ng build
+        - cd ..
+        - cd thisMyPCApp
+        - npm i
+        - cd ..
+        - cd thisMyPCServer
+        - npm i
+      artifacts:
+        paths:
+        - thisMyPCWeb/node_modules
+        - thisMyPCApp/node_modules/
+        - thisMyPCServer/node_modules/
