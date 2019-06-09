@@ -18,7 +18,6 @@ ThisMyPC is a next-generation open source solution for remote pc. It's a full st
 
 ### Desktop App Open
 
-
 <img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/app-home.PNG" title="Desktop App Open" width="80%">
 
 ### Web App  PC  Drivers
