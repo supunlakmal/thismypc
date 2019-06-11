@@ -24,6 +24,22 @@ Web App  PC  Drivers       |  Web App PC Drivers Open
 <img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%"> |<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%">
 
 
+
+##  Folder Structure 
+
+
+    .
+    ├── api                          # API documentation folder
+    ├── thisMyPCApp                  # Electron JS app folder
+    ├── thisMyPCServer               # Node JS MongoDB and Express JS server folder
+    ├── thisMyPCWeb                  # Angular website folder
+    ├── .gitignore                   
+    ├── .gitlab-ci.yml
+    ├── CODE_OF_CONDUCT.md
+    ├── LICENSE
+    └── README.md
+
+
 ## Developing
 
 ### Built With
