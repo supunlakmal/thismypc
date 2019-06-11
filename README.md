@@ -29,11 +29,12 @@ Web App  PC  Drivers       |  Web App PC Drivers Open
 
 
     .
+    ├── .github/ISSUE_TEMPLATE
     ├── api                          # API documentation folder
     ├── thisMyPCApp                  # Electron JS app folder
     ├── thisMyPCServer               # Node JS MongoDB and Express JS server folder
     ├── thisMyPCWeb                  # Angular website folder
-    ├── .gitignore                   
+    ├── .gitignore
     ├── .gitlab-ci.yml
     ├── CODE_OF_CONDUCT.md
     ├── LICENSE
