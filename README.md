@@ -31,6 +31,7 @@ Web App  PC  Drivers       |  Web App PC Drivers Open
     ├── .github/ISSUE_TEMPLATE
     ├── api                          # API documentation folder
     ├── thisMyPCApp                  # Electron JS app folder
+    ├── thisMyPCMobileApp            # React Native Mobile App folder
     ├── thisMyPCServer               # Node JS MongoDB and Express JS server folder
     ├── thisMyPCWeb                  # Angular website folder
     ├── .gitignore
@@ -43,7 +44,7 @@ Web App  PC  Drivers       |  Web App PC Drivers Open
 ## Developing
 
 ### Built With
-Node JS , Angular , Electron JS , Mongodb
+Node JS , Angular , Electron JS , Mongodb , React Native 
 
 ### Clone Project
 
