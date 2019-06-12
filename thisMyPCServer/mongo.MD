@@ -1,3 +1,5 @@
+# MongoDB Commands Cheatsheet
+
 	db.help()                    help on db methods
 	db.mycoll.help()             help on collection methods
 	sh.help()                    sharding helpers
@@ -20,9 +22,6 @@
 	it                           result of the last line evaluated; use to further iterate
 	DBQuery.shellBatchSize = x   set default number of items to display on shell
 	exit                         quit the mongo shell
-
-
-//---------------------------------------------------------------
 
 	db.adminCommand(nameOrDocument) - switches to 'admin' db, and runs command [ just calls db.runCommand(...) ]
 	db.auth(username, password)
@@ -74,9 +73,8 @@
 	db.shutdownServer()
 	db.stats()
 	db.version() current version of the server
-    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    db.User.find().help() - show DBCursor help
+	db.User.find().help() - show DBCursor help
 	db.User.bulkWrite( operations, <optional params> ) - bulk execute write operations, optional parameters are: w, wtimeout, j
 	db.User.count( query = {}, <optional params> ) - count the number of documents that matches the query, optional parameters are: limit, skip, hint, maxTimeMS
 	db.User.copyTo(newColl) - duplicates collection by copying all documents to newColl; no indexes are copied.
@@ -94,7 +92,7 @@
 	db.User.explain().help() - show explain help
 	db.User.reIndex()
 	db.User.find([query],[fields]) - query is an optional query filter. fields is optional set of fields to return.
-	                                              e.g. db.User.find( {x:77} , {name:1, x:1} )
+						      e.g. db.User.find( {x:77} , {name:1, x:1} )
 	db.User.find(...).count()
 	db.User.find(...).limit(n)
 	db.User.find(...).skip(n)
