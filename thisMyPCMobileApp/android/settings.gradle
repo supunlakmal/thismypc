@@ -1,0 +1,3 @@
+rootProject.name = 'thisMyPCMobileApp'
+
+include ':app'
