@@ -2,7 +2,6 @@
 - npm install --save-dev electron
 - npm install electron-packager --save-dev
 - npm install electron-packager -g
-- asar pack calculator app.asar
 
 ####  Creta  exe file  with  encript  source code
 -  electron-packager . --asar

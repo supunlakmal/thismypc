@@ -13,20 +13,31 @@
 
 ThisMyPC is a next-generation open source solution for remote pc. It's a full stack based project that starts as an experiment.
 
-### Desktop App  Login
-<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/app-login.PNG" title="Desktop App  Login " width="80%">
+## App Screenshots
 
-### Desktop App Open
+Desktop App  Login         |  Desktop App Open
+:-------------------------:|:-------------------------:
+<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/app-login.PNG" title="Desktop App  Login " width="100%"> |<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/app-home.PNG" title="Desktop App Open" width="100%">
 
-<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/app-home.PNG" title="Desktop App Open" width="80%">
+Web App  PC  Drivers       |  Web App PC Drivers Open
+:-------------------------:|:-------------------------:
+<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%"> |<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%">
 
-### Web App  PC  Drivers
 
-<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="80%">
+##  Folder Structure 
 
-### Web App PC Drivers Open
 
-<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/open-drive.PNG" title="Web App PC Drivers Open" width="80%">
+    .
+    ├── .github/ISSUE_TEMPLATE
+    ├── api                          # API documentation folder
+    ├── thisMyPCApp                  # Electron JS app folder
+    ├── thisMyPCServer               # Node JS MongoDB and Express JS server folder
+    ├── thisMyPCWeb                  # Angular website folder
+    ├── .gitignore
+    ├── .gitlab-ci.yml
+    ├── CODE_OF_CONDUCT.md
+    ├── LICENSE
+    └── README.md
 
 
 ## Developing
