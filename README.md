@@ -109,9 +109,19 @@ Run `npm run start` start electron app in debug mode
 
 ### Web API
 
-[User Register](api/UserRegister.md)
-
-[User Login](api/LoginFromWeb.md)
+Web API| URL | Description 
+------------ | ------------- | -------------
+User Register| thismypc.com:5000/register |[User Register](api/UserRegister.md)
+User Login | thismypc.com:5000/login | [User Login](api/LoginFromWeb.md)
+User Logout | thismypc.com:5000/logout | -
+User Auth | thismypc.com:5000/auth | -
+User Info | thismypc.com:5000/myInfo | -
+User Online PC List| thismypc.com:5000/myInfo/myPC/online | -
+Public PC Access | thismypc.com:5000/public/pc/access | -
+User PC List | thismypc.com:5000/myInfo/myPC | -
+Update User Account | thismypc.com:5000/account/myInfo/update | -
+Update User Password | thismypc.com:5000/account/password/update | -
+Update User PC Info | thismypc.com:5000/myInfo/myPc/update | -
 
 
 
