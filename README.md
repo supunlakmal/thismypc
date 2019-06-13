@@ -44,7 +44,13 @@ Web App  PC  Drivers       |  Web App PC Drivers Open
 ## Developing
 
 ### Built With
-Node JS , Angular , Electron JS , Mongodb , React Native 
+
+* [Node JS](https://nodejs.org/en/)
+* [Angular](https://angularjs.org/)
+* [Electron JS](https://electronjs.org/)
+* [Mongodb](https://www.mongodb.com/)
+* [React Native](https://facebook.github.io/react-native/)
+
 
 ### Clone Project
 
