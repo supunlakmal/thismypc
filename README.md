@@ -107,6 +107,12 @@ Run `npm run start` start electron app in debug mode
 
 ## REST  API Reference
 
+#### API Reference
+
+ * PC - Personal Computer 
+ * thismypc.com:5000 - This is Thismypc web site API url. You can use your own Thismypc server link instead default Link.
+
+
 ### Web API
 
 Web API| URL | Description 
@@ -123,11 +129,11 @@ Update User Account | thismypc.com:5000/account/myInfo/update | -
 Update User Password | thismypc.com:5000/account/password/update | -
 Update User PC Info | thismypc.com:5000/myInfo/myPc/update | -
 
-
-
----
 ### App API
----
+
+APP API| URL | Description 
+------------ | ------------- | -------------
+-| - |-
 
 ## Database
 
