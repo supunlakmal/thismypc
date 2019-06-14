@@ -133,7 +133,9 @@ Update User PC Info | thismypc.com:5000/myInfo/myPc/update | -
 
 APP API| URL | Description 
 ------------ | ------------- | -------------
--| - |-
+User Login From App | thismypc.com:5000/login/app | -
+User Info | thismypc.com:5000/app/myInfo | -
+Notification | thismypc.com:5000/app/notification | -
 
 ## Database
 
