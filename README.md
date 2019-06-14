@@ -44,7 +44,13 @@ Web App  PC  Drivers       |  Web App PC Drivers Open
 ## Developing
 
 ### Built With
-Node JS , Angular , Electron JS , Mongodb , React Native 
+
+* [Node JS](https://nodejs.org/en/)
+* [Angular](https://angularjs.org/)
+* [Electron JS](https://electronjs.org/)
+* [Mongodb](https://www.mongodb.com/)
+* [React Native](https://facebook.github.io/react-native/)
+
 
 ### Clone Project
 
@@ -101,17 +107,35 @@ Run `npm run start` start electron app in debug mode
 
 ## REST  API Reference
 
+#### API Reference
+
+ * PC - Personal Computer 
+ * thismypc.com:5000 - This is Thismypc web site API url. You can use your own Thismypc server link instead default Link.
+
+
 ### Web API
 
-[User Register](api/UserRegister.md)
+Web API| URL | Description 
+------------ | ------------- | -------------
+User Register| thismypc.com:5000/register |[User Register](api/UserRegister.md)
+User Login | thismypc.com:5000/login | [User Login](api/LoginFromWeb.md)
+User Logout | thismypc.com:5000/logout | -
+User Auth | thismypc.com:5000/auth | -
+User Info | thismypc.com:5000/myInfo | -
+User Online PC List| thismypc.com:5000/myInfo/myPC/online | -
+Public PC Access | thismypc.com:5000/public/pc/access | -
+User PC List | thismypc.com:5000/myInfo/myPC | -
+Update User Account | thismypc.com:5000/account/myInfo/update | -
+Update User Password | thismypc.com:5000/account/password/update | -
+Update User PC Info | thismypc.com:5000/myInfo/myPc/update | -
 
-[User Login](api/LoginFromWeb.md)
-
-
-
----
 ### App API
----
+
+APP API| URL | Description 
+------------ | ------------- | -------------
+User Login From App | thismypc.com:5000/login/app | -
+User Info | thismypc.com:5000/app/myInfo | -
+Notification | thismypc.com:5000/app/notification | -
 
 ## Database
 
