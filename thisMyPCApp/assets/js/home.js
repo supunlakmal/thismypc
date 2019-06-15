@@ -23,9 +23,6 @@ let ioSocketID = '';
 let id = '';
 let auth = '';
 let appKey = '';
-let incomingFileInfo;
-let incomingFileData;
-let bytesReceived;
 // folder created    mode
 const desiredMode = 0o2775;
 const homedir = os.homedir();
@@ -33,6 +30,10 @@ let userInfo = {};
 const dir = homedir + '\/.thisMyPC';
 fs.readFile(dir + '\/thisMyPC.json',
     'utf8',
+    /**
+   * @param  {object} err
+   * @param  {object} data
+   */
     function readFileCallback(err, data) {
       if (err) {
         console.log(err);
@@ -43,15 +44,27 @@ fs.readFile(dir + '\/thisMyPC.json',
         id = userInfo.id;
         auth = userInfo.auth;
         appKey = userInfo.appKey;
-        class home {
-          constructor(e) {
+        class Home {
+        /**
+         *  constructor
+         */
+          constructor() {
             this.homedir = os.homedir();
           }
-          // get  all file and folder  from path  as  list  to main  left side screen #file-dr-list
+          /**
+         * @param  {string} pathFile
+         * get  all file and folder  from path  as  list  to main  left side screen #file-dr-list
+         * @return {boolean}
+         */
           isFile(pathFile) {
             return fs.statSync(pathFile).isFile();
           }
-          // get  file all info
+          /**
+         * @param  {number} bytes
+         * @param  {string} si
+         * get  file all
+         * @return {string}
+         */
           fileSize(bytes, si) {
             const thresh = si ? 1000 : 1024;
             if (Math.abs(bytes) < thresh) {
@@ -65,17 +78,17 @@ fs.readFile(dir + '\/thisMyPC.json',
             } while (Math.abs(bytes) >= thresh && u < units.length - 1);
             return bytes.toFixed(1) + ' ' + units[u];
           }
+          /**
+         * @param  {object} t
+         * @return {string}
+         */
           timeStampToDateTimeText(t) {
-          //  console.log(t);
-          /*
-                      console.log(t.getFullYear());
-                      console.log(t.getMonth());
-                      console.log(t.getDay());
-                      console.log(t.getHours());
-                      console.log(t.getMinutes());
-                      */
             return t.getFullYear() + '-' + t.getMonth() + '-' + t.getDay() + ' ' + t.getHours() + ':' + t.getMinutes();
           }
+          /**
+         * @param  {string} pathFile
+         * @return {object}
+         */
           fileInfo(pathFile) {
             const property = {};
             const info = fs.statSync(pathFile);
@@ -85,12 +98,9 @@ fs.readFile(dir + '\/thisMyPC.json',
             property.modified = this.timeStampToDateTimeText(info.mtime);
             return property;
           }
-          // is  file  exist  on  paste  location
-          checkFileOnPasteLocation(src, dest) {
-          // your logic here
-          // it will be copied if return true
-            return true;
-          }
+          /**
+         * @param  {object} callback
+         */
           getHDDList(callback) {
             hddSpace({
               format: 'auto',
@@ -98,8 +108,14 @@ fs.readFile(dir + '\/thisMyPC.json',
               callback(info);
             });
           }
+          /**
+         * User Log Out
+         */
           logOut() {}
-          // get user  info
+
+          /**
+           * get user  info
+           */
           getUserInfo() {
             const data = {};
             data['id'] = id;
@@ -119,15 +135,15 @@ fs.readFile(dir + '\/thisMyPC.json',
                   }
                 });
           }
+          /**
+         * Initialize  functions
+         */
           install() {
             this.getUserInfo();
             this.logOut();
           }
         }
-        const config = {
-          'os': os,
-        };
-        const homeClass = new home(config);
+        const homeClass = new Home();
         console.log(os);
         console.log(os.platform());
         homeClass.install();
@@ -223,7 +239,6 @@ fs.readFile(dir + '\/thisMyPC.json',
         socket.on('copyPasteToPCApp', function(data) {
           console.log(data);
           // ToDO  only files can be copy
-          // {filter:homeClass.checkFileOnPasteLocation()}
           fse.copy(data.copyPathSet, data.pastePathSet, (err) => {
             if (err) {
               return console.error(err);
