@@ -7,6 +7,7 @@ const {
 const os = require('os');
 const fse = require('fs-extra');
 const fs = require('fs');
+
 /* const splitFile = requi;re('split-file')*/
 const $ = window.jQuery = require('jquery');
 const hddSpace = require('hdd-space');
@@ -236,24 +237,7 @@ fs.readFile(dir + '\/thisMyPC.json',
           });
         // });
         });
-        socket.on('copyPasteToPCApp', function(data) {
-          console.log(data);
-          // ToDO  only files can be copy
-          fse.copy(data.copyPathSet, data.pastePathSet, (err) => {
-            if (err) {
-              return console.error(err);
-            } else {
-            // copy done Emit
-              socket.emit('pasteDone', {
-                id: id,
-                auth: auth,
-                pcKey: pcKey,
-                data: true,
-              });
-              console.log('success!');
-            }
-          });
-        });
+        
         // validate folder name before  create
         socket.on('validateFolderName', function(data) {
           console.log(data);
@@ -290,18 +274,7 @@ fs.readFile(dir + '\/thisMyPC.json',
             }
           });
         });
-        // app center
-        $('body').on('click', '.install-btn', function(e) {
-        // code
-          const self = $(this);
-          const appID = self.attr('data-appID');
-          self.removeClass('install-btn');
-          self.children('.need-to-install').remove();
-          self.prepend(`<i class="fas fa-sync-alt fa-spin  on-install"></i>`);
-          homeClass.appInstall(appID, function(data) {
-            self.html('<i class="fas fa-check-circle"></i> Done');
-          });
-        });
+ 
         $('#submit-logout').click(function name(params) {
           ipcRenderer.send('loginPage');
           const data = {};
