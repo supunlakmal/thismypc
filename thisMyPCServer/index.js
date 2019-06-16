@@ -1042,6 +1042,62 @@ io.on('connection', function(socket) {
       }
     });
   });
+
+  socket.on('pcInfoRequest', function(input) {
+    //  console.log('PC Access from drop down', input);
+    const id = input.userID;
+    const auth = input.auth;
+    const pcID = input.pcID;
+    User.authUser(id, auth, function(err, user) {
+      console.log('user select   pc');
+      if (user) {
+        const userInfo = {};
+        userInfo.pcID = pcID;
+        User.updateUserNowAccessPCID(id, userInfo, {}, function(err, user) {});
+        // //console.log(user);
+        PC.getPCUsingID(pcID, function(err, pc) {
+          const sendUserInfoToApp = {};
+          sendUserInfoToApp.status = true;
+          sendUserInfoToApp.name = user.name;
+          sendUserInfoToApp.nameLast = user.nameLast;
+          sendUserInfoToApp.email = user.email;
+          sendUserInfoToApp.userID = user._id;
+          console.log(pc);
+          io.sockets.to(pc.pcSocketID).emit('pcInfoRequest', sendUserInfoToApp);
+          console.log('user ask  for  pc', pc.pcSocketID);
+        });
+      }
+    });
+    // //console.log('get list from app ', msg);
+    //   io.sockets.emit('sendToWeb', msg);
+  });
+
+  // pc info send to web
+  socket.on('pcInfo', function(input) {
+    //  //console.log(input);
+    const id = input.id;
+    const auth = input.auth;
+    const pcKey = md5(input.pcKey);
+
+    PC.authApp(id, auth, pcKey, function(err, pc) {
+      if (pc) {
+        User.getUser(id, function(err, user) {
+          if (user) {
+
+            // to  web
+            getUserSocketID(pc, user, function(socketID) {
+       
+
+              io.sockets.in(socketID).emit('pcInfo', input.pcInfo);
+            });
+       
+          }
+        });
+      }
+    });
+  });
+
+
   // from  web
   socket.on('openFolder', function(input) {
     const id = input.id;
