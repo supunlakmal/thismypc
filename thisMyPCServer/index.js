@@ -3,7 +3,6 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const md5 = require('js-md5');
 const validator = require('validator');
-const nodemailer = require('nodemailer');
 const fileUpload = require('express-fileupload');
 const db = require('./db');
 mongoose.connect(`mongodb://${db.user}:${db.password}@localhost/${db.db}`, {
@@ -31,12 +30,8 @@ PC = require('./models/pc');
 UserAndPC = require('./models/userAndPC');
 // pc and PC Owner  module
 PcOwner = require('./models/PCOwner');
-// developer
-Developer = require('./models/Developers');
-// app
-App = require('./models/App');
-// user and  app
-UserAndApp = require('./models/userAndApp');
+
+
 app.use(bodyParser.json());
 app.use(fileUpload());
 app.use(function(req, res, next) {
@@ -334,129 +329,7 @@ app.post('/account/password/update', function(req, res) {
   res.status(200);
   res.json(respond(true, 'Update Done', null));
 });
-//  developer  register
-app.post('/contribute', function(req, res) {
-  const email = req.body.email;
-  //  console.log(req.body);
-  const userData = req.body;
-  if (req.body.email === '' || req.body.fullName === '') {
-    res.status(401);
-    return res.json(respond(false, 'Email/Name required', null));
-  }
-  // todo this  must  fixed bug
-  /*  if (!validator.isLength(req.body.password, 7 ,15)) {
-          res.status(401);
-          return res.json(respond(false,req.body.password.length, null));
-      }*/
-  // TODO  need to   validate   for name  with spaces
-  /* if (!validator.isAlpha(req.body.name)) {
-        res.status(401);
-        return res.json(respond(false, 'Name  must only  characters  ', null));
-    }*/
-  if (!validator.isEmail(email)) {
-    res.status(401);
-    return res.json(respond(false, 'Invalid Email', null));
-  }
-  Developer.getDeveloperUsingEmail(email, function(err, user) {
-    //    //console.log(user);
-    if (!user) {
-      //      //console.log('No New User');
-      Developer.createDeveloper(userData, function(err, user) {
-        //       //console.log('add New User');
-        if (err) {
-          throw err;
-        }
-        res.status(200);
-        res.json(respond(true, 'Hello!', null));
-      });
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Email  Already exit', null));
-    }
-  });
-});
-//  get  all  app that  user install
-app.post('/store/app/myApp', function(req, res) {
-  const id = req.body.id;
-  const limit = req.body.limit;
-  const pcKey = md5(req.body.pcKey);
-  const auth = req.headers.token;
-  PC.authApp(id, auth, pcKey, function(err, user) {
-    if (!user) {
-      res.status(401);
-      return res.json(respond(false, 'Invalid User', null));
-    } else {
-      UserAndApp.userApps(req.body, function(err, apps) {
-        res.status(200);
-        res.json(respond(true, 'good call', apps));
-      });
-    }
-  });
-});
-// get  all  Apps  in store
-app.post('/store/app', function(req, res) {
-  const id = req.body.id;
-  const limit = req.body.limit;
-  const pcKey = md5(req.body.pcKey);
-  const auth = req.headers.token;
-  PC.authApp(id, auth, pcKey, function(err, user) {
-    if (!user) {
-      res.status(401);
-      return res.json(respond(false, 'Invalid User', null));
-    } else {
-      App.getApps(limit, function(err, apps) {
-        res.status(200);
-        res.json(respond(true, 'good call', apps));
-      });
-    }
-  });
-});
-// add app to user account
-app.post('/store/app/install', function(req, res) {
-  const id = req.body.id;
-  const pcKey = md5(req.body.pcKey);
-  const auth = req.headers.token;
-  PC.authApp(id, auth, pcKey, function(err, user) {
-    if (!user) {
-      res.status(401);
-      return res.json(respond(false, 'Invalid User', null));
-    } else {
-      UserAndApp.getUserAndApp(req.body, function(err, userAndApp) {
-        if (userAndApp) {
-          res.status(200);
-          res.json(respond(false, 'App Already  installed  ', null));
-        } else {
-          UserAndApp.createNewUserAndApp(req.body, function(err, apps) {
-            res.status(200);
-            res.json(respond(true, 'good call', err));
-          });
-          App.incrementInstallCount(function(err, count) {});
-        }
-      });
-    }
-  });
-});
-// add app to user account
-app.post('/store/app/uninstall', function(req, res) {
-  const id = req.body.id;
-  const pcKey = md5(req.body.pcKey);
-  const auth = req.headers.token;
-  PC.authApp(id, auth, pcKey, function(err, user) {
-    if (!user) {
-      res.status(401);
-      return res.json(respond(false, 'Invalid User', null));
-    } else {
-      UserAndApp.getUserAndApp(req.body, function(err, userAndApp) {
-        if (userAndApp) {
-          UserAndApp.deleteUserAndApp(req.body, function(err, apps) {
-            res.status(200);
-            res.json(respond(true, 'good call', err));
-          });
-        }
-      });
-    }
-  });
-});
+
 app.post('/register', function(req, res) {
   const email = req.body.email;
   const password = md5(req.body.password);
@@ -698,36 +571,7 @@ app.post('/admin/delete/app', function(req, res) {
     }
   });
 });
-// get all  contributes
-app.post('/admin/contributors', function(req, res) {
-  const limit = req.body.limit;
-  const out = {};
-  out.auth = req.headers.token;
-  out.uID = req.headers.uid;
-  User.authUser(out.uID, out.auth, function(err, user) {
-    if (user) {
-      Admin.authAdmin(out.uID, function(err, admin) {
-        if (admin) {
-          Developer.getUsers(limit, function(err, user) {
-            if (user) {
-              res.status(200);
-              res.json(respond(true, 'All Users', user));
-            } else {
-              res.status(401);
-              res.json(respond(false, 'Invalid User', null));
-            }
-          });
-        } else {
-          res.status(401);
-          res.json(respond(false, 'Authenticating Error Admin', null));
-        }
-      });
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Authenticating Error', null));
-    }
-  });
-});
+
 // get all  PC
 app.post('/admin/pc', function(req, res) {
   const limit = req.body.limit;
@@ -1198,6 +1042,62 @@ io.on('connection', function(socket) {
       }
     });
   });
+
+  socket.on('pcInfoRequest', function(input) {
+    //  console.log('PC Access from drop down', input);
+    const id = input.userID;
+    const auth = input.auth;
+    const pcID = input.pcID;
+    User.authUser(id, auth, function(err, user) {
+      console.log('user select   pc');
+      if (user) {
+        const userInfo = {};
+        userInfo.pcID = pcID;
+        User.updateUserNowAccessPCID(id, userInfo, {}, function(err, user) {});
+        // //console.log(user);
+        PC.getPCUsingID(pcID, function(err, pc) {
+          const sendUserInfoToApp = {};
+          sendUserInfoToApp.status = true;
+          sendUserInfoToApp.name = user.name;
+          sendUserInfoToApp.nameLast = user.nameLast;
+          sendUserInfoToApp.email = user.email;
+          sendUserInfoToApp.userID = user._id;
+          console.log(pc);
+          io.sockets.to(pc.pcSocketID).emit('pcInfoRequest', sendUserInfoToApp);
+          console.log('user ask  for  pc', pc.pcSocketID);
+        });
+      }
+    });
+    // //console.log('get list from app ', msg);
+    //   io.sockets.emit('sendToWeb', msg);
+  });
+
+  // pc info send to web
+  socket.on('pcInfo', function(input) {
+    //  //console.log(input);
+    const id = input.id;
+    const auth = input.auth;
+    const pcKey = md5(input.pcKey);
+
+    PC.authApp(id, auth, pcKey, function(err, pc) {
+      if (pc) {
+        User.getUser(id, function(err, user) {
+          if (user) {
+
+            // to  web
+            getUserSocketID(pc, user, function(socketID) {
+       
+
+              io.sockets.in(socketID).emit('pcInfo', input.pcInfo);
+            });
+       
+          }
+        });
+      }
+    });
+  });
+
+
   // from  web
   socket.on('openFolder', function(input) {
     const id = input.id;

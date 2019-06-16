@@ -69,6 +69,16 @@ export class SystemComponent implements OnInit {
   publicPcKey = '';
   // folder  or  file  property (Info )
   property: any = [];
+//user selected PC  ID
+selectedPC_ID ='';
+
+
+// is  pc drop  down selected
+  pcSelect = false;
+
+//pc info 
+  pcInfoData: any = [];
+
   /**
    *
    * param {HttpClient} http
@@ -177,6 +187,15 @@ export class SystemComponent implements OnInit {
         mainThis.alert.massage = ` <strong> ${data.message}  </strong> `;
       }
     });
+  //  pcInfoRequest
+  this.socket.on('pcInfo', function (data) {
+
+    self.pcInfoData = data;
+    console.log(data);
+
+  });
+
+
   }
   /**
    *
@@ -268,68 +287,7 @@ export class SystemComponent implements OnInit {
       id: id
     });
   }
-  // get upload  file info
-  onFileChange(event) {
-    // open  top alert
-    this.alert.openAlert = true;
-    this.alert.class = 'alert-primary';
-    const BYTES_PER_CHUNK = 1024;
-    const fileInput = event.target.files[0],
-      fileReader = new FileReader();
-    const id = sessionStorage.getItem('id');
-    const auth = sessionStorage.getItem('auth');
-    const self = this;
-    let file,
-      currentChunk;
-    file = fileInput;
-    let bytesSend = 0;
-    /*      incomingFileInfo
-          , incomingFileData
-          , bytesReceived
-          , downloadInProgress = false*/
-    function readNextChunk() {
-      const start = BYTES_PER_CHUNK * currentChunk;
-      const end = Math.min(file.size, start + BYTES_PER_CHUNK);
-      fileReader.readAsArrayBuffer(file.slice(start, end));
-    }
-    fileReader.onload = function () {
-      const fileData: any = fileReader.result;
-      //     socket.emit('file-send-room-result', fileReader.result);
-      // p2pConnection.send( fileReader.result );
-      bytesSend += fileData.byteLength;
-      const progress = ((bytesSend / file.size) * 100).toFixed(2);
-      console.log(progress);
-      if (bytesSend === file.size) {
-        self.alert.class = 'alert-success';
-        self.alert.massage = ` <strong> Upload Done </strong> `;
-      } else {
-        self.alert.massage = ` <i class="fas fa-sync-alt fa-spin"></i> <strong> Upload Progress ${ progress }%</strong> `;
-      }
-      self.socket.emit('uploadFile_chunk_to_pc', {
-        auth: auth,
-        id: id,
-        data: fileData
-      });
-      currentChunk++;
-      if (BYTES_PER_CHUNK * currentChunk < file.size) {
-        readNextChunk();
-      }
-    };
-    currentChunk = 0;
-    // send some metadata about our file
-    // to the receiver
-    const json = JSON.stringify({
-      fileName: file.name,
-      fileSize: file.size
-    });
-    console.log(json);
-    self.socket.emit('uploadFileInfo_to_pc', {
-      auth: auth,
-      id: id,
-      data: json
-    });
-    readNextChunk();
-  }
+
   // logout System
   logout() {
     const data = {};
@@ -360,7 +318,6 @@ export class SystemComponent implements OnInit {
     this.processAlert(true);
     this.publicPcKey = '';
     console.log(pcID);
-    const ioSocketID = sessionStorage.getItem('ioSocketID');
     const id = sessionStorage.getItem('id');
     const auth = sessionStorage.getItem('auth');
     this.socket.emit('pcAccessRequest', {
@@ -368,7 +325,36 @@ export class SystemComponent implements OnInit {
       auth: auth,
       userID: id
     });
+
+    this.pcSelect =true;
+    this.selectedPC_ID =pcID;
+
+    this.socket.emit('pcInfoRequest', {
+      pcID: pcID,
+      auth: auth,
+      userID: id
+    });
+
+
   }
+
+
+//  get  pc  information   
+
+pcInfo(){
+
+  const id = sessionStorage.getItem('id');
+  const auth = sessionStorage.getItem('auth');
+  const  pcID  =  this.selectedPC_ID;
+    this.socket.emit('pcInfoRequest', {
+      pcID: pcID,
+      auth: auth,
+      userID: id
+    });
+
+}
+
+
   getAccessToPC() {
     this.processAlert(true);
     const sendData = {};
