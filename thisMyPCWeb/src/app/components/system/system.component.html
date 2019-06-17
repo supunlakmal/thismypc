@@ -66,6 +66,21 @@
           </div>
         </form>
       </div>
+      <div class="card-body col-xl-12" *ngIf="pcSelect">
+        <div class="row">
+          <div class="col-md-2 col-4">
+            <div class="row">
+              <div class="col-6"><i class="fas fa-memory"></i> (Ram)</div>
+              <div class="col-6">{{pcInfoData.totalmem}}</div>
+            </div>
+          </div>
+          <div class="col-md-1 col-4">
+            <button type="submit" class="btn btn-primary w-100 blue-btn" (click)="pcInfo()">
+              <i class="fas fa-sync"></i>
+            </button>
+          </div>
+        </div>
+      </div>
       <div class="card-body col-xl-12 intro-step-3" data-intro="All the  hard drives list  down  here." data-step="3">
         <span class="card-box-title">Driver List</span>
         <div class="row" *ngIf="(hDDList.parts | json) != '[]'">
@@ -210,24 +225,6 @@
   </div>
 </div>
 <!-- Modal -->
-<div class="modal fade" id="sendFileModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-  aria-hidden="true">
-  <div class="modal-dialog " role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"> Send File to PC</h5><br>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <input type="file" id="sendfile" class="type-text" (change)="onFileChange($event)">
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 <div class="modal fade" id="createFolder" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
   aria-hidden="true">
   <div class="modal-dialog " role="document">

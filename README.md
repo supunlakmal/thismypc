@@ -129,6 +129,18 @@ Update User Account | thismypc.com:5000/account/myInfo/update | -
 Update User Password | thismypc.com:5000/account/password/update | -
 Update User PC Info | thismypc.com:5000/myInfo/myPc/update | -
 
+### Web socket IO
+
+Socket Name| Socket | Type | Description 
+------------ | ------------- |------------- | -------------
+Join Socket from Web | joinFromWeb | emit | -
+Folder or Driver  Open Request   | openFolder | emit | -
+PC access  Requests  | pcAccessRequest | emit | -
+Get Hard Drive List | hDDList | on | -
+Folder or  hard drive open data   | openFolderRequestToWeb | on | -
+
+
+
 ### App API
 
 APP API| URL | Description 
@@ -136,6 +148,18 @@ APP API| URL | Description
 User Login From App | thismypc.com:5000/login/app | -
 User Info | thismypc.com:5000/app/myInfo | -
 Notification | thismypc.com:5000/app/notification | -
+
+### App socket IO
+
+Socket Name| Socket | Type | Description 
+------------ | ------------- |------------- | -------------
+Join Socket from APP | joinFromApp | emit | -
+Send Hard Drive List   | hDDList | emit | -
+Send Data inside Folder or  Hard Drive  | sendOpenFolderRequest | emit | -
+Send callback  of Folder Create Function  | folderCreateCallback | emit | -
+PC access user and data | pcAccessRequest | on | -
+Folder or Hard drive  open request   | openFolderRequest | on | -
+Folder Validation   | validateFolderName | on | -
 
 ## Database
 
