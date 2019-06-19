@@ -72,6 +72,8 @@ cd thisMyPCWeb/
 npm i
 ```
 
+![Setting up Angular Project](gifAnimations/angularSetup.gif)
+
 `cd thisMyPCWeb` Move into angular Project Folder 
 `npm i` install all  dependency.
 
@@ -81,6 +83,7 @@ npm i
 cd thisMyPCApp/
 npm i
 ```
+![ Setting up Electron Project](gifAnimations/electronSetup.gif)
 
 `cd thisMyPCWeb` Move into  Electron  Project Folder 
 `npm i` install all  dependency.
