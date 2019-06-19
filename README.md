@@ -68,7 +68,7 @@ This Command  will copy a full  project  to your local  environment
 ### Setting up Angular Project
 
 ```shell
-cd thisMyPCWeb/
+cd thisMyPCWeb
 npm i
 ```
 
@@ -80,7 +80,7 @@ npm i
 ### Setting up Electron Project
 
 ```shell
-cd thisMyPCApp/
+cd thisMyPCApp
 npm i
 ```
 ![ Setting up Electron Project](gifAnimations/electronSetup.gif)
@@ -92,7 +92,7 @@ npm i
 ### Setting up Node Server 
 
 ```shell
-cd thisMyPCServer/
+cd thisMyPCServer
 npm i
 ```
 
