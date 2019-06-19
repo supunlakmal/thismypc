@@ -56,9 +56,12 @@ Web App  PC  Drivers       |  Web App PC Drivers Open
 
 ### Clone Project
 
+
 ```shell
 git clone https://github.com/supunlakmal/thismypc.git
 ```
+![git clone https://github.com/supunlakmal/thismypc.git](gifAnimations/gitClone.gif)
+
 This Command  will copy a full  project  to your local  environment 
 
 ### Setting up Angular Project
