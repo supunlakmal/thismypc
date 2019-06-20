@@ -2,7 +2,7 @@
 
 <div align="center">
     <a href="http://thismypc.com/">
-        <img src="http://thismypc.com/assets/images/logo/logo-mini.png">
+        <img src="thisMyPCWeb/src/assets/images/logo/logo-mini.png">
     </a>
 </div>
 <br />
@@ -31,8 +31,7 @@ Web App  PC  Drivers       |  Web App PC Drivers Open
 
     .
     ├── .github/ISSUE_TEMPLATE
-    ├── api                          # API documentation folder
-    ├── gifAnimations                # GIF Animations
+    ├── doc                          # All Api doc and gif files
     ├── thisMyPCApp                  # Electron JS app folder
     ├── thisMyPCMobileApp            # React Native Mobile App folder
     ├── thisMyPCServer               # Node JS MongoDB and Express JS server folder
@@ -61,7 +60,7 @@ Web App  PC  Drivers       |  Web App PC Drivers Open
 ```shell
 git clone https://github.com/supunlakmal/thismypc.git
 ```
-![git clone https://github.com/supunlakmal/thismypc.git](gifAnimations/gitClone.gif)
+![git clone https://github.com/supunlakmal/thismypc.git](doc/gifAnimations/gitClone.gif)
 
 This Command  will copy a full  project  to your local  environment 
 
@@ -72,7 +71,7 @@ cd thisMyPCWeb
 npm i
 ```
 
-![Setting up Angular Project](gifAnimations/angularSetup.gif)
+![Setting up Angular Project](doc/gifAnimations/angularSetup.gif)
 
 `cd thisMyPCWeb` Move into angular Project Folder 
 `npm i` install all  dependency.
@@ -83,7 +82,7 @@ npm i
 cd thisMyPCApp
 npm i
 ```
-![ Setting up Electron Project](gifAnimations/electronSetup.gif)
+![ Setting up Electron Project](doc/gifAnimations/electronSetup.gif)
 
 `cd thisMyPCWeb` Move into  Electron  Project Folder 
 `npm i` install all  dependency.
@@ -126,8 +125,8 @@ Run `npm run start` start electron app in debug mode
 
 Web API| URL | Description 
 ------------ | ------------- | -------------
-User Register| thismypc.com:5000/register |[User Register](api/UserRegister.md)
-User Login | thismypc.com:5000/login | [User Login](api/LoginFromWeb.md)
+User Register| thismypc.com:5000/register |[User Register](doc/api/UserRegister.md)
+User Login | thismypc.com:5000/login | [User Login](doc/api/LoginFromWeb.md)
 User Logout | thismypc.com:5000/logout | -
 User Auth | thismypc.com:5000/auth | -
 User Info | thismypc.com:5000/myInfo | -
