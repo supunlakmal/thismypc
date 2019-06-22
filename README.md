@@ -104,6 +104,17 @@ npm i
 
 
 
+## Config Project Environment
+---
+```javaScript
+
+```
+
+
+
+
+
+
 ### Building Node  Project
 
 Run `npm node index.js` to start node server

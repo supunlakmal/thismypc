@@ -16,10 +16,10 @@ let win;
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 1200,
     height: 1000,
-    minWidth: 800,
     minHeight: 800,
+    minWidth: 800,
+    width: 1200,
     icon: 'assets/images/logo/logo-icon.png',
     show: false,
     /* , frame: false*/
