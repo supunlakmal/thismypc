@@ -6,12 +6,12 @@
 
 .nav-bar-bg {
   background-color: #ffffff00 !important;
-  padding-top: 21px;
   padding-bottom: 0px;
-  width: 100%;
-  z-index: 2;
   padding-left: 8%;
   padding-right: 8%;
+  padding-top: 21px;
+  width: 100%;
+  z-index: 2;
   }
 
 .mouse {
@@ -20,9 +20,9 @@
 
 .top_alert_position {
   position : fixed;
-  z-index  : 1;
   right    : 10px;
   top      : 10px;
+  z-index  : 1;
   z-index  : 2000;
   }
 
@@ -32,14 +32,14 @@
 
 .green-btn {
   background-color : #15CD72;
-  color            : #ffffff !important;
   border           : 1px solid #15CD72;
+  color            : #ffffff !important;
   }
 
 .green-btn:hover {
   background-color : #18e07c;
-  color            : #ffffff !important;
   border           : 1px solid #15CD72;
+  color            : #ffffff !important;
   }
 
 .blue-btn {
@@ -60,9 +60,9 @@
   }
 
 body{
+  /* height           : 100vh; */
   background-image : url('../images/background_img.png');
   background-size  : cover;
-  /* height           : 100vh; */
   padding-bottom: 4%;
   }
 
@@ -72,9 +72,9 @@ body{
   }
 
 .left-box {
-  padding-top    : 11%;
-  padding-bottom : 11%;
   color          : white;
+  padding-bottom : 11%;
+  padding-top    : 11%;
   }
 
 .text-home-mini {
@@ -93,12 +93,11 @@ body{
   }
 
 .main-page-big-text {
-  font-size   : 42px;
+  color : #ffffff;
+  font-size : 42px;
   font-weight : bold;
   line-height : 48px;
-  text-align  : center;
-  color       : #ffffff;
-  padding-top : 30px
+  padding-top : 30px text-align : center;
   }
 
 .main-page-mini-text {
