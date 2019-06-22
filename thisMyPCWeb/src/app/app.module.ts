@@ -26,8 +26,7 @@ const appRoutes: Routes = [
         path: 'admin', component: DashboardComponent
     }, {
         path: 'admin/software', component: SoftwareComponent , canActivate: [AuthGuard],
-    },
-    // {path: 'demo', component: DemoComponent}
+    }
 ];
 
 @NgModule({
