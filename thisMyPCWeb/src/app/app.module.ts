@@ -8,7 +8,6 @@ import {HttpClientModule} from '@angular/common/http';
 import {SystemComponent} from './components/system/system.component';
 import {RouterModule, Routes} from '@angular/router';
 import {AccountComponent} from './components/account/account.component';
-import {DemoComponent} from './components/demo/demo.component';
 import {DashboardComponent} from './components/admin/dashboard/dashboard.component';
 import {LoginComponent} from './components/admin/login/login.component';
 import {UserComponent} from './components/admin/user/user.component';
@@ -38,7 +37,6 @@ const appRoutes: Routes = [
         SystemComponent,
 
         AccountComponent,
-        DemoComponent,
         DashboardComponent,
         LoginComponent,
         UserComponent,
