@@ -7,7 +7,7 @@
 
 </div>
 
-### http://thismypc.com
+
 
 <br />
 
@@ -21,6 +21,8 @@
 </div>
 
 ThisMyPC is a next-generation open source solution for remote pc. It's a full stack based project that starts as an experiment.
+
+### Website - http://thismypc.com
 
 ## App Screenshots
 
