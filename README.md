@@ -1,10 +1,14 @@
-# This My PC  -  http://thismypc.com
+# This My PC
 
 <div align="center">
     <a href="http://thismypc.com/">
         <img src="thisMyPCWeb/src/assets/images/logo/logo-mini.png">
     </a>
+
 </div>
+
+### http://thismypc.com
+
 <br />
 
 <div align="center">
