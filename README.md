@@ -109,16 +109,16 @@ npm i
 `npm i` install all  dependency.
 
 
-### Building Node  Project
+### Run Node  Project
 
 Run `npm node index.js` to start node server
 
 
-### Building Angular Project
+### Run Angular Project
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-### Building Electron  Project
+### Run Electron  Project
 
 Run `npm run start` start electron app in debug mode
 
