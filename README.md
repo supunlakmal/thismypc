@@ -4,7 +4,11 @@
     <a href="http://thismypc.com/">
         <img src="thisMyPCWeb/src/assets/images/logo/logo-mini.png">
     </a>
+
 </div>
+
+
+
 <br />
 
 <div align="center">
@@ -17,6 +21,8 @@
 </div>
 
 ThisMyPC is a next-generation open source solution for remote pc. It's a full stack based project that starts as an experiment.
+
+### Website - http://thismypc.com
 
 ## App Screenshots
 
@@ -103,28 +109,16 @@ npm i
 `npm i` install all  dependency.
 
 
-
-## Config Project Environment
----
-```javaScript
-
-```
-
-
-
-
-
-
-### Building Node  Project
+### Run Node  Project
 
 Run `npm node index.js` to start node server
 
 
-### Building Angular Project
+### Run Angular Project
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-### Building Electron  Project
+### Run Electron  Project
 
 Run `npm run start` start electron app in debug mode
 

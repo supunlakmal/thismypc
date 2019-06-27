@@ -2,95 +2,56 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap core CSS -->
-    <link href="../assets/css/bootstrap.min.css"
-          rel="stylesheet">
-
+    <link href="../assets/libs/bootstrap/bootstrap.min.css" rel="stylesheet">
     <!-- Custom styles for this template -->
-    <link href="../assets/css/login.css"
-          rel="stylesheet">
-    <link href="../assets/css/all.min.css"
-          rel="stylesheet">
-    <script type="text/javascript"
-            src="../assets/js/jquery-3.3.1.min.js"></script>
-    <script src="../assets/js/socket.io.js"></script>
-    <link rel="icon"
-          type="image/x-icon"
-          href="../assets/icon/logo.ico">
-
+    <link href="../assets/css/login.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+    integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <script type="text/javascript" src="../assets/libs/jquery-3.3.1.min.js"></script>
+    <script src="../assets/libs/socket.io.js"></script>
+    <link rel="icon" type="image/x-icon" href="../assets/icon/logo.ico">
 </head>
 
 <body>
-
-
-<div class="container-fluid">
-
-    <div class="row">
-
-        <div class="col-xl-12 mt-5 text-center main_text">ThisMyPC Open Source Remote PC Project</div>
-        <!-- <div class="col-xl-12 mt-1 text-center mini_text">Experimental Full Stack Project</div> -->
-
-    </div>
-
-    <div class="modal"
-         style="display: block;">
-        <div class="modal-dialog modal-dialog-centered"
-             role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-xl-12 text-center">
-                            <img class="logo-modal"
-                                 src="../assets/images/logo/logo.png"
-                                 alt="logo">
-                        </div>
-                        <div class="col-xl-12">
-                            <form>
-                                <div class="row">
-                                    <div class="col-xl-12 form-col"
-                                         id="error-massage">
-
-                                    </div>
-                                    <div class="col-xl-12 form-col"><input type="text"
-                                                                           class="type-text"
-                                                                           id="inputEmail"
-                                                                           placeholder="Email Address"
-                                                                           name="email"
-                                                                           required></div>
-                                    <div class="col-xl-12 form-col"><input type="password"
-                                                                           class="type-text"
-                                                                           id="inputPassword"
-                                                                           placeholder="Password"
-                                                                           name="password"
-                                                                           required></div>
-                                    <div class="col-xl-12 form-col">
-                                        <button type="button"
-                                                class="btn btn-primary w-100 blue-btn "
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-12 mt-5 text-center main_text">ThisMyPC Open Source Remote PC Project</div>
+        </div>
+        <div class="modal" style="display: block;">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xl-12 text-center">
+                                <img class="logo-modal" src="../assets/images/logo/logo.png" alt="logo">
+                            </div>
+                            <div class="col-xl-12">
+                                <form>
+                                    <div class="row">
+                                        <div class="col-xl-12 form-col" id="error-massage">
+                                        </div>
+                                        <div class="col-xl-12 form-col"><input type="text" class="type-text"
+                                                id="inputEmail" placeholder="Email Address" name="email" required></div>
+                                        <div class="col-xl-12 form-col"><input type="password" class="type-text"
+                                                id="inputPassword" placeholder="Password" name="password" required>
+                                        </div>
+                                        <div class="col-xl-12 form-col">
+                                            <button type="button" class="btn btn-primary w-100 blue-btn "
                                                 id="submit-login">Login
-                                        </button>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <!--  <div class="col-xl-12 form-col">
-                                          <button type="button"
-                                                  class="btn btn-secondary w-100"
-                                                  data-dismiss="modal">Close
-                                          </button>
-                                      </div>-->
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-
-<script src="../assets/js/login.js"></script>
+    <script src="../assets/js/login.js"></script>
 </body>
 
 </html>

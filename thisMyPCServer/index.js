@@ -1,10 +1,10 @@
 const app = require('express')();
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const md5 = require('js-md5');
-const validator = require('validator');
-const fileUpload = require('express-fileupload');
 const db = require('./db');
+const fileUpload = require('express-fileupload');
+const md5 = require('js-md5');
+const mongoose = require('mongoose');
+const validator = require('validator');
 mongoose.connect(`mongodb://${db.user}:${db.password}@localhost/${db.db}`, {
   useNewUrlParser: true,
 });
@@ -13,9 +13,9 @@ const io = require('socket.io')(http);
 // functions
 function respond(type, msg, data) {
   const res = {};
-  res.status = type;
-  res.message = msg;
   res.data = data;
+  res.message = msg;
+  res.status = type;
   return res;
 }
 // mongoDB models
@@ -41,7 +41,7 @@ app.use(function(req, res, next) {
 });
 http.listen(process.env.PORT || 5000);
 /**
- * Custom function  for user >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ * Custom function  for user 
  */
 // pc owner socket id or  pc public key user socket id
 function getUserSocketID(pcData, user, callback) {
@@ -164,9 +164,9 @@ app.post('/myInfo/myPc/online', function(req, res) {
 });
 app.post('/myInfo/myPc/publicKey/update', function(req, res) {
   //  //console.log(req.headers.token);
-  const userID = req.body.id;
   const auth = req.headers.token;
   const pcID = req.body.pcID;
+  const userID = req.body.id;
   let publicAccessKey = pcID + Date.now();
   publicAccessKey = md5(publicAccessKey);
   User.authUser(userID, auth, function(err, user) {
@@ -185,9 +185,9 @@ app.post('/myInfo/myPc/publicKey/update', function(req, res) {
 });
 app.post('/myInfo/myPc/update', function(req, res) {
   //  //console.log(req.headers.token);
-  const userID = req.body.id;
   const auth = req.headers.token;
   const pcID = req.body.pcID;
+  const userID = req.body.id;
   const publicAccessStatus = req.body.status;
   let publicAccessKey = pcID + Date.now();
   if (publicAccessStatus === 1) {
@@ -215,8 +215,8 @@ app.post('/myInfo/myPc/update', function(req, res) {
 // get user  info
 app.post('/myInfo', function(req, res) {
   //  //console.log(req.headers.token);
-  const id = req.body.id;
   const auth = req.headers.token;
+  const id = req.body.id;
   User.authUser(id, auth, function(err, user) {
     if (!user) {
       res.status(401);
@@ -236,8 +236,8 @@ app.post('/myInfo', function(req, res) {
 // get user  info
 app.post('/app/myInfo', function(req, res) {
   //  //console.log(req.headers.token);
-  const id = req.body.id;
   const auth = req.headers.token;
+  const id = req.body.id;
   const pcKey = req.body.pcKey;
   PC.authApp(id, auth, pcKey, function(err, pc) {
     User.getUserPublic(id, function(err, user) {
@@ -254,8 +254,8 @@ app.post('/app/myInfo', function(req, res) {
 // get user  notification  and  app notification
 app.post('/app/notification', function(req, res) {
   //  //console.log(req.headers.token);
-  const id = req.body.id;
   const auth = req.headers.token;
+  const id = req.body.id;
   const pcKey = req.body.pcKey;
   PC.authApp(id, auth, pcKey, function(err, pc) {
     User.getUserPublic(id, function(err, user) {
@@ -272,8 +272,8 @@ app.post('/app/notification', function(req, res) {
 // update account  info
 app.post('/account/myInfo/update', function(req, res) {
   //  //console.log(req.headers.token);
-  const id = req.body.id;
   const auth = req.headers.token;
+  const id = req.body.id;
   User.authUser(id, auth, function(err, user) {
     if (!user) {
       res.status(401);
@@ -296,11 +296,11 @@ app.post('/account/myInfo/update', function(req, res) {
 // update account  password
 app.post('/account/password/update', function(req, res) {
   //  //console.log(req.headers.token);
-  const id = req.body.id;
   const auth = req.headers.token;
-  const password = md5(req.body.password);
-  const newPassword = md5(req.body.newPassword);
   const confirmNewPassword = md5(req.body.confirmNewPassword);
+  const id = req.body.id;
+  const newPassword = md5(req.body.newPassword);
+  const password = md5(req.body.password);
   User.authUser(id, auth, function(err, user) {
     if (!user) {
       res.status(401);
@@ -367,10 +367,10 @@ app.post('/register', function(req, res) {
         User.loginUser(email, password, function(err, user) {
           const date = new Date();
           const out = {};
-          out.name = user.name;
           out.auth = md5(user._id + date);
           out.id = user._id;
           out.ioSocketID = user.ioSocketID;
+          out.name = user.name;
           User.updateUserAuth(user._id, out, {}, function(err, user) {});
           // Todo this will no need in future
           out.ioSocketID = 'room1';
@@ -398,10 +398,10 @@ app.post('/login', function(req, res) {
     if (user) {
       const date = new Date();
       const out = {};
-      out.name = user.name;
       out.auth = md5(user._id + date);
       out.id = user._id;
       out.ioSocketID = user.ioSocketID;
+      out.name = user.name;
       User.updateUserAuth(user._id, out, {}, function(err, user) {});
       // Todo this will no need in future
       out.ioSocketID = 'room1';
@@ -421,9 +421,9 @@ app.post('/logout', function(req, res) {
     if (user) {
       const date = new Date();
       const out = {};
-      out.name = user.name;
       out.auth = md5(user._id + date) + '_logout';
       out.id = user._id;
+      out.name = user.name;
       //  out.ioSocketID = user.ioSocketID;
       User.updateUserAuth(user._id, out, {}, function(err, user) {});
       res.status(200);
@@ -443,9 +443,9 @@ app.post('/app/logout', function(req, res) {
     if (user) {
       const date = new Date();
       const out = {};
-      out.name = user.name;
       out.auth = md5(user._id + date) + '_logout';
       out.id = user._id;
+      out.name = user.name;
       //  out.ioSocketID = user.ioSocketID;
       User.updateUserAuthApp(user._id, out, {}, function(err, user) {});
       res.status(200);
@@ -468,9 +468,9 @@ app.post('/admin/create/app', function(req, res) {
       Admin.authAdmin(out.uID, function(err, admin) {
         if (admin) {
           const app = {};
-          app.appName = req.body.appName;
-          app.appInfo = req.body.appInfo;
           app.appImageUrl = req.body.appImageUrl;
+          app.appInfo = req.body.appInfo;
+          app.appName = req.body.appName;
           app.userID = req.body.userID;
           app.version = req.body.version;
           App.createApp(app, function(err, app) {});
@@ -634,8 +634,8 @@ app.post('/admin/users', function(req, res) {
 });
 app.post('/admin/admin/create', function(req, res) {
   const out = {};
-  out.id = req.body.userID;
   out.auth = req.headers.token;
+  out.id = req.body.userID;
   out.uID = req.headers.uid;
   User.authUser(out.uID, out.auth, function(err, user) {
     if (user) {
@@ -678,9 +678,9 @@ app.post('/admin/admin/create', function(req, res) {
 });
 app.post('/admin/user/status', function(req, res) {
   const out = {};
+  out.auth = req.headers.token;
   out.id = req.body.userID;
   out.status = req.body.status;
-  out.auth = req.headers.token;
   out.uID = req.headers.uid;
   User.authUser(out.uID, out.auth, function(err, user) {
     if (user) {
@@ -706,11 +706,11 @@ app.post('/admin/user/status', function(req, res) {
 //  create   software   version
 app.post('/admin/software/create', function(req, res) {
   const out = {};
+  out.auth = req.headers.token;
+  out.status = req.body.status;
+  out.uID = req.headers.uid;
   out.version = req.body.version;
   out.versionKey = md5(req.body.version);
-  out.status = req.body.status;
-  out.auth = req.headers.token;
-  out.uID = req.headers.uid;
   User.authUser(out.uID, out.auth, function(err, user) {
     if (user) {
       Admin.authAdmin(out.uID, function(err, admin) {
@@ -744,8 +744,8 @@ app.post('/admin/software/create', function(req, res) {
 //  get all   software   version
 app.post('/admin/software/all', function(req, res) {
   const out = {};
-  out.limit = req.body.limit;
   out.auth = req.headers.token;
+  out.limit = req.body.limit;
   out.uID = req.headers.uid;
   User.authUser(out.uID, out.auth, function(err, user) {
     if (user) {
@@ -769,11 +769,11 @@ app.post('/admin/software/all', function(req, res) {
 // TODO  need to  complete
 app.post('/admin/software/notification', function(req, res) {
   const out = {};
+  out.auth = req.headers.token;
+  out.status = req.body.status;
+  out.uID = req.headers.uid;
   out.version = req.body.version;
   out.versionKey = md5(req.body.version);
-  out.status = req.body.status;
-  out.auth = req.headers.token;
-  out.uID = req.headers.uid;
   User.authUser(out.uID, out.auth, function(err, user) {
     if (user) {
       Admin.authAdmin(out.uID, function(err, admin) {
@@ -873,9 +873,9 @@ io.on('connection', function(socket) {
                 pcInfo.pcSocketID = socket.id;
                 PC.updatePcOnlineStatus(pc._id, pcInfo, {}, function(err, user) {});
                 const pcOwner = {};
-                pcOwner.userID = user._id;
                 pcOwner.pcID = pc._id;
                 pcOwner.pcKey = pcKey;
+                pcOwner.userID = user._id;
                 PcOwner.pcAndOwner(pcOwner, function(err, pcOwner) {
                   //     console.log(err, pcOwner);
                   const out = updateAppUserAuth(user, pcKey);
@@ -886,17 +886,17 @@ io.on('connection', function(socket) {
               } else {
                 const pc = {};
                 pc.pcKey = pcKey;
-                pc.userID = user._id;
                 pc.pcName = pcName;
-                pc.platform = platform;
-                pc.publicAccessKey = md5(pcKey + Date.now());
                 pc.pcOnline = 1;
                 pc.pcSocketID = socket.id;
+                pc.platform = platform;
+                pc.publicAccessKey = md5(pcKey + Date.now());
+                pc.userID = user._id;
                 PC.createNewPC(pc, function(err, pc) {
                   const pcOwner = {};
-                  pcOwner.userID = user._id;
                   pcOwner.pcID = pc._id;
                   pcOwner.pcKey = pcKey;
+                  pcOwner.userID = user._id;
                   PcOwner.pcAndOwner(pcOwner, function(err, pcOwner) {
                     //       console.log(err, pcOwner);
                     const out = updateAppUserAuth(user, pcKey);
@@ -954,8 +954,8 @@ io.on('connection', function(socket) {
   });
   // join user from  app
   socket.on('joinFromApp', function(data) {
-    const id = data.data.id;
     const auth = data.data.auth;
+    const id = data.data.id;
     const pcKey = md5(data.data.pcKey);
     // let roomID = '';
     // console.log('joinFromApp >>>>>>>>', data);
@@ -991,8 +991,8 @@ io.on('connection', function(socket) {
        });*/
   socket.on('pcAccessRequest', function(input) {
     //  console.log('PC Access from drop down', input);
-    const id = input.userID;
     const auth = input.auth;
+    const id = input.userID;
     const pcID = input.pcID;
     User.authUser(id, auth, function(err, user) {
       console.log('user select   pc');
@@ -1003,10 +1003,10 @@ io.on('connection', function(socket) {
         // //console.log(user);
         PC.getPCUsingID(pcID, function(err, pc) {
           const sendUserInfoToApp = {};
-          sendUserInfoToApp.status = true;
+          sendUserInfoToApp.email = user.email;
           sendUserInfoToApp.name = user.name;
           sendUserInfoToApp.nameLast = user.nameLast;
-          sendUserInfoToApp.email = user.email;
+          sendUserInfoToApp.status = true;
           sendUserInfoToApp.userID = user._id;
           console.log(pc);
           io.sockets.to(pc.pcSocketID).emit('pcAccessRequest', sendUserInfoToApp);
@@ -1045,8 +1045,8 @@ io.on('connection', function(socket) {
 
   socket.on('pcInfoRequest', function(input) {
     //  console.log('PC Access from drop down', input);
-    const id = input.userID;
     const auth = input.auth;
+    const id = input.userID;
     const pcID = input.pcID;
     User.authUser(id, auth, function(err, user) {
       console.log('user select   pc');
@@ -1057,10 +1057,10 @@ io.on('connection', function(socket) {
         // //console.log(user);
         PC.getPCUsingID(pcID, function(err, pc) {
           const sendUserInfoToApp = {};
-          sendUserInfoToApp.status = true;
+          sendUserInfoToApp.email = user.email;
           sendUserInfoToApp.name = user.name;
           sendUserInfoToApp.nameLast = user.nameLast;
-          sendUserInfoToApp.email = user.email;
+          sendUserInfoToApp.status = true;
           sendUserInfoToApp.userID = user._id;
           console.log(pc);
           io.sockets.to(pc.pcSocketID).emit('pcInfoRequest', sendUserInfoToApp);
@@ -1075,8 +1075,8 @@ io.on('connection', function(socket) {
   // pc info send to web
   socket.on('pcInfo', function(input) {
     //  //console.log(input);
-    const id = input.id;
     const auth = input.auth;
+    const id = input.id;
     const pcKey = md5(input.pcKey);
 
     PC.authApp(id, auth, pcKey, function(err, pc) {
@@ -1100,8 +1100,8 @@ io.on('connection', function(socket) {
 
   // from  web
   socket.on('openFolder', function(input) {
-    const id = input.id;
     const auth = input.auth;
+    const id = input.id;
     const pcKeyPublic = input.pcKeyPublic;
     User.authUser(id, auth, function(err, user) {
       // console.log(input);
@@ -1124,8 +1124,8 @@ io.on('connection', function(socket) {
   });
   // from  pc
   socket.on('sendOpenFolderRequest', function(input) {
-    const id = input.id;
     const auth = input.auth;
+    const id = input.id;
     const pcKey = md5(input.pcKey);
     //   console.log('sendOpenFolderRequest >>>>>>>>', input);
     PC.authApp(id, auth, pcKey, function(err, pc) {
@@ -1148,8 +1148,8 @@ io.on('connection', function(socket) {
   });
   // copy file  location ad paste file  location
   socket.on('copyPasteToPC', function(input) {
-    const id = input.id;
     const auth = input.auth;
+    const id = input.id;
     User.authUser(id, auth, function(err, user) {
       // console.log(user);
       if (user) {
@@ -1160,8 +1160,8 @@ io.on('connection', function(socket) {
   });
   // copy  and paste  Done
   socket.on('pasteDone', function(input) {
-    const id = input.id;
     const auth = input.auth;
+    const id = input.id;
     const pcKey = md5(input.pcKey);
     let roomID = '';
     // console.log('pasteDone >>>>>>>', input);
@@ -1180,8 +1180,8 @@ io.on('connection', function(socket) {
   });
   // file  transfer
   socket.on('uploadFileInfo_to_pc', function(input) {
-    const id = input.id;
     const auth = input.auth;
+    const id = input.id;
     User.authUser(id, auth, function(err, user) {
       // console.log(user);
       if (user) {
@@ -1191,8 +1191,8 @@ io.on('connection', function(socket) {
     });
   });
   socket.on('uploadFile_chunk_to_pc', function(input) {
-    const id = input.id;
     const auth = input.auth;
+    const id = input.id;
     User.authUser(id, auth, function(err, user) {
       // console.log(user);
       if (user) {
@@ -1209,8 +1209,8 @@ io.on('connection', function(socket) {
      * User
      */
   app.post('/public/pc/access', function(req, res) {
-    const id = req.body.id;
     const auth = req.headers.token;
+    const id = req.body.id;
     const pcKeyPublic = req.body.pcKeyPublic;
     User.authUser(id, auth, function(err, user) {
       if (!user) {
@@ -1218,9 +1218,9 @@ io.on('connection', function(socket) {
         return res.json(respond(false, 'Invalid User', null));
       }
       const sendUserInfoToApp = {};
+      sendUserInfoToApp.email = user.email;
       sendUserInfoToApp.name = user.name;
       sendUserInfoToApp.nameLast = user.nameLast;
-      sendUserInfoToApp.email = user.email;
       sendUserInfoToApp.userID = user._id;
       //    console.log('User Auth >>>>>>>> ');
       PC.getPCPublicKey(pcKeyPublic, function(err, pcInfo) {
@@ -1238,10 +1238,10 @@ io.on('connection', function(socket) {
     });
   });
   app.post('/pc/downloadFileRequest', function(req, res) {
-    const id = req.body.id;
     const auth = req.headers.token;
-    const pcKeyPublic = req.body.pcKeyPublic;
+    const id = req.body.id;
     const path = req.body.path;
+    const pcKeyPublic = req.body.pcKeyPublic;
     User.authUser(id, auth, function(err, user) {
       // console.log(input);
       if (user) {
@@ -1266,11 +1266,11 @@ io.on('connection', function(socket) {
   });
   // validate folder name
   app.post('/validateFolderName', function(req, res) {
-    const id = req.body.id;
     const auth = req.headers.token;
-    const pcKeyPublic = req.body.pcKeyPublic;
     const createFolderName = req.body.createFolderName;
+    const id = req.body.id;
     const path = req.body.path;
+    const pcKeyPublic = req.body.pcKeyPublic;
     User.authUser(id, auth, function(err, user) {
       // console.log(input);
       if (user) {
@@ -1291,8 +1291,8 @@ io.on('connection', function(socket) {
   });
   // from  pc  send  information after create  folder
   socket.on('folderCreateCallback', function(input) {
-    const id = input.id;
     const auth = input.auth;
+    const id = input.id;
     const pcKey = md5(input.pcKey);
     PC.authApp(id, auth, pcKey, function(err, pc) {
       if (pc) {
