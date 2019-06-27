@@ -66,7 +66,7 @@ git clone https://github.com/supunlakmal/thismypc.git
 This Command  will copy a full  project  to your local  environment
 
 ## Angular Project
----
+
 
 ### Setting up Angular Project
 
@@ -85,7 +85,7 @@ npm i
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Electron Project
----
+
 
 ### Setting up Electron Project
 
@@ -103,7 +103,7 @@ npm i
 Run `npm run start` start electron app in debug mode
 
 ## Node Server
----
+
 
 ### Setting up Node Server
 
@@ -119,8 +119,7 @@ npm i
 
 Run `npm node index.js` to start node server
 
-## REST  API
----
+## REST  API 
 
 #### API Reference
 
@@ -174,7 +173,6 @@ Folder or Hard drive  open request   | openFolderRequest | on | -
 Folder Validation   | validateFolderName | on | -
 
 ## Database
----
 
 MongoDB use as Database.
 
