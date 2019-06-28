@@ -48,6 +48,16 @@ Web App  PC  Drivers       |  Web App PC Drivers Open
 
 ## Developing
 
+### Platforms
+
+Platform| Status
+------------ | -------------
+Microsoft Windows | Developing
+Linux  | Pending
+Mac os | Pending
+Android  | Developing
+
+
 #### Built With
 
 * [Node JS](https://nodejs.org/en/)
