@@ -30,8 +30,6 @@ PC = require('./models/pc');
 UserAndPC = require('./models/userAndPC');
 // pc and PC Owner  module
 PcOwner = require('./models/PCOwner');
-
-
 app.use(bodyParser.json());
 app.use(fileUpload());
 app.use(function(req, res, next) {
@@ -41,7 +39,7 @@ app.use(function(req, res, next) {
 });
 http.listen(process.env.PORT || 5000);
 /**
- * Custom function  for user 
+ * Custom function  for user
  */
 // pc owner socket id or  pc public key user socket id
 function getUserSocketID(pcData, user, callback) {
@@ -68,8 +66,6 @@ function getUserSocketID(pcData, user, callback) {
 function getPCSocketID(user, pcKeyPublic, callback) {
   if (pcKeyPublic === '') {
     PC.getPCUsingID(user.userNowAccessPCID, function(err, userPC) {
-      // //console.log(err);
-      // console.log(pc);
       callback(userPC.pcSocketID);
     });
   } else {
@@ -78,8 +74,6 @@ function getPCSocketID(user, pcKeyPublic, callback) {
         callback(pc.pcSocketID);
       } else {
         PC.getPCUsingID(user.userNowAccessPCID, function(err, userPC) {
-          // //console.log(err);
-          // console.log(pc);
           callback(userPC.pcSocketID);
         });
       }
@@ -107,7 +101,6 @@ app.get('/siteInfo', function(req, res) {
 });
 // todo all  user  id  must  set as  uID add  it should call from headers
 app.post('/auth', function(req, res) {
-  //  //console.log(req.headers.token);
   const id = req.body.id;
   const auth = req.headers.token;
   User.authUser(id, auth, function(err, user) {
@@ -122,7 +115,6 @@ app.post('/auth', function(req, res) {
 });
 // get all pc
 app.post('/myInfo/myPc', function(req, res) {
-  //  //console.log(req.headers.token);
   const id = req.body.id;
   const auth = req.headers.token;
   User.authUser(id, auth, function(err, user) {
@@ -143,7 +135,6 @@ app.post('/myInfo/myPc', function(req, res) {
 });
 // get all online  pc
 app.post('/myInfo/myPc/online', function(req, res) {
-  //  //console.log(req.headers.token);
   const id = req.body.id;
   const auth = req.headers.token;
   User.authUser(id, auth, function(err, user) {
@@ -163,7 +154,6 @@ app.post('/myInfo/myPc/online', function(req, res) {
   });
 });
 app.post('/myInfo/myPc/publicKey/update', function(req, res) {
-  //  //console.log(req.headers.token);
   const auth = req.headers.token;
   const pcID = req.body.pcID;
   const userID = req.body.id;
@@ -177,14 +167,12 @@ app.post('/myInfo/myPc/publicKey/update', function(req, res) {
   });
   const out = {};
   out.publicAccessKey = publicAccessKey;
-  // console.log(out, pcID);
   PC.newPublicAccessKey(pcID, out, {}, function(err, pc) {
     res.status(200);
     res.json(respond(true, 'Update Done', out));
   });
 });
 app.post('/myInfo/myPc/update', function(req, res) {
-  //  //console.log(req.headers.token);
   const auth = req.headers.token;
   const pcID = req.body.pcID;
   const userID = req.body.id;
@@ -203,10 +191,7 @@ app.post('/myInfo/myPc/update', function(req, res) {
   });
   const out = {};
   out.publicAccessKey = publicAccessKey;
-  // out.auth = md5(user._id + date);
   out.publicAccessStatus = publicAccessStatus;
-  // out.ioSocketID = user.ioSocketID;
-  // console.log(out, pcID);
   PC.updatePublicAccessStatus(pcID, out, {}, function(err, pc) {
     res.status(200);
     res.json(respond(true, 'Update Done', out));
@@ -214,7 +199,6 @@ app.post('/myInfo/myPc/update', function(req, res) {
 });
 // get user  info
 app.post('/myInfo', function(req, res) {
-  //  //console.log(req.headers.token);
   const auth = req.headers.token;
   const id = req.body.id;
   User.authUser(id, auth, function(err, user) {
@@ -235,7 +219,6 @@ app.post('/myInfo', function(req, res) {
 });
 // get user  info
 app.post('/app/myInfo', function(req, res) {
-  //  //console.log(req.headers.token);
   const auth = req.headers.token;
   const id = req.body.id;
   const pcKey = req.body.pcKey;
@@ -253,7 +236,6 @@ app.post('/app/myInfo', function(req, res) {
 });
 // get user  notification  and  app notification
 app.post('/app/notification', function(req, res) {
-  //  //console.log(req.headers.token);
   const auth = req.headers.token;
   const id = req.body.id;
   const pcKey = req.body.pcKey;
@@ -271,7 +253,6 @@ app.post('/app/notification', function(req, res) {
 });
 // update account  info
 app.post('/account/myInfo/update', function(req, res) {
-  //  //console.log(req.headers.token);
   const auth = req.headers.token;
   const id = req.body.id;
   User.authUser(id, auth, function(err, user) {
@@ -286,16 +267,13 @@ app.post('/account/myInfo/update', function(req, res) {
   }
   const out = {};
   out.name = req.body.name;
-  // out.auth = md5(user._id + date);
   out.nameLast = req.body.nameLast;
-  // out.ioSocketID = user.ioSocketID;
   User.updateUserInfo(id, out, {}, function(err, user) {});
   res.status(200);
   res.json(respond(true, 'Update Done', null));
 });
 // update account  password
 app.post('/account/password/update', function(req, res) {
-  //  //console.log(req.headers.token);
   const auth = req.headers.token;
   const confirmNewPassword = md5(req.body.confirmNewPassword);
   const id = req.body.id;
@@ -323,13 +301,10 @@ app.post('/account/password/update', function(req, res) {
   });
   const out = {};
   out.password = newPassword;
-  // out.auth = md5(user._id + date);
-  // out.ioSocketID = user.ioSocketID;
   User.updateUserPassword(id, out, {}, function(err, user) {});
   res.status(200);
   res.json(respond(true, 'Update Done', null));
 });
-
 app.post('/register', function(req, res) {
   const email = req.body.email;
   const password = md5(req.body.password);
@@ -356,11 +331,8 @@ app.post('/register', function(req, res) {
     return res.json(respond(false, 'Invalid Email', null));
   }
   User.searchEmailUser(email, function(err, user) {
-    //    //console.log(user);
     if (!user) {
-      //      //console.log('No New User');
       User.createUser(userData, function(err, user) {
-        //       //console.log('add New User');
         if (err) {
           throw err;
         }
@@ -424,7 +396,6 @@ app.post('/logout', function(req, res) {
       out.auth = md5(user._id + date) + '_logout';
       out.id = user._id;
       out.name = user.name;
-      //  out.ioSocketID = user.ioSocketID;
       User.updateUserAuth(user._id, out, {}, function(err, user) {});
       res.status(200);
       res.json(respond(true, 'logout!', null));
@@ -446,7 +417,6 @@ app.post('/app/logout', function(req, res) {
       out.auth = md5(user._id + date) + '_logout';
       out.id = user._id;
       out.name = user.name;
-      //  out.ioSocketID = user.ioSocketID;
       User.updateUserAuthApp(user._id, out, {}, function(err, user) {});
       res.status(200);
       res.json(respond(true, 'logout!', null));
@@ -492,8 +462,6 @@ app.post('/admin/update/app/image', function(req, res) {
   const id = req.body.id;
   const image = req.files.image;
   const imageName = image.name;
-  console.log(id);
-  console.log(image.mimetype);
   const out = {};
   out.auth = req.headers.token;
   out.uID = req.headers.uid;
@@ -504,15 +472,10 @@ app.post('/admin/update/app/image', function(req, res) {
           const imagePath = 'assets/images/app/' + imageName;
           image.mv('../' + imagePath, function(err) {
             if (err) return res.status(500).send(err);
-            //
-            //
-            // res.send('File uploaded!');
             App.appImageUpdate(id, imagePath, {}, function(err, update) {});
             res.status(200);
             res.json(respond(true, 'Image Update Done', app));
           });
-          // res.status(200);
-          // res.json(respond(true, 'Delete Done', app));
         } else {
           res.status(401);
           res.json(respond(false, 'Authenticating Error Admin', null));
@@ -571,7 +534,6 @@ app.post('/admin/delete/app', function(req, res) {
     }
   });
 });
-
 // get all  PC
 app.post('/admin/pc', function(req, res) {
   const limit = req.body.limit;
@@ -642,10 +604,8 @@ app.post('/admin/admin/create', function(req, res) {
       Admin.authAdmin(out.uID, function(err, admin) {
         if (admin) {
           Admin.searchAdmin(out.id, function(err, admin) {
-            // //console.log(admin);
             if (!admin) {
               Admin.createAdmin(out, function(err, admin) {
-                //   //console.log('add New Admin');
                 if (err) {
                   throw err;
                 }
@@ -718,7 +678,6 @@ app.post('/admin/software/create', function(req, res) {
           Software.getSoftware(out.versionKey, function(err, softwareIn) {
             if (!softwareIn) {
               Software.createSoftwareVersion(out, function(err, software) {
-                //       //console.log('add New User');
                 if (err) {
                   throw err;
                 }
@@ -781,7 +740,6 @@ app.post('/admin/software/notification', function(req, res) {
           Software.getSoftware(out.versionKey, function(err, softwareIn) {
             if (!softwareIn) {
               Software.createSoftwareVersion(out, function(err, software) {
-                //       //console.log('add New User');
                 if (err) {
                   throw err;
                 }
@@ -805,18 +763,12 @@ app.post('/admin/software/notification', function(req, res) {
   });
 });
 io.on('connection', function(socket) {
-  // console.log(socket.id);
-  // //console.log('socket run......');
   // TODO this user  login from app need to add few   function to  it
-  socket.on('loginPage', function() {
-    //   //console.log('You Are  in  Login Page');
-  });
+  socket.on('loginPage', function() {});
   // some  user  or  app get disconnected  from serve
   socket.on('disconnect', function() {
-    //  console.log('user  get  disconnected->' + socket);
     PC.getPCSocketID(socket.id, function(err, pc) {
       if (pc) {
-        //   console.log(pc);
         const pcInfo = {};
         pcInfo.pcOnline = 0;
         pcInfo.pcSocketID = socket.id;
@@ -824,13 +776,10 @@ io.on('connection', function(socket) {
       } else {
         User.getUserSocketId(socket.id, function(err, user) {
           if (user) {
-            // //console.log(user);
             PC.getPCUsingID(user.userNowAccessPCID, function(err, pc) {
               const sendUserInfoToApp = {};
               sendUserInfoToApp.status = false;
               io.sockets.to(pc.pcSocketID).emit('pcAccessRequest', sendUserInfoToApp);
-              console.log('when  user  disconnect', pc.pcSocketID);
-              //  socket.leave(pc.pcSocketID);
             });
           }
         });
@@ -843,9 +792,7 @@ io.on('connection', function(socket) {
     const out = {};
     out.auth = md5(user._id + date + pcKey);
     out.id = user._id;
-    PC.updateUserAuthApp(pcKey, out, {}, function(err, user) {
-      console.log(out);
-    });
+    PC.updateUserAuthApp(pcKey, out, {}, function(err, user) {});
     return out;
   }
   app.post('/login/app', function(req, res) {
@@ -877,7 +824,6 @@ io.on('connection', function(socket) {
                 pcOwner.pcKey = pcKey;
                 pcOwner.userID = user._id;
                 PcOwner.pcAndOwner(pcOwner, function(err, pcOwner) {
-                  //     console.log(err, pcOwner);
                   const out = updateAppUserAuth(user, pcKey);
                   out.ioSocketID = 'room1';
                   res.status(200);
@@ -898,7 +844,6 @@ io.on('connection', function(socket) {
                   pcOwner.pcKey = pcKey;
                   pcOwner.userID = user._id;
                   PcOwner.pcAndOwner(pcOwner, function(err, pcOwner) {
-                    //       console.log(err, pcOwner);
                     const out = updateAppUserAuth(user, pcKey);
                     out.ioSocketID = 'room1';
                     res.status(200);
@@ -907,16 +852,7 @@ io.on('connection', function(socket) {
                 });
               }
             });
-            //  socket.room = user.ioSocketID;
             socket.join(user.ioSocketID);
-            //  //console.log(`This App create  new  Room ${roomID} and join to it`);
-            // pc app create new  room  and other user need to join it to manage pc
-            // //console.log('WEBPC------->>>>',io.sockets);
-            /*   var clients_in_the_room = io.sockets.adapter.rooms[roomID].sockets;
-                           for (var clientId in clients_in_the_room) {
-                               //console.log('client: %s', clientId); //Seeing is believing
-                           }*/
-            // Todo this will no need in future
           } else {
             res.status(401);
             res.json(respond(false, 'Invalid User', null));
@@ -934,20 +870,18 @@ io.on('connection', function(socket) {
     const auth = data.data.auth;
     User.authUser(id, auth, function(err, user) {
       if (user) {
-        // console.log(`User send data ${data}`);
         socket.join(user.ioSocketID);
         // update user Currentsockett ID
         const userData = {};
         userData.userCurrentSocketId = socket.id;
         User.updateUserCurrentSocketId(user._id, userData, {}, function(user) {});
-        // console.log(`User Join to PC App Room ${user.ioSocketID}`);
         // pulling data from app
         io.sockets.in(user.ioSocketID).emit('getAppData', {
           data: 'start',
         });
         const clients_in_the_room = io.sockets.adapter.rooms[user.ioSocketID].sockets;
         for (const clientId in clients_in_the_room) {
-          //    console.log('client -web: %s', clientId); //Seeing is believing
+          // Seeing is believing
         }
       }
     });
@@ -957,50 +891,34 @@ io.on('connection', function(socket) {
     const auth = data.data.auth;
     const id = data.data.id;
     const pcKey = md5(data.data.pcKey);
-    // let roomID = '';
-    // console.log('joinFromApp >>>>>>>>', data);
     PC.authApp(id, auth, pcKey, function(err, pc) {
       if (pc) {
         User.getUser(id, function(err, user) {
           if (user) {
-            //       console.log(` joinFromApp >>>>>>>> user data error >>>>>>>>> ${err}`);
-            //       console.log(` joinFromApp >>>>>>>> room ${user.ioSocketID}  >>>>>>> user data >>>>>>>>>`);
             socket.join(user.ioSocketID);
             PC.getPC(pcKey, function(err, pcData) {
-              //  console.log('this is  app socket ->>>>>', socket.id);
               const pcInfo = {};
               pcInfo.pcSocketID = socket.id;
-              PC.updatePcSocketID(pcData._id, pcInfo, {}, function(err, pc) {
-                //     console.log(err);
-              });
+              PC.updatePcSocketID(pcData._id, pcInfo, {}, function(err, pc) {});
             });
-            // console.log(`App Join to PC App Room ${user.ioSocketID}`);
-            //     io.sockets.in(user.ioSocketID).emit('getAppData', {data: 'start'});
             const clients_in_the_room = io.sockets.adapter.rooms[user.ioSocketID].sockets;
             for (const clientId in clients_in_the_room) {
-              // console.log('client -web: %s', clientId); //Seeing is believing
+              // Seeing is believing
             }
           }
         });
       }
     });
   });
-  /*   socket.on('sendList', function (msg) {
-           ////console.log('get list from app ', msg);
-           //   io.sockets.emit('sendToWeb', msg);
-       });*/
   socket.on('pcAccessRequest', function(input) {
-    //  console.log('PC Access from drop down', input);
     const auth = input.auth;
     const id = input.userID;
     const pcID = input.pcID;
     User.authUser(id, auth, function(err, user) {
-      console.log('user select   pc');
       if (user) {
         const userInfo = {};
         userInfo.pcID = pcID;
         User.updateUserNowAccessPCID(id, userInfo, {}, function(err, user) {});
-        // //console.log(user);
         PC.getPCUsingID(pcID, function(err, pc) {
           const sendUserInfoToApp = {};
           sendUserInfoToApp.email = user.email;
@@ -1008,53 +926,38 @@ io.on('connection', function(socket) {
           sendUserInfoToApp.nameLast = user.nameLast;
           sendUserInfoToApp.status = true;
           sendUserInfoToApp.userID = user._id;
-          console.log(pc);
           io.sockets.to(pc.pcSocketID).emit('pcAccessRequest', sendUserInfoToApp);
-          console.log('user ask  for  pc', pc.pcSocketID);
         });
       }
     });
-    // //console.log('get list from app ', msg);
-    //   io.sockets.emit('sendToWeb', msg);
   });
   // from  pc
   socket.on('hDDList', function(input) {
-    //  //console.log(input);
     const id = input.id;
     const auth = input.auth;
     const pcKey = md5(input.pcKey);
-    // console.log('hDDList >>>>>>>>', input);
     PC.authApp(id, auth, pcKey, function(err, pc) {
       if (pc) {
         User.getUser(id, function(err, user) {
           if (user) {
-            //            console.log(` hDDList >>>>>>>> room ${user.ioSocketID}>>>> user data error >>>>>>>>> ${err}`);
-            //      //console.log(input);
-            //   //console.log('get list from app ', input.data);
             // to  web
             getUserSocketID(pc, user, function(socketID) {
-              // /          console.log('User new socket id >>>>>>>>>>>>>> ', socketID);
               io.sockets.in(socketID).emit('hDDList', input.data);
             });
-            //  io.sockets.in(newSocketID).emit('hDDList', input.data);
           }
         });
       }
     });
   });
-
   socket.on('pcInfoRequest', function(input) {
-    //  console.log('PC Access from drop down', input);
     const auth = input.auth;
     const id = input.userID;
     const pcID = input.pcID;
     User.authUser(id, auth, function(err, user) {
-      console.log('user select   pc');
       if (user) {
         const userInfo = {};
         userInfo.pcID = pcID;
         User.updateUserNowAccessPCID(id, userInfo, {}, function(err, user) {});
-        // //console.log(user);
         PC.getPCUsingID(pcID, function(err, pc) {
           const sendUserInfoToApp = {};
           sendUserInfoToApp.email = user.email;
@@ -1062,60 +965,36 @@ io.on('connection', function(socket) {
           sendUserInfoToApp.nameLast = user.nameLast;
           sendUserInfoToApp.status = true;
           sendUserInfoToApp.userID = user._id;
-          console.log(pc);
           io.sockets.to(pc.pcSocketID).emit('pcInfoRequest', sendUserInfoToApp);
-          console.log('user ask  for  pc', pc.pcSocketID);
         });
       }
     });
-    // //console.log('get list from app ', msg);
-    //   io.sockets.emit('sendToWeb', msg);
   });
-
   // pc info send to web
   socket.on('pcInfo', function(input) {
-    //  //console.log(input);
     const auth = input.auth;
     const id = input.id;
     const pcKey = md5(input.pcKey);
-
     PC.authApp(id, auth, pcKey, function(err, pc) {
       if (pc) {
         User.getUser(id, function(err, user) {
           if (user) {
-
             // to  web
             getUserSocketID(pc, user, function(socketID) {
-       
-
               io.sockets.in(socketID).emit('pcInfo', input.pcInfo);
             });
-       
           }
         });
       }
     });
   });
-
-
   // from  web
   socket.on('openFolder', function(input) {
     const auth = input.auth;
     const id = input.id;
     const pcKeyPublic = input.pcKeyPublic;
     User.authUser(id, auth, function(err, user) {
-      // console.log(input);
       if (user) {
-        // console.log(user);
-        //     //console.log('open Folder Request ', input);
-        // to pc
-        //        io.sockets.in(user.ioSocketID)
-        // //console.log(user);
-        /*  PC.getPCUsingID(user.userNowAccessPCID, function (err, pc) {
-                      // //console.log(err);
-                      //console.log(pc);
-                      io.sockets.to(pc.pcSocketID).emit('openFolderRequest', input);
-                  });*/
         getPCSocketID(user, pcKeyPublic, function(socket) {
           io.sockets.to(socket).emit('openFolderRequest', input);
         });
@@ -1127,18 +1006,12 @@ io.on('connection', function(socket) {
     const auth = input.auth;
     const id = input.id;
     const pcKey = md5(input.pcKey);
-    //   console.log('sendOpenFolderRequest >>>>>>>>', input);
     PC.authApp(id, auth, pcKey, function(err, pc) {
       if (pc) {
         User.getUser(id, function(err, user) {
           if (user) {
-            //    console.log(` sendOpenFolderRequest >>>>>>>> room ${user.ioSocketID} >>>>>> user data error >>>>>>>>> ${err}`);
-            // console.log('open Folder get ', input);
-            //  io.sockets.emit('openFolderRequestToWeb', msg);
             // to  web
             getUserSocketID(pc, user, function(socketID) {
-              //  console.log('User new socket id >>>>>>>>>>>>>> ', socketID);
-              // io.sockets.in(socketID).emit('hDDList', input.data);
               io.sockets.in(socketID).emit('openFolderRequestToWeb', input.data);
             });
           }
@@ -1151,9 +1024,7 @@ io.on('connection', function(socket) {
     const auth = input.auth;
     const id = input.id;
     User.authUser(id, auth, function(err, user) {
-      // console.log(user);
       if (user) {
-        // console.log(input);
         io.sockets.in(user.ioSocketID).emit('copyPasteToPCApp', input.data);
       }
     });
@@ -1164,16 +1035,13 @@ io.on('connection', function(socket) {
     const id = input.id;
     const pcKey = md5(input.pcKey);
     let roomID = '';
-    // console.log('pasteDone >>>>>>>', input);
     PC.authApp(id, auth, pcKey, function(err, pc) {
       User.getUser(id, function(err, user) {
         if (user) {
           roomID = user.ioSocketID;
         }
       });
-      //  console.log(` pasteDone >>>>>>>> room ${roomID} >>>>>> user data error >>>>>>>>> ${err}`);
       if (pc) {
-        // console.log(input);
         io.sockets.in(user.ioSocketID).emit('pasteDone', input.data);
       }
     });
@@ -1183,9 +1051,7 @@ io.on('connection', function(socket) {
     const auth = input.auth;
     const id = input.id;
     User.authUser(id, auth, function(err, user) {
-      // console.log(user);
       if (user) {
-        // console.log(input);
         io.sockets.in(user.ioSocketID).emit('uploadFileInfo_from_web', input.data);
       }
     });
@@ -1194,20 +1060,16 @@ io.on('connection', function(socket) {
     const auth = input.auth;
     const id = input.id;
     User.authUser(id, auth, function(err, user) {
-      // console.log(user);
       if (user) {
-        // console.log(input);
         io.sockets.in(user.ioSocketID).emit('uploadFile_chunk_from_web', input.data);
       }
     });
   });
-  socket.on('fileSendingFromPc', function(input) {
-    //  console.log(input);
-  });
+  socket.on('fileSendingFromPc', function(input) {});
   // get  access for  public pc key
   /**
-     * User
-     */
+   * User
+   */
   app.post('/public/pc/access', function(req, res) {
     const auth = req.headers.token;
     const id = req.body.id;
@@ -1222,11 +1084,9 @@ io.on('connection', function(socket) {
       sendUserInfoToApp.name = user.name;
       sendUserInfoToApp.nameLast = user.nameLast;
       sendUserInfoToApp.userID = user._id;
-      //    console.log('User Auth >>>>>>>> ');
       PC.getPCPublicKey(pcKeyPublic, function(err, pcInfo) {
         if (pcInfo) {
           if (pcInfo.publicAccessStatus === 1) {
-            //      console.log('pc allow to access from public');
             const pc = {};
             pc.pcKeyPublic = pcKeyPublic;
             pc.userID = id;
@@ -1243,21 +1103,9 @@ io.on('connection', function(socket) {
     const path = req.body.path;
     const pcKeyPublic = req.body.pcKeyPublic;
     User.authUser(id, auth, function(err, user) {
-      // console.log(input);
       if (user) {
         const output = {};
         output.path = path;
-        //     console.log('User Auth >>>>>>>> ');
-        // console.log(user);
-        //     //console.log('open Folder Request ', input);
-        // to pc
-        //        io.sockets.in(user.ioSocketID)
-        // //console.log(user);
-        /*  PC.getPCUsingID(user.userNowAccessPCID, function (err, pc) {
-                      // //console.log(err);
-                      //console.log(pc);
-                      io.sockets.to(pc.pcSocketID).emit('openFolderRequest', input);
-                  });*/
         getPCSocketID(user, pcKeyPublic, function(socket) {
           io.sockets.to(socket).emit('downloadFileRequest', output);
         });
@@ -1272,7 +1120,6 @@ io.on('connection', function(socket) {
     const path = req.body.path;
     const pcKeyPublic = req.body.pcKeyPublic;
     User.authUser(id, auth, function(err, user) {
-      // console.log(input);
       if (user) {
         res.status(200);
         if (!isValidFoldersName(createFolderName)) {
