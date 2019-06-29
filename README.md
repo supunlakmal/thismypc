@@ -45,6 +45,9 @@ Web App  PC  Drivers       |  Web App PC Drivers Open
     ├── CODE_OF_CONDUCT.md
     ├── LICENSE
     └── README.md
+## How to (Wiki)
+All usage instruction and information update on [Gihub Wiki](https://github.com/supunlakmal/thismypc/wiki)
+
 
 ## Developing
 
