@@ -4,7 +4,7 @@ const userAndPC = mongoose.Schema({
     type: String,
     required: true,
   },
-  pcKeyPublic: {
+  pcKeyPublic: { // Personal Computer public Access Key
     type: String,
     required: true,
   },

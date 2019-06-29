@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 const pcSchema = mongoose.Schema({
-  pcKey: {
+  pcKey: { // Personal Computer Unique Key
     type: String,
     required: true,
   },
-  userID: {
+  userID: { // User ID
     type: String,
     required: true,
   },
-  status: {
+  status: { 
     type: Number,
     required: true,
     default: 1, //
@@ -17,7 +17,7 @@ const pcSchema = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  publicAccessKey: {
+  publicAccessKey: { //Personal computer Public Access Key
     type: String,
     default: Date.now,
     unique: true,
@@ -27,21 +27,21 @@ const pcSchema = mongoose.Schema({
     required: true,
     default: 0, //
   },
-  pcName: {
+  pcName: { // Person Computer name
     type: String,
   },
-  platform: {
+  platform: { // Computer OS
     type: String,
   },
-  pcOnline: {
+  pcOnline: { // Computer offline online
     type: Number,
     required: true,
     default: 0, //
   },
-  pcSocketID: {
+  pcSocketID: { // Computer  socket ID
     type: String,
   },
-  authApp: {
+  authApp: { // Auth key from App side
     type: String,
   },
 });

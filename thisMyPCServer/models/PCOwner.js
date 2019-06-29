@@ -4,11 +4,11 @@ const PCOwner = mongoose.Schema({
     type: String,
     required: true,
   },
-  pcID: {
+  pcID: { // User Personal Computer ID
     type: String,
     required: true,
   },
-  pcKey: {
+  pcKey: { // Unique Key that belong to pc
     type: String,
     required: true,
   },
