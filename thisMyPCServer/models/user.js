@@ -1,68 +1,67 @@
 const mongoose = require('mongoose');
-// db.users.update({},{ $set: {"created_date": '' ,'last_login':'' ,'socketID':''} },false,true)
 const userSchema = mongoose.Schema({
-  name: {
+  name: { // User name
     type: String,
     required: true,
   },
-  nameLast: {
+  nameLast: { // TODO Remove nameLast from next release
     type: String,
   },
-  email: {
-    type: String,
-    required: true,
-  },
-  password: {
+  email: { // User Email
     type: String,
     required: true,
   },
-  created_date: {
+  password: { // User Password
+    type: String,
+    required: true,
+  },
+  created_date: { // User Account Created Date
     type: Date,
     default: Date.now,
   },
-  last_login: {
+  last_login: { // User last Login to System
     type: Date,
     default: Date.now,
   },
-  auth: {
+  auth: { // User Auth key
     type: String,
   },
-  ioSocketID: {
+  ioSocketID: { // TODO need to  remove  from next release
     type: String,
   },
   authApp: {
     type: String,
   },
-  status: {
+  status: { // User Status 1,0
     type: Number,
     required: true,
     default: 1, //
   },
-  userNowAccessPCID: {
+  userNowAccessPCID: {// User currently accessing PC ID
     type: String,
   },
-  userCurrentSocketId: {
+  userCurrentSocketId: { // User current SocketID
     type: String,
   },
 });
 const User = module.exports = mongoose.model('Users', userSchema);
 //  get  users
-module.exports.getUsers = function(limit, callback) {
+module.exports.getUsers = function (limit, callback) {
   User.find(callback).limit(limit);
 };
 //  get  user using id
-module.exports.getUser = function(id, callback) {
+module.exports.getUser = function (id, callback) {
   User.findOne().where('_id', id).exec(callback);
 }; //  get  user using id for  public  use
-module.exports.getUserPublic = function(id, callback) {
+module.exports.getUserPublic = function (id, callback) {
   User.findOne().select('_id name nameLast email').where('_id', id).exec(callback);
 };
 // search  user
-module.exports.searchEmailUser = function(email, callback) {
+module.exports.searchEmailUser = function (email, callback) {
   User.findOne().where('email', email).exec(callback);
 };
 // login  user
-module.exports.loginUser = function(email, password, callback) {
+module.exports.loginUser = function (email, password, callback) {
   User.findOne().where({
     'email': email,
     'password': password,
@@ -70,7 +69,7 @@ module.exports.loginUser = function(email, password, callback) {
   }).exec(callback);
 };
 // confirm user  password
-module.exports.passwordConfirm = function(id, password, callback) {
+module.exports.passwordConfirm = function (id, password, callback) {
   User.findOne().where({
     '_id': id,
     'password': password,
@@ -78,21 +77,21 @@ module.exports.passwordConfirm = function(id, password, callback) {
   }).exec(callback);
 };
 // auth  user
-module.exports.authUser = function(id, auth, callback) {
+module.exports.authUser = function (id, auth, callback) {
   User.findOne().where({
     '_id': id,
     'auth': auth,
   }).exec(callback);
 };
 // auth  App
-module.exports.authApp = function(id, auth, callback) {
+module.exports.authApp = function (id, auth, callback) {
   User.findOne().where({
     '_id': id,
     'authApp': auth,
   }).exec(callback);
 };
 // create   user
-module.exports.createUser = function(user, callback) {
+module.exports.createUser = function (user, callback) {
   User.create({
     'name': user.name,
     'email': user.email,
@@ -101,7 +100,7 @@ module.exports.createUser = function(user, callback) {
   }, callback);
 };
 //  update  user  info
-module.exports.updateUserInfo = function(id, user, option, callback) {
+module.exports.updateUserInfo = function (id, user, option, callback) {
   const query = {
     _id: id,
   };
@@ -111,7 +110,7 @@ module.exports.updateUserInfo = function(id, user, option, callback) {
   };
   User.findOneAndUpdate(query, update, option, callback);
 }; //  update  user  userCurrentSocketId
-module.exports.updateUserCurrentSocketId = function(id, user, option, callback) {
+module.exports.updateUserCurrentSocketId = function (id, user, option, callback) {
   const query = {
     _id: id,
   };
@@ -121,11 +120,11 @@ module.exports.updateUserCurrentSocketId = function(id, user, option, callback) 
   User.findOneAndUpdate(query, update, option, callback);
 };
 //  get  user using SocketId
-module.exports.getUserSocketId = function(userCurrentSocketId, callback) {
+module.exports.getUserSocketId = function (userCurrentSocketId, callback) {
   User.findOne().where('userCurrentSocketId', userCurrentSocketId).exec(callback);
 };
 //  update  user  password
-module.exports.updateUserPassword = function(id, user, option, callback) {
+module.exports.updateUserPassword = function (id, user, option, callback) {
   const query = {
     _id: id,
   };
@@ -135,7 +134,7 @@ module.exports.updateUserPassword = function(id, user, option, callback) {
   User.findOneAndUpdate(query, update, option, callback);
 };
 // user update auth
-module.exports.updateUserAuth = function(id, user, option, callback) {
+module.exports.updateUserAuth = function (id, user, option, callback) {
   const query = {
     _id: id,
   };
@@ -156,7 +155,7 @@ module.exports.updateUserAuthApp = function (id, user, option, callback) {
     User.findOneAndUpdate(query, update, option, callback);
 }*/
 // // user update  status
-module.exports.updateUserStatus = function(id, user, option, callback) {
+module.exports.updateUserStatus = function (id, user, option, callback) {
   const query = {
     _id: id,
   };
@@ -165,7 +164,7 @@ module.exports.updateUserStatus = function(id, user, option, callback) {
   };
   User.findOneAndUpdate(query, update, option, callback);
 }; // // user update  current pc id
-module.exports.updateUserNowAccessPCID = function(id, user, option, callback) {
+module.exports.updateUserNowAccessPCID = function (id, user, option, callback) {
   const query = {
     _id: id,
   };
@@ -176,7 +175,7 @@ module.exports.updateUserNowAccessPCID = function(id, user, option, callback) {
 };
 // user  info  (My account)
 // auth  user
-module.exports.userInfo = function(id, auth, callback) {
+module.exports.userInfo = function (id, auth, callback) {
   User.findOne().select({
     name: 1,
     email: 1,
@@ -188,7 +187,7 @@ module.exports.userInfo = function(id, auth, callback) {
   }).exec(callback);
 };
 // all active   user
-module.exports.countUsers = function(callback) {
+module.exports.countUsers = function (callback) {
   User.findOne().where({
     'status': 1,
   }).count(callback);
