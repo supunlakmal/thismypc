@@ -186,6 +186,14 @@ Folder Validation   | validateFolderName | on | -
 
 MongoDB use as Database.
 
+## Screen Capture
+
+### Web System
+![Web Site System](doc/gifAnimations/web_site_system.gif)
+
+### Breadcrumb
+![Breadcrumb](doc/gifAnimations/breadcrumb.gif)
+
 ## Licensing
 
 The MIT License 2019 Supun Lakmal
