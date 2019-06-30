@@ -46,7 +46,7 @@ Web App  PC  Drivers       |  Web App PC Drivers Open
     ├── LICENSE
     └── README.md
 ## How to (Wiki)
-All usage instruction and information update on [Gihub Wiki](https://github.com/supunlakmal/thismypc/wiki)
+All usage instruction and information update on [Github Wiki](https://github.com/supunlakmal/thismypc/wiki)
 
 
 ## Developing
