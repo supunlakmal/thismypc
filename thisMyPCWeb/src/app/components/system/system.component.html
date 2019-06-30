@@ -42,7 +42,7 @@
   <!--Nav end  -->
   <div class="container">
     <div class="row ">
-      <div class="card-body col-xl-6 intro-step-1" data-intro="List Down All Your Online Pc that Belong To your Account"
+      <div class="card-body col-xl-6 col-md-4 intro-step-1" data-intro="List Down All Your Online Pc that Belong To your Account"
         data-step="1">
         <select *ngIf="(pcs | json) != '[]'" name="" id="" class="type-text" #pc (change)="selectPC(pc.value)">
           <option value="*">Select Pc</option>
@@ -53,13 +53,13 @@
         </select>
         <span *ngIf="(pcs | json) === '[]'">Online Pc not available</span>
       </div>
-      <div class=" card-body col-xl-6 intro-step-2" data-intro="You can Connect to another  pc using this Public PC Key"
+      <div class=" card-body col-xl-6 col-md-8 intro-step-2" data-intro="You can Connect to another  pc using this Public PC Key"
         data-step="2">
         <form action="" (submit)="getAccessToPC()">
           <div class="row">
-            <div class="col-xl-8"><input type="text" name="publicPcKey" [(ngModel)]="publicPcKey" class="type-text"
+            <div class="col-xl-8 col-md-8"><input type="text" name="publicPcKey" [(ngModel)]="publicPcKey" class="type-text"
                 placeholder="Public PC Key"></div>
-            <div class="col-xl-4">
+            <div class="col-xl-4 col-md-4">
               <button type="submit" class="btn btn-primary w-100 blue-btn btn-big ">Access PC
               </button>
             </div>
@@ -68,23 +68,29 @@
       </div>
       <div class="card-body col-xl-12" *ngIf="pcSelect">
         <div class="row">
-          <div class="col-md-2 col-4">
+          <div class="col-lg-4 col-md-8 col-sm-8 col-12">
             <div class="row">
-              <div class="col-6"><i class="fas fa-memory"></i> (Ram)</div>
-              <div class="col-6">{{pcInfoData.totalmem}}</div>
+              <div class="col-5"><i class="fas fa-memory"></i> (Memory)</div>
+              <div class="col-7"> {{pcInfoData.useMemory}} / {{pcInfoData.totalMemory}}    <i class="fas fa-sync mouse ml-2" (click)="pcInfo()"></i></div>
             </div>
-          </div>
-          <div class="col-md-1 col-4">
-            <button type="submit" class="btn btn-primary w-100 blue-btn" (click)="pcInfo()">
-              <i class="fas fa-sync"></i>
-            </button>
           </div>
         </div>
       </div>
+     
+
+        <div class="card-body  col-12"  *ngIf="(breadcrumbObject | json) != '[]'">
+<nav aria-label="breadcrumb" >
+  <ol class="breadcrumb">
+  <li class="breadcrumb-item" *ngFor="let breadcrumb of breadcrumbObject; "><div class="mouse" (click)="openFolder(breadcrumb.path, breadcrumb.name)">{{breadcrumb.name}}</div></li>
+   
+  </ol>
+</nav>
+        </div>
+     
       <div class="card-body col-xl-12 intro-step-3" data-intro="All the  hard drives list  down  here." data-step="3">
         <span class="card-box-title">Driver List</span>
         <div class="row" *ngIf="(hDDList.parts | json) != '[]'">
-          <div class="col-xl-3 system-font    " *ngFor="let hd of hDDList.parts; let i = index ">
+          <div class="col-xl-3 col-sm-6 col-12 system-font    " *ngFor="let hd of hDDList.parts; let i = index ">
             <div class="hddBox box mouse main-hdd-box" id="click_{{i}}" (click)="openDrive(hd.letter ,i)">
               <div class="row ">
                 <div class="col-xl-12 ">
@@ -107,9 +113,8 @@
         </div>
       </div>
     </div>
-    <hr>
+
     <div class="row justify-content-between" *ngIf="(folderList | json) != '[]'">
-      <div class="col-xl-1"><span class="card-box-title">{{openFolderName}}</span></div>
       <div class="col-xl-1 text-right">
         <div class="dropdown">
           <i class="fas fa-cog mouse" id="folderMianDropDown" data-toggle="dropdown" aria-haspopup="true"
@@ -131,7 +136,10 @@
                   <i class="far fa-folder mouse" *ngIf="!folder.file"></i>
                   <i class="far fa-file mouse" *ngIf="folder.file"></i>
                 </div>
-                <div class="col-xl-8 mouse folder-name" (click)="openFolder(folder.path , folder.fileName)">
+                <div class="col-xl-8 mouse folder-name" *ngIf="!folder.file" (click)="openFolder(folder.path , folder.fileName)">
+                  {{folder.fileName}}
+                </div>
+                <div class="col-xl-8 mouse folder-name" *ngIf="folder.file" >
                   {{folder.fileName}}
                 </div>
                 <div class="col-xl-1">

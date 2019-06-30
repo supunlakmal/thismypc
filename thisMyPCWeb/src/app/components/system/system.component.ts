@@ -13,7 +13,9 @@ import {
 } from '@angular/common/http';
 import * as io from 'socket.io-client';
 import * as $ from 'jquery';
-import {config} from '../config/config'
+import {
+  config
+} from '../config/config'
 import {
   ConnectionService
 } from 'ng-connection-service';
@@ -46,6 +48,8 @@ export class SystemComponent implements OnInit {
   openFolderName = '';
   // open folder or hhd path
   openFolderPath = '';
+  //top breadcrumb folder
+  breadcrumbObject: any = [];
   //  crete  folder  name
   createFolderName = '';
   //createFolderNameErrorMsg
@@ -69,25 +73,21 @@ export class SystemComponent implements OnInit {
   publicPcKey = '';
   // folder  or  file  property (Info )
   property: any = [];
-//user selected PC  ID
-selectedPC_ID ='';
-
-
-// is  pc drop  down selected
+  //user selected PC  ID
+  selectedPC_ID = '';
+  // is  pc drop  down selected
   pcSelect = false;
-
-//pc info 
+  //pc info 
   pcInfoData: any = [];
-
   /**
    *
    * param {HttpClient} http
    * param {Router} router
    */
   constructor(private http: HttpClient, private router: Router, private connectionService: ConnectionService) {
-    this.socket = io.connect(`${config.url}${config.port}`);
     const self = this;
-    this.connectionService.monitor().subscribe(isConnected => {
+    self.socket = io.connect(`${config.url}${config.port}`);
+    self.connectionService.monitor().subscribe(isConnected => {
       this.isConnected = isConnected;
       if (this.isConnected) {
         self.alert.openAlert = true;
@@ -100,11 +100,32 @@ selectedPC_ID ='';
       }
     });
   }
+  /**
+   * Top right corner alert
+   * 
+   * @param  {object} e
+   */
   processAlert(e) {
     const self = this;
     self.alert.openAlert = e;
     self.alert.class = 'alert-primary';
     self.alert.massage = ` <i class="fas fa-sync-alt fa-spin"></i> <strong>Progress... </strong> `;
+  }
+  // TODO need to test this on linux and macOX
+  breadcrumb(path) {
+    const self = this;
+    self.breadcrumbObject = [];
+    //separate foldername and path
+    let customPathArray = path.split("//\\");
+    //user click path
+    let clickPath = '';
+    customPathArray.forEach(function (name) {
+      clickPath = clickPath + name + '//\\';
+      let customPath: any = []
+      customPath.name = name;
+      customPath.path = clickPath;
+      self.breadcrumbObject.push(customPath)
+    });
   }
   ngOnInit() {
     const self = this;
@@ -115,7 +136,7 @@ selectedPC_ID ='';
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    this.http.post(`${config.url}${config.port}/auth`,
+    self.http.post(`${config.url}${config.port}/auth`,
         JSON.stringify(sendData), {
           headers
         })
@@ -123,12 +144,12 @@ selectedPC_ID ='';
         (val: any) => {},
         response => {
           // if offline
-          this.router.navigate(['/login']);
+          self.router.navigate(['/login']);
         },
         () => {
           console.log('The POST observable is now completed.');
         });
-    this.http.post(`${config.url}${config.port}/myInfo`,
+    self.http.post(`${config.url}${config.port}/myInfo`,
         JSON.stringify(sendData), {
           headers
         })
@@ -143,30 +164,29 @@ selectedPC_ID ='';
     const ioSocketID = sessionStorage.getItem('ioSocketID');
     const id = sessionStorage.getItem('id');
     const auth = sessionStorage.getItem('auth');
-    this.socket.emit('joinFromWeb', {
+    self.socket.emit('joinFromWeb', {
       data: {
         id: id,
         auth: auth,
         ioSocketID: ioSocketID
       }
     });
-    const mainThis = this;
-    this.socket.on('hDDList', function (data) {
-      mainThis.hDDList = data;
+    self.socket.on('hDDList', function (data) {
+      self.hDDList = data;
       console.log(data.parts);
       self.processAlert(false);
     });
-    this.socket.on('openFolderRequestToWeb', function (data) {
+    self.socket.on('openFolderRequestToWeb', function (data) {
       self.processAlert(false);
       console.log(data, 'openlist');
-      mainThis.folderList.push(data);
+      self.folderList.push(data);
     });
-    this.socket.on('pasteDone', function (data) {
-      mainThis.alert.openAlert = true;
-      mainThis.alert.class = 'alert-success';
-      mainThis.alert.massage = ` <strong> Paste Done </strong> `;
+    self.socket.on('pasteDone', function (data) {
+      self.alert.openAlert = true;
+      self.alert.class = 'alert-success';
+      self.alert.massage = ` <strong> Paste Done </strong> `;
     });
-    this.http.post(`${config.url}${config.port}/myInfo/myPC/online`,
+    self.http.post(`${config.url}${config.port}/myInfo/myPC/online`,
         JSON.stringify(sendData), {
           headers
         })
@@ -177,25 +197,22 @@ selectedPC_ID ='';
         },
         response => {},
         () => {});
-    this.socket.on('folderCreateCallbackToWeb', function (data) {
-      mainThis.alert.openAlert = true;
+    self.socket.on('folderCreateCallbackToWeb', function (data) {
+      self.alert.openAlert = true;
       if (data.status) {
-        mainThis.alert.class = 'alert-success';
-        mainThis.alert.massage = ` <strong> ${data.message} </strong> `;
+        self.alert.class = 'alert-success';
+        self.alert.massage = ` <strong> ${data.message} </strong> `;
       } else {
-        mainThis.alert.class = 'alert-danger';
-        mainThis.alert.massage = ` <strong> ${data.message}  </strong> `;
+        self.alert.class = 'alert-danger';
+        self.alert.massage = ` <strong> ${data.message}  </strong> `;
       }
     });
-  //  pcInfoRequest
-  this.socket.on('pcInfo', function (data) {
-
-    self.pcInfoData = data;
-    console.log(data);
-
-  });
-
-
+    //  pcInfoRequest
+    self.socket.on('pcInfo', function (data) {
+      self.pcInfoData = data;
+      console.log(data);
+      self.processAlert(false);
+    });
   }
   /**
    *
@@ -210,7 +227,7 @@ selectedPC_ID ='';
     $('#click_' + i).addClass('box-active');
     console.log(path);
     this.openFolderName = path;
-    this.openFolderPath = path;
+    this.breadcrumb(path);
     const ioSocketID = sessionStorage.getItem('ioSocketID');
     const id = sessionStorage.getItem('id');
     const auth = sessionStorage.getItem('auth');
@@ -228,7 +245,7 @@ selectedPC_ID ='';
     this.processAlert(true);
     const pcKeyPublic = this.publicPcKey;
     this.openFolderName = fileName;
-    this.openFolderPath = path;
+    this.breadcrumb(path);
     console.log(fileName);
     const ioSocketID = sessionStorage.getItem('ioSocketID');
     const id = sessionStorage.getItem('id');
@@ -287,7 +304,6 @@ selectedPC_ID ='';
       id: id
     });
   }
-
   // logout System
   logout() {
     const data = {};
@@ -325,36 +341,26 @@ selectedPC_ID ='';
       auth: auth,
       userID: id
     });
-
-    this.pcSelect =true;
-    this.selectedPC_ID =pcID;
-
+    this.pcSelect = true;
+    this.selectedPC_ID = pcID;
     this.socket.emit('pcInfoRequest', {
       pcID: pcID,
       auth: auth,
       userID: id
     });
-
-
   }
-
-
-//  get  pc  information   
-
-pcInfo(){
-
-  const id = sessionStorage.getItem('id');
-  const auth = sessionStorage.getItem('auth');
-  const  pcID  =  this.selectedPC_ID;
+  //  get  pc  information   
+  pcInfo() {
+    this.processAlert(true);
+    const id = sessionStorage.getItem('id');
+    const auth = sessionStorage.getItem('auth');
+    const pcID = this.selectedPC_ID;
     this.socket.emit('pcInfoRequest', {
       pcID: pcID,
       auth: auth,
       userID: id
     });
-
-}
-
-
+  }
   getAccessToPC() {
     this.processAlert(true);
     const sendData = {};

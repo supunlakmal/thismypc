@@ -141,7 +141,9 @@ ${os.totalmem()}
 ${os.uptime()}
 `);
           let pcInfo = {};
-          pcInfo.totalmem = self.fileSize(os.totalmem(), true);
+          pcInfo.totalMemory = self.fileSize(os.totalmem(), true);
+          // calculate  PC use memory
+          pcInfo.useMemory = self.fileSize(os.totalmem()-os.freemem(), true);
           return pcInfo;
         }
         /**
