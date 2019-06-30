@@ -150,21 +150,21 @@ selectedPC_ID ='';
         ioSocketID: ioSocketID
       }
     });
-    const mainThis = this;
+   
     this.socket.on('hDDList', function (data) {
-      mainThis.hDDList = data;
+      self.hDDList = data;
       console.log(data.parts);
       self.processAlert(false);
     });
     this.socket.on('openFolderRequestToWeb', function (data) {
       self.processAlert(false);
       console.log(data, 'openlist');
-      mainThis.folderList.push(data);
+      self.folderList.push(data);
     });
     this.socket.on('pasteDone', function (data) {
-      mainThis.alert.openAlert = true;
-      mainThis.alert.class = 'alert-success';
-      mainThis.alert.massage = ` <strong> Paste Done </strong> `;
+      self.alert.openAlert = true;
+      self.alert.class = 'alert-success';
+      self.alert.massage = ` <strong> Paste Done </strong> `;
     });
     this.http.post(`${config.url}${config.port}/myInfo/myPC/online`,
         JSON.stringify(sendData), {
@@ -178,13 +178,13 @@ selectedPC_ID ='';
         response => {},
         () => {});
     this.socket.on('folderCreateCallbackToWeb', function (data) {
-      mainThis.alert.openAlert = true;
+      self.alert.openAlert = true;
       if (data.status) {
-        mainThis.alert.class = 'alert-success';
-        mainThis.alert.massage = ` <strong> ${data.message} </strong> `;
+        self.alert.class = 'alert-success';
+        self.alert.massage = ` <strong> ${data.message} </strong> `;
       } else {
-        mainThis.alert.class = 'alert-danger';
-        mainThis.alert.massage = ` <strong> ${data.message}  </strong> `;
+        self.alert.class = 'alert-danger';
+        self.alert.massage = ` <strong> ${data.message}  </strong> `;
       }
     });
   //  pcInfoRequest
@@ -192,7 +192,7 @@ selectedPC_ID ='';
 
     self.pcInfoData = data;
     console.log(data);
-
+    self.processAlert(false);
   });
 
 
@@ -342,7 +342,7 @@ selectedPC_ID ='';
 //  get  pc  information   
 
 pcInfo(){
-
+  this.processAlert(true);
   const id = sessionStorage.getItem('id');
   const auth = sessionStorage.getItem('auth');
   const  pcID  =  this.selectedPC_ID;
