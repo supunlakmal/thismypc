@@ -78,8 +78,13 @@
       </div>
      
 
-        <div class="card-body  col-12">
-{{openFolderPath}}
+        <div class="card-body  col-12"  *ngIf="(breadcrumbObject | json) != '[]'">
+<nav aria-label="breadcrumb" >
+  <ol class="breadcrumb">
+  <li class="breadcrumb-item" *ngFor="let breadcrumb of breadcrumbObject; "><div class="mouse" (click)="openFolder(breadcrumb.path, breadcrumb.name)">{{breadcrumb.name}}</div></li>
+   
+  </ol>
+</nav>
         </div>
      
       <div class="card-body col-xl-12 intro-step-3" data-intro="All the  hard drives list  down  here." data-step="3">

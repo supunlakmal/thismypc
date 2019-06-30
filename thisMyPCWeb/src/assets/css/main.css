@@ -242,6 +242,8 @@ html {
   height: 48px !important;
 }
 
+.breadcrumb li { display: inline-flex;}
+
 /**System Block End**/
 /**
 Account Block
