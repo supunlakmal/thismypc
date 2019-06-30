@@ -99,7 +99,18 @@ app.get('/siteInfo', function(req, res) {
     });
   });
 });
-// todo all  user  id  must  set as  uID add  it should call from headers
+
+/**
+* User authentications 
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/auth', function(req, res) {
   const id = req.body.id;
   const auth = req.headers.token;
@@ -113,7 +124,18 @@ app.post('/auth', function(req, res) {
     }
   });
 });
-// get all pc
+
+/**
+* Get all user computer names and IDs
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/myInfo/myPc', function(req, res) {
   const id = req.body.id;
   const auth = req.headers.token;
@@ -133,7 +155,18 @@ app.post('/myInfo/myPc', function(req, res) {
     }
   });
 });
-// get all online  pc
+
+/**
+* Get user all online computers list
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/myInfo/myPc/online', function(req, res) {
   const id = req.body.id;
   const auth = req.headers.token;
@@ -153,6 +186,18 @@ app.post('/myInfo/myPc/online', function(req, res) {
     }
   });
 });
+
+/**
+* Update user public key that allow to access other your computer.
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/myInfo/myPc/publicKey/update', function(req, res) {
   const auth = req.headers.token;
   const pcID = req.body.pcID;
@@ -172,6 +217,18 @@ app.post('/myInfo/myPc/publicKey/update', function(req, res) {
     res.json(respond(true, 'Update Done', out));
   });
 });
+
+/**
+* Update allow pubic access status
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/myInfo/myPc/update', function(req, res) {
   const auth = req.headers.token;
   const pcID = req.body.pcID;
@@ -197,7 +254,18 @@ app.post('/myInfo/myPc/update', function(req, res) {
     res.json(respond(true, 'Update Done', out));
   });
 });
-// get user  info
+
+/**
+* Get user information
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/myInfo', function(req, res) {
   const auth = req.headers.token;
   const id = req.body.id;
@@ -217,7 +285,18 @@ app.post('/myInfo', function(req, res) {
     }
   });
 });
-// get user  info
+
+/**
+* Get user infromation from desktop app side
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/app/myInfo', function(req, res) {
   const auth = req.headers.token;
   const id = req.body.id;
@@ -251,7 +330,18 @@ app.post('/app/notification', function(req, res) {
     });
   });
 });
-// update account  info
+
+/**
+* update user information
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/account/myInfo/update', function(req, res) {
   const auth = req.headers.token;
   const id = req.body.id;
@@ -272,7 +362,18 @@ app.post('/account/myInfo/update', function(req, res) {
   res.status(200);
   res.json(respond(true, 'Update Done', null));
 });
-// update account  password
+
+/**
+* Update user password
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/account/password/update', function(req, res) {
   const auth = req.headers.token;
   const confirmNewPassword = md5(req.body.confirmNewPassword);
@@ -305,6 +406,18 @@ app.post('/account/password/update', function(req, res) {
   res.status(200);
   res.json(respond(true, 'Update Done', null));
 });
+
+/**
+* New user registration
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/register', function(req, res) {
   const email = req.body.email;
   const password = md5(req.body.password);
@@ -356,7 +469,18 @@ app.post('/register', function(req, res) {
     }
   });
 });
-// this user  login
+
+/**
+* User logging
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/login', function(req, res) {
   const email = req.body.email;
   const password = md5(req.body.password);
@@ -385,7 +509,18 @@ app.post('/login', function(req, res) {
     }
   });
 });
-// logout
+
+/**
+* User logout from web
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/logout', function(req, res) {
   const id = req.body.id;
   const auth = req.headers.token;
@@ -405,8 +540,19 @@ app.post('/logout', function(req, res) {
     }
   });
 });
-// logout
-// todo  need to  fix
+
+/**
+* User logout from app
+* TODO need to fix issues
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/app/logout', function(req, res) {
   const id = req.body.id;
   const auth = req.body.auth;
