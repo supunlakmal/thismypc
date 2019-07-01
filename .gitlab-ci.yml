@@ -16,7 +16,7 @@
         - cd thisMyPCWeb
         - npm i
         - npm i -g @angular/cli
-        - ng build
+        - ng build --prod --base-href /
         - cd ..
         - cd thisMyPCApp
         - npm i
