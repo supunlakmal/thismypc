@@ -13,7 +13,7 @@
     install_dependencies:
       stage: build
       script:
-        - git clone https://github.com/supunlakmal/thismypc.git
+        - git clone https://gitlab.com/supunlakmal/thismypc.git
         - cd thismypc
         - cd thisMyPCWeb
         - npm i
