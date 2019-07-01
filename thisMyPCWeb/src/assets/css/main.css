@@ -735,6 +735,12 @@ a.linkd_in_link {
   padding-right: 20px;
   padding-top: .5rem;
 }
+.release_link{
+  color: #fff;
+}
+.release_link:hover{
+  color: #fff;
+}
 
 /**
 Home  block end
