@@ -43,6 +43,9 @@ Desktop App  Login         |  Desktop App Open | Web App  PC  Drivers       |  W
     ├── CODE_OF_CONDUCT.md
     ├── LICENSE
     └── README.md
+## Why (This my pc)
+The concept behind thismypc app was transferred your computer folder and file information trough node server to web end as a json data.  
+
 
 ## How to (Wiki)
 All usage instruction and information update on [Github Wiki](https://github.com/supunlakmal/thismypc/wiki)
