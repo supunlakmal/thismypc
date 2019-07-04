@@ -43,11 +43,16 @@ Desktop App  Login         |  Desktop App Open | Web App  PC  Drivers       |  W
     ├── CODE_OF_CONDUCT.md
     ├── LICENSE
     └── README.md
-## Why (This my pc)
-The concept behind thismypc app was transferred your computer folder and file information trough node server to web end as a json data.  
 
+## What (This my pc) ?
+The concept behind thismypc app was transferred your computer folder and file information trough nodeJS server to web end as a json data.  
 
-## How to (Wiki)
+## why (This my pc) ?
+- Responsive web interface helps you to browse file in any resolution device.
+- You can use sours code for your own projects.
+- It's a good  solution for low bandwidth network use.
+
+## How to (Wiki) ?
 All usage instruction and information update on [Github Wiki](https://github.com/supunlakmal/thismypc/wiki)
 
 ## Developing
