@@ -1,13 +1,17 @@
 const app = require('express')();
 const bodyParser = require('body-parser');
-const db = require('./db');
+const config = require('./config');
 const fileUpload = require('express-fileupload');
+//md5 encrypt
 const md5 = require('js-md5');
 const mongoose = require('mongoose');
+// validate inputs
 const validator = require('validator');
-mongoose.connect(`mongodb://${db.user}:${db.password}@${db.host}/${db.db}`, {
+//MongoDB server connection
+mongoose.connect(`mongodb://${config.user}:${config.password}@${config.host}/${config.db}`, {
   useNewUrlParser: true,
 });
+
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 // functions
@@ -18,7 +22,12 @@ function respond(type, msg, data) {
   res.status = type;
   return res;
 }
-// mongoDB models
+
+/**
+ * Mongo DB modules
+ */
+
+// user module
 User = require('./models/user');
 // admin module
 Admin = require('./models/admin');
@@ -37,7 +46,7 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,token ,uid');
   next();
 });
-http.listen(process.env.PORT || 5000);
+http.listen(process.env.PORT || config.port);
 /**
  * Custom function  for user
  */
