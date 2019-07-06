@@ -2,11 +2,14 @@ const app = require('express')();
 const bodyParser = require('body-parser');
 const config = require('./config');
 const fileUpload = require('express-fileupload');
+
 // md5 encrypt
 const md5 = require('js-md5');
 const mongoose = require('mongoose');
+
 // validate inputs
 const validator = require('validator');
+
 // MongoDB server connection
 mongoose.connect(`mongodb://${config.user}:${config.password}@${config.host}/${config.db}`, {
   useNewUrlParser: true,
@@ -29,23 +32,32 @@ function respond(type, msg, data) {
 
 // user module
 User = require('./models/user');
+
 // admin module
 Admin = require('./models/admin');
+
 // software module
 Software = require('./models/software');
+
 // pc  module
 PC = require('./models/pc');
+
 // pc and user  module
 UserAndPC = require('./models/userAndPC');
+
 // pc and PC Owner  module
 PcOwner = require('./models/PCOwner');
 app.use(bodyParser.json());
 app.use(fileUpload());
+
+//REST API output header
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,token ,uid');
   next();
 });
+
+//server port ex-5000
 http.listen(process.env.PORT || config.port);
 /**
  * Custom function  for user
