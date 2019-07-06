@@ -5,7 +5,7 @@ const fileUpload = require('express-fileupload');
 const md5 = require('js-md5');
 const mongoose = require('mongoose');
 const validator = require('validator');
-mongoose.connect(`mongodb://${db.user}:${db.password}@localhost/${db.db}`, {
+mongoose.connect(`mongodb://${db.user}:${db.password}@${db.host}/${db.db}`, {
   useNewUrlParser: true,
 });
 const http = require('http').Server(app);

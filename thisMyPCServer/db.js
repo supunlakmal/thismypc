@@ -1,5 +1,6 @@
 module.exports = {
-    db: "DataBaseName",
-    password: "dataBasePassword",
-    user: "dataBaceUser",
+	host:"localhost",
+	db: "DataBaseName",
+	password: "dataBasePassword",
+	user: "dataBaceUser",
 };
