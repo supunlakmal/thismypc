@@ -1,3 +1,5 @@
+// admin module
+const Admin = require('./models/admin');
 
 // this api  function    for  admin
 // create  app frp for app Store

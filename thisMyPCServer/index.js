@@ -1,36 +1,35 @@
 'use strict';
 const app = require('express')();
 const bodyParser = require('body-parser');
-
 // MongoDb config variables
 const db = require('./config/db');
-
 // config  variables
 const config = require('./config/config');
-
 const fileUpload = require('express-fileupload');
-
 // md5 encrypt
 const md5 = require('js-md5');
 const mongoose = require('mongoose');
-
 // validate inputs
 const validator = require('validator');
-
 /**
  * components
  */
 // logger
 const logger = require('./components/logger');
-
 // MongoDB server connection
 mongoose.connect(`mongodb://${db.user}:${db.password}@${db.host}/${db.dbName}`, {
   useNewUrlParser: true,
 });
-
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-// functions
+/**
+ * REST api call  convert to  json object before send
+ *
+ * @param {object} type
+ * @param {object} msg
+ * @param {object} data
+ * @return {object}
+ */
 function respond(type, msg, data) {
   const res = {};
   res.data = data;
@@ -38,47 +37,37 @@ function respond(type, msg, data) {
   res.status = type;
   return res;
 }
-
 /**
  * Mongo DB modules
  */
-
 // user module
 const User = require('./models/user');
-
-// admin module
-const Admin = require('./models/admin');
-
 // software module
 const Software = require('./models/software');
-
 // pc  module
 const PC = require('./models/pc');
-
 // pc and user  module
 const UserAndPC = require('./models/userAndPC');
-
 // pc and PC Owner  module
 const PcOwner = require('./models/PCOwner');
-
 app.use(bodyParser.json());
 app.use(fileUpload());
-
 // REST API output header
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,token ,uid');
   next();
 });
-
 // server port ex-5000
 http.listen(process.env.PORT || config.port);
 logger.log(`Sever start on Port ${config.port}`);
-
 /**
- * Custom function  for user
+ * get user socketID
+ *
+ * @param {object} pcData
+ * @param {object} user
+ * @param {callback} callback
  */
-// pc owner socket id or  pc public key user socket id
 function getUserSocketID(pcData, user, callback) {
   PC.getPC(pcData.pcKey, function(err, pc) {
     if (pc) {
@@ -99,8 +88,13 @@ function getUserSocketID(pcData, user, callback) {
     }
   });
 }
-
-// owner pc  socket id  or public key socket id
+/**
+ * Get owner pc  socket id  or public key socket id
+ *
+ * @param {object} user  user information
+ * @param {string} pcKeyPublic computer public access key
+ * @param {callback} callback
+ */
 function getPCSocketID(user, pcKeyPublic, callback) {
   if (pcKeyPublic === '') {
     PC.getPCUsingID(user.userNowAccessPCID, function(err, userPC) {
@@ -126,18 +120,17 @@ const isValidFoldersName = (function() {
     return rg1.test(fname) && !rg2.test(fname) && !rg3.test(fname);
   };
 })();
-
 /**
-* User authentications
-*
-* @param  {json} req
-* req : Request
-* req->
-*
-* @param  {json} res
-* res:Respond
-* res<-
-*/
+ * User authentications
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
 app.post('/auth', function(req, res) {
   const id = req.body.id;
   const auth = req.headers.token;
@@ -151,18 +144,17 @@ app.post('/auth', function(req, res) {
     }
   });
 });
-
 /**
-* Get all user computer names and IDs
-*
-* @param  {json} req
-* req : Request
-* req->
-*
-* @param  {json} res
-* res:Respond
-* res<-
-*/
+ * Get all user computer names and IDs
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
 app.post('/myInfo/myPc', function(req, res) {
   const id = req.body.id;
   const auth = req.headers.token;
@@ -182,18 +174,17 @@ app.post('/myInfo/myPc', function(req, res) {
     }
   });
 });
-
 /**
-* Get user all online computers list
-*
-* @param  {json} req
-* req : Request
-* req->
-*
-* @param  {json} res
-* res:Respond
-* res<-
-*/
+ * Get user all online computers list
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
 app.post('/myInfo/myPc/online', function(req, res) {
   const id = req.body.id;
   const auth = req.headers.token;
@@ -213,18 +204,17 @@ app.post('/myInfo/myPc/online', function(req, res) {
     }
   });
 });
-
 /**
-* Update user public key that allow to access other your computer.
-*
-* @param  {json} req
-* req : Request
-* req->
-*
-* @param  {json} res
-* res:Respond
-* res<-
-*/
+ * Update user public key that allow to access other your computer.
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
 app.post('/myInfo/myPc/publicKey/update', function(req, res) {
   const auth = req.headers.token;
   const pcID = req.body.pcID;
@@ -244,18 +234,17 @@ app.post('/myInfo/myPc/publicKey/update', function(req, res) {
     res.json(respond(true, 'Update Done', out));
   });
 });
-
 /**
-* Update allow pubic access status
-*
-* @param  {json} req
-* req : Request
-* req->
-*
-* @param  {json} res
-* res:Respond
-* res<-
-*/
+ * Update allow pubic access status
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
 app.post('/myInfo/myPc/update', function(req, res) {
   const auth = req.headers.token;
   const pcID = req.body.pcID;
@@ -281,18 +270,17 @@ app.post('/myInfo/myPc/update', function(req, res) {
     res.json(respond(true, 'Update Done', out));
   });
 });
-
 /**
-* Get user information
-*
-* @param  {json} req
-* req : Request
-* req->
-*
-* @param  {json} res
-* res:Respond
-* res<-
-*/
+ * Get user information
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
 app.post('/myInfo', function(req, res) {
   const auth = req.headers.token;
   const id = req.body.id;
@@ -312,18 +300,17 @@ app.post('/myInfo', function(req, res) {
     }
   });
 });
-
 /**
-* Get user infromation from desktop app side
-*
-* @param  {json} req
-* req : Request
-* req->
-*
-* @param  {json} res
-* res:Respond
-* res<-
-*/
+ * Get user infromation from desktop app side
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
 app.post('/app/myInfo', function(req, res) {
   const auth = req.headers.token;
   const id = req.body.id;
@@ -357,18 +344,17 @@ app.post('/app/notification', function(req, res) {
     });
   });
 });
-
 /**
-* update user information
-*
-* @param  {json} req
-* req : Request
-* req->
-*
-* @param  {json} res
-* res:Respond
-* res<-
-*/
+ * update user information
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
 app.post('/account/myInfo/update', function(req, res) {
   const auth = req.headers.token;
   const id = req.body.id;
@@ -389,21 +375,19 @@ app.post('/account/myInfo/update', function(req, res) {
   res.status(200);
   res.json(respond(true, 'Update Done', null));
 });
-
 /**
-* Update user password
-*
-* @param  {json} req
-* req : Request
-* req->
-*
-* @param  {json} res
-* res:Respond
-* res<-
-*/
+ * Update user password
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
 app.post('/account/password/update', function(req, res) {
   const auth = req.headers.token;
-  const confirmNewPassword = md5(req.body.confirmNewPassword);
   const id = req.body.id;
   const newPassword = md5(req.body.newPassword);
   const password = md5(req.body.password);
@@ -433,18 +417,17 @@ app.post('/account/password/update', function(req, res) {
   res.status(200);
   res.json(respond(true, 'Update Done', null));
 });
-
 /**
-* New user registration
-*
-* @param  {json} req
-* req : Request
-* req->
-*
-* @param  {json} res
-* res:Respond
-* res<-
-*/
+ * New user registration
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
 app.post('/register', function(req, res) {
   const email = req.body.email;
   const password = md5(req.body.password);
@@ -496,23 +479,21 @@ app.post('/register', function(req, res) {
     }
   });
 });
-
 /**
-* User logging
-*
-* @param  {json} req
-* req : Request
-* req->
-*
-* @param  {json} res
-* res:Respond
-* res<-
-*/
+ * User logging
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
 app.post('/login', function(req, res) {
   const email = req.body.email;
   const password = md5(req.body.password);
   req.body.password = password;
-  const userData = req.body;
   if (req.body.email === '' || req.body.password === '') {
     res.status(401);
     return res.json(respond(false, 'username/password required', null));
@@ -536,18 +517,17 @@ app.post('/login', function(req, res) {
     }
   });
 });
-
 /**
-* User logout from web
-*
-* @param  {json} req
-* req : Request
-* req->
-*
-* @param  {json} res
-* res:Respond
-* res<-
-*/
+ * User logout from web
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
 app.post('/logout', function(req, res) {
   const id = req.body.id;
   const auth = req.headers.token;
@@ -567,19 +547,18 @@ app.post('/logout', function(req, res) {
     }
   });
 });
-
 /**
-* User logout from app
-* TODO need to fix issues
-*
-* @param  {json} req
-* req : Request
-* req->
-*
-* @param  {json} res
-* res:Respond
-* res<-
-*/
+ * User logout from app
+ * TODO need to fix issues
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
 app.post('/app/logout', function(req, res) {
   const id = req.body.id;
   const auth = req.body.auth;
@@ -599,9 +578,7 @@ app.post('/app/logout', function(req, res) {
     }
   });
 });
-
 io.on('connection', function(socket) {
-
   // TODO this user  login from app need to add few   function to  it
   socket.on('loginPage', function() {});
   // some  user  or  app get disconnected  from serve
@@ -625,7 +602,12 @@ io.on('connection', function(socket) {
       }
     });
   });
-
+  /**
+   *
+   * @param {object} user  user information
+   * @param {*} pcKey  Computer key
+   * @return {object} new auth key
+   */
   function updateAppUserAuth(user, pcKey) {
     const date = new Date();
     const out = {};
@@ -642,7 +624,6 @@ io.on('connection', function(socket) {
     const pcName = req.body.pcName;
     const platform = req.body.platform;
     req.body.password = password;
-    const userData = req.body;
     if (req.body.email === '' || req.body.password === '') {
       res.status(401);
       return res.json(respond(false, 'username/password required', null));
@@ -718,10 +699,6 @@ io.on('connection', function(socket) {
         io.sockets.in(user.ioSocketID).emit('getAppData', {
           data: 'start',
         });
-        const clients_in_the_room = io.sockets.adapter.rooms[user.ioSocketID].sockets;
-        for (const clientId in clients_in_the_room) {
-          // Seeing is believing
-        }
       }
     });
   });
@@ -740,10 +717,6 @@ io.on('connection', function(socket) {
               pcInfo.pcSocketID = socket.id;
               PC.updatePcSocketID(pcData._id, pcInfo, {}, function(err, pc) {});
             });
-            const clients_in_the_room = io.sockets.adapter.rooms[user.ioSocketID].sockets;
-            for (const clientId in clients_in_the_room) {
-              // Seeing is believing
-            }
           }
         });
       }
@@ -873,7 +846,6 @@ io.on('connection', function(socket) {
     const auth = input.auth;
     const id = input.id;
     const pcKey = md5(input.pcKey);
-    let roomID = '';
     PC.authApp(id, auth, pcKey, function(err, pc) {
       User.getUser(id, function(err, user) {
         if (user) {
