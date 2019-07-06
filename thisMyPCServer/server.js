@@ -1,5 +1,5 @@
 'use strict';
-//https://javascript.info/async-await
+// https://javascript.info/async-await
 const app = require('express')();
 const bodyParser = require('body-parser');
 // MongoDb config variables
@@ -56,7 +56,7 @@ const PcOwner = require('./models_p/PCOwner');
 app.use(bodyParser.json());
 app.use(fileUpload());
 // REST API output header
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,token ,uid');
   next();
@@ -75,7 +75,7 @@ logger.log(`Sever start on Port ${config.port}`);
  * res:Respond
  * res<-
  */
-app.post('/login', async function (req, res) {
+app.post('/login', async function(req, res) {
   const email = req.body.email;
   const password = md5(req.body.password);
   req.body.password = password;
@@ -83,8 +83,8 @@ app.post('/login', async function (req, res) {
     res.status(401);
     return res.json(respond(false, 'username/password required', null));
   }
-   // wait till the promise resolves (*)
-  let user = await User.loginUser(email, password);
+  // wait till the promise resolves (*)
+  const user = await User.loginUser(email, password);
 
   if (user) {
     const date = new Date();
@@ -93,7 +93,7 @@ app.post('/login', async function (req, res) {
     out.id = user._id;
     out.ioSocketID = user.ioSocketID;
     out.name = user.name;
-    User.updateUserAuth(user._id, out, {}, function (err, user) {});
+    User.updateUserAuth(user._id, out, {}, function(err, user) {});
     // Todo this will no need in future
     out.ioSocketID = 'room1';
     res.status(200);
