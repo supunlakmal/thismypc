@@ -1,13 +1,33 @@
+'use strict';
 const app = require('express')();
 const bodyParser = require('body-parser');
-const db = require('./db');
+
+// MongoDb config variables
+const db = require('./config/db');
+
+// config  variables
+const config = require('./config/config');
+
 const fileUpload = require('express-fileupload');
+
+// md5 encrypt
 const md5 = require('js-md5');
 const mongoose = require('mongoose');
+
+// validate inputs
 const validator = require('validator');
-mongoose.connect(`mongodb://${db.user}:${db.password}@localhost/${db.db}`, {
+
+/**
+ * components
+ */
+// logger
+const logger = require('./components/logger');
+
+// MongoDB server connection
+mongoose.connect(`mongodb://${db.user}:${db.password}@${db.host}/${db.dbName}`, {
   useNewUrlParser: true,
 });
+
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 // functions
@@ -18,26 +38,42 @@ function respond(type, msg, data) {
   res.status = type;
   return res;
 }
-// mongoDB models
-User = require('./models/user');
+
+/**
+ * Mongo DB modules
+ */
+
+// user module
+const User = require('./models/user');
+
 // admin module
-Admin = require('./models/admin');
+const Admin = require('./models/admin');
+
 // software module
-Software = require('./models/software');
+const Software = require('./models/software');
+
 // pc  module
-PC = require('./models/pc');
+const PC = require('./models/pc');
+
 // pc and user  module
-UserAndPC = require('./models/userAndPC');
+const UserAndPC = require('./models/userAndPC');
+
 // pc and PC Owner  module
-PcOwner = require('./models/PCOwner');
+const PcOwner = require('./models/PCOwner');
 app.use(bodyParser.json());
 app.use(fileUpload());
+
+// REST API output header
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,token ,uid');
   next();
 });
-http.listen(process.env.PORT || 5000);
+
+// server port ex-5000
+http.listen(process.env.PORT || config.port);
+logger.log(`Sever start on Port ${config.port}`);
+
 /**
  * Custom function  for user
  */
@@ -101,7 +137,7 @@ app.get('/siteInfo', function(req, res) {
 });
 
 /**
-* User authentications 
+* User authentications
 *
 * @param  {json} req
 * req : Request
@@ -909,6 +945,7 @@ app.post('/admin/software/notification', function(req, res) {
   });
 });
 io.on('connection', function(socket) {
+
   // TODO this user  login from app need to add few   function to  it
   socket.on('loginPage', function() {});
   // some  user  or  app get disconnected  from serve
