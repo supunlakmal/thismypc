@@ -1,6 +1,12 @@
 const app = require('express')();
 const bodyParser = require('body-parser');
-const config = require('./config');
+
+// MongoDb config variables
+const db = require('./config/db');
+
+// config  variables
+const config = require('./config/config');
+
 const fileUpload = require('express-fileupload');
 
 // md5 encrypt
@@ -11,7 +17,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 
 // MongoDB server connection
-mongoose.connect(`mongodb://${config.user}:${config.password}@${config.host}/${config.db}`, {
+mongoose.connect(`mongodb://${db.user}:${db.password}@${db.host}/${db.dbName}`, {
   useNewUrlParser: true,
 });
 
@@ -50,14 +56,14 @@ PcOwner = require('./models/PCOwner');
 app.use(bodyParser.json());
 app.use(fileUpload());
 
-//REST API output header
+// REST API output header
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,token ,uid');
   next();
 });
 
-//server port ex-5000
+// server port ex-5000
 http.listen(process.env.PORT || config.port);
 /**
  * Custom function  for user
