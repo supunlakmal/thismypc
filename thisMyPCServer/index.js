@@ -1,3 +1,4 @@
+'use strict';
 const app = require('express')();
 const bodyParser = require('body-parser');
 
@@ -15,6 +16,12 @@ const mongoose = require('mongoose');
 
 // validate inputs
 const validator = require('validator');
+
+/**
+ * components
+ */
+// logger
+const logger = require('./components/logger');
 
 // MongoDB server connection
 mongoose.connect(`mongodb://${db.user}:${db.password}@${db.host}/${db.dbName}`, {
@@ -37,22 +44,22 @@ function respond(type, msg, data) {
  */
 
 // user module
-User = require('./models/user');
+const User = require('./models/user');
 
 // admin module
-Admin = require('./models/admin');
+const Admin = require('./models/admin');
 
 // software module
-Software = require('./models/software');
+const Software = require('./models/software');
 
 // pc  module
-PC = require('./models/pc');
+const PC = require('./models/pc');
 
 // pc and user  module
-UserAndPC = require('./models/userAndPC');
+const UserAndPC = require('./models/userAndPC');
 
 // pc and PC Owner  module
-PcOwner = require('./models/PCOwner');
+const PcOwner = require('./models/PCOwner');
 app.use(bodyParser.json());
 app.use(fileUpload());
 
@@ -65,6 +72,8 @@ app.use(function(req, res, next) {
 
 // server port ex-5000
 http.listen(process.env.PORT || config.port);
+logger.log(`Sever start on Port ${config.port}`);
+
 /**
  * Custom function  for user
  */
@@ -936,6 +945,7 @@ app.post('/admin/software/notification', function(req, res) {
   });
 });
 io.on('connection', function(socket) {
+
   // TODO this user  login from app need to add few   function to  it
   socket.on('loginPage', function() {});
   // some  user  or  app get disconnected  from serve
