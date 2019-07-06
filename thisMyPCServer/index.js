@@ -124,17 +124,6 @@ const isValidFoldersName = (function() {
     return rg1.test(fname) && !rg2.test(fname) && !rg3.test(fname);
   };
 })();
-app.get('/siteInfo', function(req, res) {
-  const outPut = {};
-  User.countUsers(function(err, userCount) {
-    PC.countPC(function(err, pcCount) {
-      outPut.userCount = userCount;
-      outPut.pcCount = pcCount;
-      res.status(200);
-      res.json(respond(true, 'good call', outPut));
-    });
-  });
-});
 
 /**
 * User authentications
