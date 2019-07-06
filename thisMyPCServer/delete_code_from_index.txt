@@ -337,3 +337,67 @@ app.post('/admin/software/notification', function(req, res) {
     }
   });
 });
+
+
+  app.post('/pc/downloadFileRequest', function(req, res) {
+    const auth = req.headers.token;
+    const id = req.body.id;
+    const path = req.body.path;
+    const pcKeyPublic = req.body.pcKeyPublic;
+    User.authUser(id, auth, function(err, user) {
+      if (user) {
+        const output = {};
+        output.path = path;
+        getPCSocketID(user, pcKeyPublic, function(socket) {
+          io.sockets.to(socket).emit('downloadFileRequest', output);
+        });
+      }
+    });
+  });
+
+    // copy file  location ad paste file  location
+  socket.on('copyPasteToPC', function(input) {
+    const auth = input.auth;
+    const id = input.id;
+    User.authUser(id, auth, function(err, user) {
+      if (user) {
+        io.sockets.in(user.ioSocketID).emit('copyPasteToPCApp', input.data);
+      }
+    });
+  });
+  // copy  and paste  Done
+  socket.on('pasteDone', function(input) {
+    const auth = input.auth;
+    const id = input.id;
+    const pcKey = md5(input.pcKey);
+    PC.authApp(id, auth, pcKey, function(err, pc) {
+      User.getUser(id, function(err, user) {
+        if (user) {
+          roomID = user.ioSocketID;
+        }
+      });
+      if (pc) {
+        io.sockets.in(user.ioSocketID).emit('pasteDone', input.data);
+      }
+    });
+  });
+  // file  transfer
+  socket.on('uploadFileInfo_to_pc', function(input) {
+    const auth = input.auth;
+    const id = input.id;
+    User.authUser(id, auth, function(err, user) {
+      if (user) {
+        io.sockets.in(user.ioSocketID).emit('uploadFileInfo_from_web', input.data);
+      }
+    });
+  });
+  socket.on('uploadFile_chunk_to_pc', function(input) {
+    const auth = input.auth;
+    const id = input.id;
+    User.authUser(id, auth, function(err, user) {
+      if (user) {
+        io.sockets.in(user.ioSocketID).emit('uploadFile_chunk_from_web', input.data);
+      }
+    });
+  });
+  socket.on('fileSendingFromPc', function(input) {});
