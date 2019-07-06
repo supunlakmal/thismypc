@@ -2,12 +2,12 @@ const app = require('express')();
 const bodyParser = require('body-parser');
 const config = require('./config');
 const fileUpload = require('express-fileupload');
-//md5 encrypt
+// md5 encrypt
 const md5 = require('js-md5');
 const mongoose = require('mongoose');
 // validate inputs
 const validator = require('validator');
-//MongoDB server connection
+// MongoDB server connection
 mongoose.connect(`mongodb://${config.user}:${config.password}@${config.host}/${config.db}`, {
   useNewUrlParser: true,
 });
@@ -110,7 +110,7 @@ app.get('/siteInfo', function(req, res) {
 });
 
 /**
-* User authentications 
+* User authentications
 *
 * @param  {json} req
 * req : Request
