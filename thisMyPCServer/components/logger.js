@@ -1,15 +1,16 @@
 'use strict';
 
 /**
- *  log class
- */
+*  log class
+*  pattern - Singletons
+*/
 class Logger {
-/**
- * @param {object} message 
- */
-    log(message) {
-    const timestamp =new Date().toISOString();
-    console.log(`${timestamp} -  ${message}`);
-  }
+	/**
+	* @param {object} message 
+	*/
+	log(message) {
+		const timestamp = new Date().toISOString();
+		console.log(`${timestamp} -  ${message}`);
+	}
 }
-module.exports =new Logger();
+module.exports = new Logger();
