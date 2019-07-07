@@ -50,8 +50,18 @@ module.exports.getUsers = function (limit, callback) {
   User.find(callback).limit(limit);
 };
 //  get  user using id
-module.exports.getUser = function (id, callback) {
-  User.findOne().where('_id', id).exec(callback);
+module.exports.getUser = function (id) {
+
+  return  new Promise((resolve, reject) => {
+  User.findOne().where('_id', id).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
+
+
+
+
+
 }; //  get  user using id for  public  use
 module.exports.getUserPublic = function (id) {
 

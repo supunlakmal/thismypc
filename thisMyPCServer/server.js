@@ -64,8 +64,6 @@ app.use(function(req, res, next) {
 // server port ex-5000
 http.listen(process.env.PORT || config.port);
 logger.log(`Sever start on Port ${config.port}`);
-
-
 /**
  * New user registration
  *
@@ -90,22 +88,16 @@ app.post('/register', async function(req, res) {
     res.status(401);
     return res.json(respond(false, 'username/password/name required', null));
   }
-
   if (!validator.isEmail(email)) {
     res.status(401);
     return res.json(respond(false, 'Invalid Email', null));
   }
   // search user by user name
   const user = await User.searchEmailUser(email);
-
-
   if (!user) {
     const userCrated = await User.createUser(userData);
-
     if (userCrated) {
       const userLoginData = await User.loginUser(email, password);
-
-
       out.auth = md5(userLoginData._id + date);
       out.id = userLoginData._id;
       out.ioSocketID = userLoginData.ioSocketID;
@@ -121,8 +113,6 @@ app.post('/register', async function(req, res) {
     res.json(respond(false, 'User  Already exit', null));
   }
 });
-
-
 /**
  * User logging {async}
  *
@@ -144,7 +134,6 @@ app.post('/login', async function(req, res) {
   }
   // wait till the promise resolves (*)
   const user = await User.loginUser(email, password);
-
   if (user) {
     const date = new Date();
     const out = {};
@@ -162,7 +151,6 @@ app.post('/login', async function(req, res) {
     res.json(respond(false, 'Invalid User', null));
   }
 });
-
 /**
  * User logout from web
  *
@@ -192,7 +180,6 @@ app.post('/logout', async function(req, res) {
     res.json(respond(true, 'Invalid User', null));
   }
 });
-
 /**
  * User logout from app
  * TODO need to fix issues
@@ -211,8 +198,6 @@ app.post('/app/logout', async function(req, res) {
   const date = new Date();
   const out = {};
   const user = await User.authApp(id, auth);
-
-
   if (user) {
     out.auth = md5(user._id + date) + '_logout';
     out.id = user._id;
@@ -225,8 +210,6 @@ app.post('/app/logout', async function(req, res) {
     res.json(respond(false, 'Invalid User', null));
   }
 });
-
-
 /**
  * Update user password
  *
@@ -248,8 +231,6 @@ app.post('/account/password/update', async function(req, res) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
   }
-
-
   if (req.body.password === '' || req.body.newPassword === '' || req.body.confirmNewPassword === '') {
     res.status(401);
     return res.json(respond(false, 'Password/New Password/Confirm Password required', null));
@@ -269,8 +250,6 @@ app.post('/account/password/update', async function(req, res) {
   res.status(200);
   res.json(respond(true, 'Update Done', null));
 });
-
-
 /**
  * update user information
  *
@@ -286,12 +265,10 @@ app.post('/account/myInfo/update', async function(req, res) {
   const auth = req.headers.token;
   const id = req.body.id;
   const user = await User.authUser(id, auth);
-
   if (!user) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
   }
-
   if (req.body.name === '' || req.body.nameLast === '') {
     res.status(401);
     return res.json(respond(false, 'username/password/name required', null));
@@ -303,7 +280,6 @@ app.post('/account/myInfo/update', async function(req, res) {
   res.status(200);
   res.json(respond(true, 'Update Done', null));
 });
-
 /**
  * Get user infromation from desktop app side
  *
@@ -320,10 +296,8 @@ app.post('/app/myInfo', async function(req, res) {
   const id = req.body.id;
   const pcKey = req.body.pcKey;
   const pc = await PC.authApp(id, auth, pcKey);
-
   if (pc) {
     const user = await User.getUserPublic(id);
-
     if (!user) {
       res.status(401);
       return res.json(respond(false, 'Invalid User', null));
@@ -333,8 +307,6 @@ app.post('/app/myInfo', async function(req, res) {
     }
   }
 });
-
-
 /**
  * Get user information
  *
@@ -350,15 +322,11 @@ app.post('/myInfo', async function(req, res) {
   const auth = req.headers.token;
   const id = req.body.id;
   const user = await User.authUser(id, auth);
-
   if (!user) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
   }
-
-
   const userInfo = await User.userInfo(id, auth);
-
   if (userInfo) {
     res.status(200);
     res.json(respond(true, 'User Information', userInfo));
@@ -367,8 +335,6 @@ app.post('/myInfo', async function(req, res) {
     res.json(respond(false, 'Invalid User', null));
   }
 });
-
-
 /**
  * Update allow pubic access status
  *
@@ -392,27 +358,19 @@ app.post('/myInfo/myPc/update', async function(req, res) {
     publicAccessKey = md5(publicAccessKey);
   }
   const user = await User.authUser(userID, auth);
-
-
   if (!user) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
   }
-
-
   const out = {};
   out.publicAccessKey = publicAccessKey;
   out.publicAccessStatus = publicAccessStatus;
-
-
   const pc= await PC.updatePublicAccessStatus(pcID, out, {});
   if (pc) {
     res.status(200);
     res.json(respond(true, 'Update Done', out));
   }
 });
-
-
 /**
  * Update user public key that allow to access other your computer.
  *
@@ -430,28 +388,19 @@ app.post('/myInfo/myPc/publicKey/update', async function(req, res) {
   const userID = req.body.id;
   let publicAccessKey = pcID + Date.now();
   publicAccessKey = md5(publicAccessKey);
-
-
   const user =await User.authUser(userID, auth);
   if (!user) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
   }
-
-
   const out = {};
   out.publicAccessKey = publicAccessKey;
-
-
   const pc = await PC.newPublicAccessKey(pcID, out, {});
-
   if (pc) {
     res.status(200);
     res.json(respond(true, 'Update Done', out));
   }
 });
-
-
 /**
  * Get user all online computers list
  *
@@ -467,15 +416,11 @@ app.post('/myInfo/myPc/online', async function(req, res) {
   const id = req.body.id;
   const auth = req.headers.token;
   const user =await User.authUser(id, auth);
-
   if (!user) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
   }
-
-
   const pc = await PC.getPCByUserIDOnline(id);
-
   if (pc) {
     res.status(200);
     res.json(respond(true, 'Computer  Information', pc));
@@ -484,8 +429,6 @@ app.post('/myInfo/myPc/online', async function(req, res) {
     res.json(respond(false, 'Invalid User', null));
   }
 });
-
-
 /**
  * Get all user computer names and IDs
  *
@@ -505,9 +448,7 @@ app.post('/myInfo/myPc', async function(req, res) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
   }
-
   const pc =await PC.getPCByUserID(id);
-
   if (pc) {
     res.status(200);
     res.json(respond(true, 'good call', pc));
@@ -516,8 +457,6 @@ app.post('/myInfo/myPc', async function(req, res) {
     res.json(respond(false, 'Invalid User', null));
   }
 });
-
-
 /**
  * User authentications
  *
@@ -533,7 +472,6 @@ app.post('/auth', async function(req, res) {
   const id = req.body.id;
   const auth = req.headers.token;
   const user = await User.authUser(id, auth);
-
   if (user) {
     res.status(200);
     res.json(respond(true, 'good call', null));
@@ -542,14 +480,12 @@ app.post('/auth', async function(req, res) {
     res.json(respond(false, 'Invalid User', null));
   }
 });
-
 io.on('connection', function(socket) {
   // TODO this user  login from app need to add few   function to  it
   socket.on('loginPage', function() {});
   // some  user  or  app get disconnected  from serve
   socket.on('disconnect', async function() {
     const pc = await PC.getPCSocketID(socket.id);
-
     if (pc) {
       const pcInfo = {};
       pcInfo.pcOnline = 0;
@@ -557,11 +493,8 @@ io.on('connection', function(socket) {
       PC.updatePcOnlineStatus(pc._id, pcInfo, {}, function(err, user) {});
     } else {
       const user =await User.getUserSocketId(socket.id);
-
       if (user) {
         const pc = await PC.getPCUsingID(user.userNowAccessPCID);
-
-
         if (pc) {
           const sendUserInfoToApp = {};
           sendUserInfoToApp.status = false;
@@ -570,6 +503,122 @@ io.on('connection', function(socket) {
       }
     }
   });
+  /**
+   *
+   * @param {object} user  user information
+   * @param {*} pcKey  Computer key
+   * @return {object} new auth key
+   */
+  function updateAppUserAuth(user, pcKey) {
+    const date = new Date();
+    const out = {};
+    out.auth = md5(user._id + date + pcKey);
+    out.id = user._id;
+    PC.updateUserAuthApp(pcKey, out, {}, function(err, user) {});
+    return out;
+  }
+  app.post('/login/app', async function(req, res) {
+    const email = req.body.email;
+    const key = req.body.appKey;
+    const password = md5(req.body.password);
+    const pcKey = md5(req.body.pcKey);
+    const pcName = req.body.pcName;
+    const platform = req.body.platform;
+    req.body.password = password;
+    if (req.body.email === '' || req.body.password === '') {
+      res.status(401);
+      return res.json(respond(false, 'username/password required', null));
+    }
+    const software = await Software.getActiveSoftware(key);
+    if (software) {
+      const user =await User.loginUser(email, password);
+      if (user) {
+        //  set  if  user  got  new pc  key  or  update  if  got  old one
+        const pc = await PC.getPCByUserIDAndPCKey(pcKey, user._id);
+        if (pc) {
+          const pcInfo = {};
+          pcInfo.pcOnline = 1;
+          pcInfo.pcSocketID = socket.id;
+          PC.updatePcOnlineStatus(pc._id, pcInfo, {}, function(err, user) {});
+          const pcOwner = {};
+          pcOwner.pcID = pc._id;
+          pcOwner.pcKey = pcKey;
+          pcOwner.userID = user._id;
+          const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
+          if (pcOwnerData) {
+            const out = updateAppUserAuth(user, pcKey);
+            out.ioSocketID = 'room1';
+            res.status(200);
+            res.json(respond(true, 'Hello!', out));
+          }
+        } else {
+          const pc = {};
+          pc.pcKey = pcKey;
+          pc.pcName = pcName;
+          pc.pcOnline = 1;
+          pc.pcSocketID = socket.id;
+          pc.platform = platform;
+          pc.publicAccessKey = md5(pcKey + Date.now());
+          pc.userID = user._id;
+          const pcData = await PC.createNewPC(pc);
+          if (pcData) {
+            const pcOwner = {};
+            pcOwner.pcID = pcData._id;
+            pcOwner.pcKey = pcKey;
+            pcOwner.userID = user._id;
+            const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
+            if (pcOwnerData) {
+              const out = updateAppUserAuth(user, pcKey);
+              out.ioSocketID = 'room1';
+              res.status(200);
+              res.json(respond(true, 'Hello!', out));
+            }
+          }
+        }
+        socket.join(user.ioSocketID);
+      } else {
+        res.status(401);
+        res.json(respond(false, 'Invalid User', null));
+      }
+    } else {
+      res.status(401);
+      res.json(respond(false, 'This  software version  no  longer  work', null));
+    }
+  });
+  // join user from  web
+  socket.on('joinFromWeb', async function(data) {
+    const id = data.data.id;
+    const auth = data.data.auth;
+    const user =await User.authUser(id, auth);
+    if (user) {
+      socket.join(user.ioSocketID);
+      // update user Currentsockett ID
+      const userData = {};
+      userData.userCurrentSocketId = socket.id;
+      User.updateUserCurrentSocketId(user._id, userData, {}, function(user) {});
+      // pulling data from app
+      io.sockets.in(user.ioSocketID).emit('getAppData', {
+        data: 'start',
+      });
+    }
+  });
+  // join user from  app
+  socket.on('joinFromApp', async function(data) {
+    const auth = data.data.auth;
+    const id = data.data.id;
+    const pcKey = md5(data.data.pcKey);
+    const pc = await PC.authApp(id, auth, pcKey);
+    if (pc) {
+      const user= await User.getUser(id);
+      if (user) {
+        socket.join(user.ioSocketID);
+        const pcData =await PC.getPC(pcKey);
+        if (pcData) {
+          const pcInfo = {};
+          pcInfo.pcSocketID = socket.id;
+          PC.updatePcSocketID(pcData._id, pcInfo, {}, function(err, pc) {});
+        }
+      }
+    }
+  });
 });
-
-

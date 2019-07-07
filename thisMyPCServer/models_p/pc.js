@@ -47,7 +47,8 @@ const pcSchema = mongoose.Schema({
 });
 const PC = module.exports = mongoose.model('pc', pcSchema);
 // create   pc
-module.exports.createNewPC = function(pc, callback) {
+module.exports.createNewPC = function(pc) {
+  return new Promise((resolve,reject)=>{
   PC.create({
     'pcKey': pc.pcKey,
     'userID': pc.userID,
@@ -56,94 +57,71 @@ module.exports.createNewPC = function(pc, callback) {
     'publicAccessKey': pc.publicAccessKey,
     'pcOnline': pc.pcOnline,
     'pcSocketID': pc.pcSocketID,
-  }, callback);
+  }, function (err, pc) {
+    resolve(pc);
+        });
+      }).then(result=>{return result;});
 };
 //  get  pc using _id
 module.exports.getPCUsingID = function(key, callback) {
-
   return new Promise((resolve,reject)=>{
   PC.findOne().where('_id', key).exec(function (err, pc) {
-
     resolve(pc);
-    
         });
-    
-    
     }).then(result=>{return result;});
-
-
 };
 //  get all pc
 module.exports.getAllPC = function(limit, callback) {
   PC.find(callback).limit(limit);
 };
 //  get  pc using pcKey
-module.exports.getPC = function(key, callback) {
-  PC.findOne().where('pcKey', key).exec(callback);
+module.exports.getPC = function(key) {
+  return new Promise((resolve,reject)=>{
+  PC.findOne().where('pcKey', key).exec(function (err, pc) {
+    resolve(pc);
+        });
+    }).then(result=>{return result;});
 }; //  get  pc using socket ID
 module.exports.getPCSocketID = function(pcSocketID) {
-
-
   return new Promise((resolve,reject)=>{
   PC.findOne().where('pcSocketID', pcSocketID).exec(function (err, pc) {
-
     resolve(pc);
-    
         });
-    
-    
     }).then(result=>{return result;});
-
-
-
-
 };
 //  get  pc using pcKey and user ID
 module.exports.getPCByUserIDAndPCKey = function(key, userID, callback) {
+  return new Promise((resolve,reject)=>{
   PC.findOne().where({
     'pcKey': key,
     'userID': userID,
-  }).exec(callback);
+  }).exec(function (err, pc) {
+    resolve(pc);
+        });
+    }).then(result=>{return result;});
 };
 //  get all  pc using  user id
 module.exports.getPCByUserID = function(userID) {
-
-
   return new Promise((resolve,reject)=>{
   PC.find().where({
     'userID': userID,
     'status': 1,
   }).exec(function (err, pc) {
-
     resolve(pc);
-    
         });
-    
-    
     }).then(result=>{return result;});
-
-
-
 };
 //  get all online  pc using  user id
 module.exports.getPCByUserIDOnline = function(userID) {
-
-
   return new Promise((resolve,reject)=>{
-
   PC.find().select('_id pcName platform email').where({
     'userID': userID,
     'status': 1,
     'pcOnline': 1,
   }).exec(function (err, pc) {
-
 resolve(pc);
-
     });
-
-
 }).then(result=>{return result;});
-
 }; //  get   pc using  pc id
 module.exports.getPCByPCID = function(pcID, callback) {
   PC.findOne().where({
@@ -154,7 +132,6 @@ module.exports.getPCByPCID = function(pcID, callback) {
 //  generate public access key
 module.exports.newPublicAccessKey = function(pcID, pc) {
   return new Promise((resolve,reject)=>{
-
   const query = {
     _id: pcID,
   };
@@ -162,20 +139,13 @@ module.exports.newPublicAccessKey = function(pcID, pc) {
     publicAccessKey: pc.key,
   };
   PC.findOneAndUpdate(query, update, option, function (err , pc) {
-
     resolve(pc);
-    
   });
 }).then(result=>{return result;});
-
-
-
-
 };
 //  update public access key access
 module.exports.updatePublicAccessStatus = function(pcID, pc, option) {
 return new Promise((resolve,reject)=>{
-
   const query = {
     _id: pcID,
   };
@@ -184,17 +154,9 @@ return new Promise((resolve,reject)=>{
     publicAccessKey: pc.publicAccessKey,
   };
   PC.findOneAndUpdate(query, update, option, function (err , pc) {
-
     resolve(pc);
-    
   });
 }).then(result=>{return result;});
-
-
-
-
-
-
 };
 //  update PC  online status
 module.exports.updatePcOnlineStatus = function(pcID, pc, option, callback) {
@@ -235,7 +197,6 @@ module.exports.updateUserAuthApp = function(pcKey, pc, option, callback) {
 // auth  App
 module.exports.authApp = function(id, auth, pcKey) {
   return  new Promise((resolve, reject) => {
-
   PC.findOne().where({
     'userID': id,
     'authApp': auth,
@@ -244,7 +205,6 @@ module.exports.authApp = function(id, auth, pcKey) {
     resolve(result);
   });
 }).then(result=>{return result});
-
 };
 //  get  pc using public access key
 module.exports.getPCPublicKey = function(key, callback) {
