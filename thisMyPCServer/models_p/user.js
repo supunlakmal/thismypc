@@ -102,13 +102,19 @@ module.exports.authApp = function (id, auth, callback) {
   }).exec(callback);
 };
 // create   user
-module.exports.createUser = function (user, callback) {
+module.exports.createUser = function (user) {
+  return  new Promise((resolve, reject) => {
   User.create({
     'name': user.name,
     'email': user.email,
     'password': user.password,
     'ioSocketID': user.ioSocketID,
-  }, callback);
+  }, function(err,user){
+    resolve(user);
+  });
+
+}).then(user=>{return user});
+  
 };
 //  update  user  info
 module.exports.updateUserInfo = function (id, user, option, callback) {

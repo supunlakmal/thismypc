@@ -64,6 +64,65 @@ app.use(function(req, res, next) {
 // server port ex-5000
 http.listen(process.env.PORT || config.port);
 logger.log(`Sever start on Port ${config.port}`);
+
+
+/**
+ * New user registration
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
+app.post('/register', async function(req, res) {
+  const email = req.body.email;
+  const password = md5(req.body.password);
+  req.body.password = password;
+  const userData = req.body;
+  const date = new Date();
+  const out = {};
+  // create  room id
+  userData.ioSocketID = md5(req.body.email + Date.now());
+  if (req.body.email === '' || req.body.password === '' || req.body.name === '') {
+    res.status(401);
+    return res.json(respond(false, 'username/password/name required', null));
+  }
+
+  if (!validator.isEmail(email)) {
+    res.status(401);
+    return res.json(respond(false, 'Invalid Email', null));
+  }
+  // search user by user name
+  const user = await User.searchEmailUser(email);
+
+
+  if (!user) {
+    const userCrated = await User.createUser(userData);
+
+    if (userCrated) {
+      const userLoginData = await User.loginUser(email, password);
+
+
+      out.auth = md5(userLoginData._id + date);
+      out.id = userLoginData._id;
+      out.ioSocketID = userLoginData.ioSocketID;
+      out.name = userLoginData.name;
+      User.updateUserAuth(userLoginData._id, out, {}, function(err, user) {});
+      // Todo this will no need in future
+      out.ioSocketID = 'room1';
+      res.status(200);
+      res.json(respond(true, 'User login infromation', out));
+    }
+  } else {
+    res.status(401);
+    res.json(respond(false, 'User  Already exit', null));
+  }
+});
+
+
 /**
  * User logging {async}
  *
