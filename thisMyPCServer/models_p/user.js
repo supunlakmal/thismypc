@@ -51,28 +51,18 @@ module.exports.getUsers = function (limit, callback) {
 };
 //  get  user using id
 module.exports.getUser = function (id) {
-
   return  new Promise((resolve, reject) => {
   User.findOne().where('_id', id).exec(function(err,result){
     resolve(result);
   });
 }).then(result=>{return result});
-
-
-
-
-
 }; //  get  user using id for  public  use
 module.exports.getUserPublic = function (id) {
-
   return  new Promise((resolve, reject) => {
   User.findOne().select('_id name nameLast email').where('_id', id).exec(function(err,result){
     resolve(result);
   });
 }).then(result=>{return result});
-
-
-
 };
 // search  user
 module.exports.searchEmailUser =  function (email) {
@@ -81,11 +71,9 @@ module.exports.searchEmailUser =  function (email) {
     resolve(result);
   });
 }).then(result=>{return result});
-
 };
 // login  user
 module.exports.loginUser =  function (email, password) {
-  
   return  new Promise((resolve, reject) => {
     User.findOne().where({
       'email': email,
@@ -95,11 +83,9 @@ module.exports.loginUser =  function (email, password) {
       resolve(result);
     });
   }).then(result=>{return result});
-  
 };
 // confirm user  password
 module.exports.passwordConfirm = function (id, password, callback) {
-  
   return  new Promise((resolve, reject) => {
   User.findOne().where({
     '_id': id,
@@ -112,7 +98,6 @@ module.exports.passwordConfirm = function (id, password, callback) {
 };
 // auth  user
 module.exports.authUser = function (id, auth) {
-
   return  new Promise((resolve, reject) => {
   User.findOne().where({
     '_id': id,
@@ -124,7 +109,6 @@ module.exports.authUser = function (id, auth) {
 };
 // auth  App
 module.exports.authApp = function (id, auth) {
-
   return  new Promise((resolve, reject) => {
   User.findOne().where({
     '_id': id,
@@ -145,9 +129,7 @@ module.exports.createUser = function (user) {
   }, function(err,user){
     resolve(user);
   });
-
 }).then(user=>{return user});
-  
 };
 //  update  user  info
 module.exports.updateUserInfo = function (id, user, option, callback) {
@@ -172,13 +154,10 @@ module.exports.updateUserCurrentSocketId = function (id, user, option, callback)
 //  get  user using SocketId
 module.exports.getUserSocketId = function (userCurrentSocketId) {
   return  new Promise((resolve, reject) => {
-
   User.findOne().where('userCurrentSocketId', userCurrentSocketId).exec(function(err,result){
     resolve(result);
   });
 }).then(result=>{return result});
-
-
 };
 //  update  user  password
 module.exports.updateUserPassword = function (id, user, option, callback) {

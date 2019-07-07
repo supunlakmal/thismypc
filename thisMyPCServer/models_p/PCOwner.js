@@ -28,7 +28,6 @@ const pCOwner = module.exports = mongoose.model('pcOwner', PCOwner);
 module.exports.pcAndOwner = function(pcOwner) {
 
 
-  
   return new Promise((resolve,reject)=>{
   pCOwner.create({
     'userID': pcOwner.userID,

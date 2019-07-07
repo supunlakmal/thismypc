@@ -327,7 +327,6 @@ app.post('/app/myInfo', function(req, res) {
     });
   });
 });
-
 /**
  * update user information
  *
@@ -815,7 +814,6 @@ io.on('connection', function(socket) {
       }
     });
   });
-
   // get  access for  public pc key
   /**
    * User
@@ -847,7 +845,6 @@ io.on('connection', function(socket) {
       });
     });
   });
-
   // validate folder name
   app.post('/validateFolderName', function(req, res) {
     const auth = req.headers.token;
