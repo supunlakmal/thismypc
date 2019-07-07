@@ -50,57 +50,91 @@ module.exports.getUsers = function (limit, callback) {
   User.find(callback).limit(limit);
 };
 //  get  user using id
-module.exports.getUser = function (id, callback) {
-  User.findOne().where('_id', id).exec(callback);
+module.exports.getUser = function (id) {
+  return  new Promise((resolve, reject) => {
+  User.findOne().where('_id', id).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
 }; //  get  user using id for  public  use
-module.exports.getUserPublic = function (id, callback) {
-  User.findOne().select('_id name nameLast email').where('_id', id).exec(callback);
+module.exports.getUserPublic = function (id) {
+  return  new Promise((resolve, reject) => {
+  User.findOne().select('_id name nameLast email').where('_id', id).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
 };
 // search  user
-module.exports.searchEmailUser = function (email, callback) {
-  User.findOne().where('email', email).exec(callback);
+module.exports.searchEmailUser =  function (email) {
+  return  new Promise((resolve, reject) => {
+  User.findOne().where('email', email).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
 };
 // login  user
-module.exports.loginUser = function (email, password, callback) {
-  User.findOne().where({
-    'email': email,
-    'password': password,
-    'status': 1,
-  }).exec(callback);
+module.exports.loginUser =  function (email, password) {
+  return  new Promise((resolve, reject) => {
+    User.findOne().where({
+      'email': email,
+      'password': password,
+      'status': 1,
+    }).exec(function(err,result){
+      resolve(result);
+    });
+  }).then(result=>{return result});
 };
 // confirm user  password
 module.exports.passwordConfirm = function (id, password, callback) {
+  return  new Promise((resolve, reject) => {
   User.findOne().where({
     '_id': id,
     'password': password,
     'status': 1,
-  }).exec(callback);
+  }).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
 };
 // auth  user
-module.exports.authUser = function (id, auth, callback) {
+module.exports.authUser = function (id, auth) {
+  return  new Promise((resolve, reject) => {
   User.findOne().where({
     '_id': id,
     'auth': auth,
-  }).exec(callback);
+  }).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
 };
 // auth  App
-module.exports.authApp = function (id, auth, callback) {
+module.exports.authApp = function (id, auth) {
+  return  new Promise((resolve, reject) => {
   User.findOne().where({
     '_id': id,
     'authApp': auth,
-  }).exec(callback);
+  }).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
 };
 // create   user
-module.exports.createUser = function (user, callback) {
+module.exports.createUser = function (user) {
+  return  new Promise((resolve, reject) => {
   User.create({
     'name': user.name,
     'email': user.email,
     'password': user.password,
     'ioSocketID': user.ioSocketID,
-  }, callback);
+  }, function(err,user){
+    resolve(user);
+  });
+}).then(user=>{return user});
 };
 //  update  user  info
-module.exports.updateUserInfo = function (id, user, option, callback) {
+module.exports.updateUserInfo = function (id, user, option) {
+  return  new Promise((resolve, reject) => {
+
   const query = {
     _id: id,
   };
@@ -108,53 +142,72 @@ module.exports.updateUserInfo = function (id, user, option, callback) {
     name: user.name,
     nameLast: user.nameLast,
   };
-  User.findOneAndUpdate(query, update, option, callback);
+  User.findOneAndUpdate(query, update, option, function(err,user){
+    resolve(user);
+  });
+}).then(user=>{return user});
+
+
+
 }; //  update  user  userCurrentSocketId
-module.exports.updateUserCurrentSocketId = function (id, user, option, callback) {
+module.exports.updateUserCurrentSocketId = function (id, user, option) {
+
+  return  new Promise((resolve, reject) => {
   const query = {
     _id: id,
   };
   const update = {
     userCurrentSocketId: user.userCurrentSocketId,
   };
-  User.findOneAndUpdate(query, update, option, callback);
+  User.findOneAndUpdate(query, update, option, function(err,user){
+    resolve(user);
+  });
+}).then(user=>{return user});
 };
 //  get  user using SocketId
-module.exports.getUserSocketId = function (userCurrentSocketId, callback) {
-  User.findOne().where('userCurrentSocketId', userCurrentSocketId).exec(callback);
+module.exports.getUserSocketId = function (userCurrentSocketId) {
+  return  new Promise((resolve, reject) => {
+  User.findOne().where('userCurrentSocketId', userCurrentSocketId).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
 };
 //  update  user  password
-module.exports.updateUserPassword = function (id, user, option, callback) {
+module.exports.updateUserPassword = function (id, user, option) {
+  return  new Promise((resolve, reject) => {
   const query = {
     _id: id,
   };
   const update = {
     password: user.password,
   };
-  User.findOneAndUpdate(query, update, option, callback);
+  User.findOneAndUpdate(query, update, option, function (err,data) { 
+
+
+    resolve(data);
+   });
+
+ } );
 };
 // user update auth
-module.exports.updateUserAuth = function (id, user, option, callback) {
+module.exports.updateUserAuth = function (id, user, option) {
+  return  new Promise((resolve, reject) => {
+
   const query = {
     _id: id,
   };
   const update = {
     auth: user.auth,
   };
-  User.findOneAndUpdate(query, update, option, callback);
+  User.findOneAndUpdate(query, update, option, function (err , data) {
+    resolve(data);
+  });
+
+  });
+
 };
-/* // user app update auth
-module.exports.updateUserAuthApp = function (id, user, option, callback) {
-    var query = {_id: id};
-    var update = {
-        authApp: user.auth
-    }
-    /!*    var update = {
-            authApp: user.auth, ioSocketID: user.ioSocketID,
-        }*!/
-    User.findOneAndUpdate(query, update, option, callback);
-}*/
-// // user update  status
+
+// user update  status
 module.exports.updateUserStatus = function (id, user, option, callback) {
   const query = {
     _id: id,
@@ -163,19 +216,23 @@ module.exports.updateUserStatus = function (id, user, option, callback) {
     status: user.status,
   };
   User.findOneAndUpdate(query, update, option, callback);
-}; // // user update  current pc id
+}; // user update  current pc id
 module.exports.updateUserNowAccessPCID = function (id, user, option, callback) {
+  return  new Promise((resolve, reject) => {
   const query = {
     _id: id,
   };
   const update = {
     userNowAccessPCID: user.pcID,
   };
-  User.findOneAndUpdate(query, update, option, callback);
+  User.findOneAndUpdate(query, update, option, function (err,data) { resolve(data);  });
+
+  });
 };
 // user  info  (My account)
 // auth  user
-module.exports.userInfo = function (id, auth, callback) {
+module.exports.userInfo = function (id, auth) {
+  return  new Promise((resolve, reject) => {
   User.findOne().select({
     name: 1,
     email: 1,
@@ -184,7 +241,10 @@ module.exports.userInfo = function (id, auth, callback) {
   }).where({
     '_id': id,
     'auth': auth,
-  }).exec(callback);
+  }).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
 };
 // all active   user
 module.exports.countUsers = function (callback) {
