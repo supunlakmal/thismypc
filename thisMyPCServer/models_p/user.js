@@ -53,8 +53,16 @@ module.exports.getUsers = function (limit, callback) {
 module.exports.getUser = function (id, callback) {
   User.findOne().where('_id', id).exec(callback);
 }; //  get  user using id for  public  use
-module.exports.getUserPublic = function (id, callback) {
-  User.findOne().select('_id name nameLast email').where('_id', id).exec(callback);
+module.exports.getUserPublic = function (id) {
+
+  return  new Promise((resolve, reject) => {
+  User.findOne().select('_id name nameLast email').where('_id', id).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
+
+
+
 };
 // search  user
 module.exports.searchEmailUser =  function (email) {
@@ -81,25 +89,40 @@ module.exports.loginUser =  function (email, password) {
 };
 // confirm user  password
 module.exports.passwordConfirm = function (id, password, callback) {
+  
+  return  new Promise((resolve, reject) => {
   User.findOne().where({
     '_id': id,
     'password': password,
     'status': 1,
-  }).exec(callback);
+  }).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
 };
 // auth  user
-module.exports.authUser = function (id, auth, callback) {
+module.exports.authUser = function (id, auth) {
+
+  return  new Promise((resolve, reject) => {
   User.findOne().where({
     '_id': id,
     'auth': auth,
-  }).exec(callback);
+  }).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
 };
 // auth  App
-module.exports.authApp = function (id, auth, callback) {
+module.exports.authApp = function (id, auth) {
+
+  return  new Promise((resolve, reject) => {
   User.findOne().where({
     '_id': id,
     'authApp': auth,
-  }).exec(callback);
+  }).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
 };
 // create   user
 module.exports.createUser = function (user) {
@@ -192,7 +215,8 @@ module.exports.updateUserNowAccessPCID = function (id, user, option, callback) {
 };
 // user  info  (My account)
 // auth  user
-module.exports.userInfo = function (id, auth, callback) {
+module.exports.userInfo = function (id, auth) {
+  return  new Promise((resolve, reject) => {
   User.findOne().select({
     name: 1,
     email: 1,
@@ -201,7 +225,10 @@ module.exports.userInfo = function (id, auth, callback) {
   }).where({
     '_id': id,
     'auth': auth,
-  }).exec(callback);
+  }).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
 };
 // all active   user
 module.exports.countUsers = function (callback) {

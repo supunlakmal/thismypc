@@ -327,23 +327,7 @@ app.post('/app/myInfo', function(req, res) {
     });
   });
 });
-// get user  notification  and  app notification
-app.post('/app/notification', function(req, res) {
-  const auth = req.headers.token;
-  const id = req.body.id;
-  const pcKey = req.body.pcKey;
-  PC.authApp(id, auth, pcKey, function(err, pc) {
-    User.getUserPublic(id, function(err, user) {
-      if (!user) {
-        res.status(401);
-        return res.json(respond(false, 'Invalid User', null));
-      } else {
-        res.status(200);
-        res.json(respond(true, 'good call', null));
-      }
-    });
-  });
-});
+
 /**
  * update user information
  *
