@@ -102,7 +102,7 @@ app.post('/register', async function(req, res) {
       out.id = userLoginData._id;
       out.ioSocketID = userLoginData.ioSocketID;
       out.name = userLoginData.name;
-      User.updateUserAuth(userLoginData._id, out, {}, function(err, user) {});
+      const updateUserAuth = await User.updateUserAuth(userLoginData._id, out, {});
       // Todo this will no need in future
       out.ioSocketID = 'room1';
       res.status(200);
@@ -141,7 +141,7 @@ app.post('/login', async function(req, res) {
     out.id = user._id;
     out.ioSocketID = user.ioSocketID;
     out.name = user.name;
-    User.updateUserAuth(user._id, out, {}, function(err, user) {});
+    const updateUserAuth = await User.updateUserAuth(user._id, out, {});
     // Todo this will no need in future
     out.ioSocketID = 'room1';
     res.status(200);
@@ -172,7 +172,7 @@ app.post('/logout', async function(req, res) {
     out.auth = md5(user._id + date) + '_logout';
     out.id = user._id;
     out.name = user.name;
-    User.updateUserAuth(user._id, out, {}, function(err, user) {});
+    const updateUserAuth = await User.updateUserAuth(user._id, out, {});
     res.status(200);
     res.json(respond(true, 'logout!', null));
   } else {
@@ -202,7 +202,7 @@ app.post('/app/logout', async function(req, res) {
     out.auth = md5(user._id + date) + '_logout';
     out.id = user._id;
     out.name = user.name;
-    User.updateUserAuthApp(user._id, out, {}, function(err, user) {});
+    const updateUserAuth = await User.updateUserAuth(user._id, out, {});
     res.status(200);
     res.json(respond(true, 'logout!', null));
   } else {
@@ -246,7 +246,7 @@ app.post('/account/password/update', async function(req, res) {
   }
   const out = {};
   out.password = newPassword;
-  User.updateUserPassword(id, out, {}, function(err, user) {});
+  const updateUserPassword = await User.updateUserPassword(id, out, {});
   res.status(200);
   res.json(respond(true, 'Update Done', null));
 });
@@ -276,7 +276,7 @@ app.post('/account/myInfo/update', async function(req, res) {
   const out = {};
   out.name = req.body.name;
   out.nameLast = req.body.nameLast;
-  User.updateUserInfo(id, out, {}, function(err, user) {});
+  const updateUserInfo = await User.updateUserInfo(id, out, {});
   res.status(200);
   res.json(respond(true, 'Update Done', null));
 });
@@ -292,15 +292,17 @@ app.post('/account/myInfo/update', async function(req, res) {
  * res<-
  */
 app.post('/app/myInfo', async function(req, res) {
+  // logger.log('/app/myInfo OK');
   const auth = req.headers.token;
   const id = req.body.id;
-  const pcKey = req.body.pcKey;
+  const pcKey = md5(req.body.pcKey);
+  // logger.log(` after login call user  info ->${auth}`);
   const pc = await PC.authApp(id, auth, pcKey);
   if (pc) {
     const user = await User.getUserPublic(id);
     if (!user) {
       res.status(401);
-      return res.json(respond(false, 'Invalid User', null));
+      res.json(respond(false, 'Invalid User', null));
     } else {
       res.status(200);
       res.json(respond(true, 'good call', user));
@@ -365,7 +367,7 @@ app.post('/myInfo/myPc/update', async function(req, res) {
   const out = {};
   out.publicAccessKey = publicAccessKey;
   out.publicAccessStatus = publicAccessStatus;
-  const pc= await PC.updatePublicAccessStatus(pcID, out, {});
+  const pc= await PC.updatePublicAccessStatus(pcID, out, {new:true});
   if (pc) {
     res.status(200);
     res.json(respond(true, 'Update Done', out));
@@ -395,7 +397,7 @@ app.post('/myInfo/myPc/publicKey/update', async function(req, res) {
   }
   const out = {};
   out.publicAccessKey = publicAccessKey;
-  const pc = await PC.newPublicAccessKey(pcID, out, {});
+  const pc = await PC.newPublicAccessKey(pcID, out, {new:true});
   if (pc) {
     res.status(200);
     res.json(respond(true, 'Update Done', out));
@@ -490,7 +492,7 @@ io.on('connection', function(socket) {
       const pcInfo = {};
       pcInfo.pcOnline = 0;
       pcInfo.pcSocketID = socket.id;
-      PC.updatePcOnlineStatus(pc._id, pcInfo, {}, function(err, user) {});
+      const updatePcOnlineStatus= await PC.updatePcOnlineStatus(pc._id, pcInfo, {});
     } else {
       const user =await User.getUserSocketId(socket.id);
       if (user) {
@@ -509,12 +511,15 @@ io.on('connection', function(socket) {
    * @param {*} pcKey  Computer key
    * @return {object} new auth key
    */
-  function updateAppUserAuth(user, pcKey) {
+  async function updateAppUserAuth(user, pcKey) {
     const date = new Date();
+    const input = {};
+    input.auth = md5(user._id + date + pcKey);
+    input.id = user._id;
+    const updateUserAuthApp = await PC.updateUserAuthApp(pcKey, input, {new: true} );
     const out = {};
-    out.auth = md5(user._id + date + pcKey);
-    out.id = user._id;
-    PC.updateUserAuthApp(pcKey, out, {}, function(err, user) {});
+    out.auth = updateUserAuthApp.authApp;
+    out.id = updateUserAuthApp.userID;
     return out;
   }
   app.post('/login/app', async function(req, res) {
@@ -539,15 +544,14 @@ io.on('connection', function(socket) {
           const pcInfo = {};
           pcInfo.pcOnline = 1;
           pcInfo.pcSocketID = socket.id;
-          PC.updatePcOnlineStatus(pc._id, pcInfo, {}, function(err, user) {});
+          const pcOnline = await PC.updatePcOnlineStatus(pc._id, pcInfo, {});
           const pcOwner = {};
           pcOwner.pcID = pc._id;
           pcOwner.pcKey = pcKey;
           pcOwner.userID = user._id;
           const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
           if (pcOwnerData) {
-            const out = updateAppUserAuth(user, pcKey);
-            out.ioSocketID = 'room1';
+            const out = await updateAppUserAuth(user, pcKey);
             res.status(200);
             res.json(respond(true, 'Hello!', out));
           }
@@ -568,7 +572,7 @@ io.on('connection', function(socket) {
             pcOwner.userID = user._id;
             const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
             if (pcOwnerData) {
-              const out = updateAppUserAuth(user, pcKey);
+              const out = await updateAppUserAuth(user, pcKey);
               out.ioSocketID = 'room1';
               res.status(200);
               res.json(respond(true, 'Hello!', out));
@@ -587,6 +591,7 @@ io.on('connection', function(socket) {
   });
   // join user from  web
   socket.on('joinFromWeb', async function(data) {
+  //  logger.log(data);
     const id = data.data.id;
     const auth = data.data.auth;
     const user =await User.authUser(id, auth);
@@ -595,7 +600,7 @@ io.on('connection', function(socket) {
       // update user Currentsockett ID
       const userData = {};
       userData.userCurrentSocketId = socket.id;
-      User.updateUserCurrentSocketId(user._id, userData, {}, function(user) {});
+      const updateUserCurrentSocketId = await User.updateUserCurrentSocketId(user._id, userData, {});
       // pulling data from app
       io.sockets.in(user.ioSocketID).emit('getAppData', {
         data: 'start',
@@ -616,7 +621,7 @@ io.on('connection', function(socket) {
         if (pcData) {
           const pcInfo = {};
           pcInfo.pcSocketID = socket.id;
-          PC.updatePcSocketID(pcData._id, pcInfo, {}, function(err, pc) {});
+          const updatePcSocketID = await PC.updatePcSocketID(pcData._id, pcInfo, {});
         }
       }
     }
@@ -627,11 +632,13 @@ io.on('connection', function(socket) {
     const pcID = input.pcID;
     const user = await User.authUser(id, auth);
     if (user) {
+    // logger.log(user);
       const userInfo = {};
       userInfo.pcID = pcID;
-      User.updateUserNowAccessPCID(id, userInfo, {}, function(err, user) {});
+      const updateUserNowAccessPCID = await User.updateUserNowAccessPCID(id, userInfo, {});
       const pc= await PC.getPCUsingID(pcID);
       if (pc) {
+      //  logger.log(pc);
         const sendUserInfoToApp = {};
         sendUserInfoToApp.email = user.email;
         sendUserInfoToApp.name = user.name;
@@ -710,7 +717,7 @@ io.on('connection', function(socket) {
     if (user) {
       const userInfo = {};
       userInfo.pcID = pcID;
-      User.updateUserNowAccessPCID(id, userInfo, {}, function(err, user) {});
+      const updateUserNowAccessPCID = await User.updateUserNowAccessPCID(id, userInfo, {});
       const pc = await PC.getPCUsingID(pcID);
       if (pc) {
         const sendUserInfoToApp = {};
@@ -788,7 +795,7 @@ io.on('connection', function(socket) {
         const pc = {};
         pc.pcKeyPublic = pcKeyPublic;
         pc.userID = id;
-        UserAndPC.createNewUserAndPC(pc, function(err, output) {});
+        const createNewUserAndPC = await UserAndPC.createNewUserAndPC(pc);
         io.sockets.to(pcInfo.pcSocketID).emit('pcAccessRequest', sendUserInfoToApp);
       }
     }

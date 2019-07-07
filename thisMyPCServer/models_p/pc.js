@@ -159,7 +159,8 @@ return new Promise((resolve,reject)=>{
 }).then(result=>{return result;});
 };
 //  update PC  online status
-module.exports.updatePcOnlineStatus = function(pcID, pc, option, callback) {
+module.exports.updatePcOnlineStatus = function(pcID, pc, option) {
+  return new Promise((resolve,reject)=>{
   const query = {
     _id: pcID,
   };
@@ -167,20 +168,28 @@ module.exports.updatePcOnlineStatus = function(pcID, pc, option, callback) {
     pcOnline: pc.pcOnline,
     pcSocketID: pc.pcSocketID,
   };
-  PC.findOneAndUpdate(query, update, option, callback);
+  PC.findOneAndUpdate(query, update, option, function (err , pc) {
+    resolve(pc);
+  });
+}).then(result=>{return result;});
 };
 //  update PC  socket ID
-module.exports.updatePcSocketID = function(pcID, pc, option, callback) {
+module.exports.updatePcSocketID = function(pcID, pc, option) { 
+  return  new Promise((resolve, reject) => {
   const query = {
     _id: pcID,
   };
   const update = {
     pcSocketID: pc.pcSocketID,
   };
-  PC.findOneAndUpdate(query, update, option, callback);
+  PC.findOneAndUpdate(query, update, option, function (err , pc) {
+    resolve(pc);
+  });
+}).then(result=>{return result;});  
 };
 // user app update auth from pc key
-module.exports.updateUserAuthApp = function(pcKey, pc, option, callback) {
+module.exports.updateUserAuthApp = function(pcKey, pc, option) {
+  return  new Promise((resolve, reject) => {
   const query = {
     pcKey: pcKey,
     userID: pc.id,
@@ -188,11 +197,10 @@ module.exports.updateUserAuthApp = function(pcKey, pc, option, callback) {
   const update = {
     authApp: pc.auth,
   };
-  /*    var update = {
-            authApp: user.auth, ioSocketID: user.ioSocketID,
-        }*/
-  //  console.log(update,query);
-  PC.findOneAndUpdate(query, update, option, callback);
+  PC.findOneAndUpdate(query, update, option, function (err , pc) {
+    resolve(pc);
+  });
+}).then(result=>{return result;});
 };
 // auth  App
 module.exports.authApp = function(id, auth, pcKey) {
