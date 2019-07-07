@@ -60,7 +60,18 @@ module.exports.createNewPC = function(pc, callback) {
 };
 //  get  pc using _id
 module.exports.getPCUsingID = function(key, callback) {
-  PC.findOne().where('_id', key).exec(callback);
+
+  return new Promise((resolve,reject)=>{
+  PC.findOne().where('_id', key).exec(function (err, pc) {
+
+    resolve(pc);
+    
+        });
+    
+    
+    }).then(result=>{return result;});
+
+
 };
 //  get all pc
 module.exports.getAllPC = function(limit, callback) {
@@ -70,8 +81,22 @@ module.exports.getAllPC = function(limit, callback) {
 module.exports.getPC = function(key, callback) {
   PC.findOne().where('pcKey', key).exec(callback);
 }; //  get  pc using socket ID
-module.exports.getPCSocketID = function(pcSocketID, callback) {
-  PC.findOne().where('pcSocketID', pcSocketID).exec(callback);
+module.exports.getPCSocketID = function(pcSocketID) {
+
+
+  return new Promise((resolve,reject)=>{
+  PC.findOne().where('pcSocketID', pcSocketID).exec(function (err, pc) {
+
+    resolve(pc);
+    
+        });
+    
+    
+    }).then(result=>{return result;});
+
+
+
+
 };
 //  get  pc using pcKey and user ID
 module.exports.getPCByUserIDAndPCKey = function(key, userID, callback) {

@@ -432,8 +432,7 @@ app.post('/myInfo/myPc/publicKey/update', async function(req, res) {
   publicAccessKey = md5(publicAccessKey);
 
 
-
-let user =await  User.authUser(userID, auth);
+  const user =await User.authUser(userID, auth);
   if (!user) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
@@ -444,20 +443,13 @@ let user =await  User.authUser(userID, auth);
   out.publicAccessKey = publicAccessKey;
 
 
+  const pc = await PC.newPublicAccessKey(pcID, out, {});
 
-
- let pc  = await PC.newPublicAccessKey(pcID, out, {});
-
-  if(pc){
+  if (pc) {
     res.status(200);
     res.json(respond(true, 'Update Done', out));
   }
-
-
-
-
 });
-
 
 
 /**
@@ -474,7 +466,7 @@ let user =await  User.authUser(userID, auth);
 app.post('/myInfo/myPc/online', async function(req, res) {
   const id = req.body.id;
   const auth = req.headers.token;
-let user =await   User.authUser(id, auth);
+  const user =await User.authUser(id, auth);
 
   if (!user) {
     res.status(401);
@@ -482,9 +474,7 @@ let user =await   User.authUser(id, auth);
   }
 
 
-
-
-let pc = await PC.getPCByUserIDOnline(id);
+  const pc = await PC.getPCByUserIDOnline(id);
 
   if (pc) {
     res.status(200);
@@ -493,8 +483,6 @@ let pc = await PC.getPCByUserIDOnline(id);
     res.status(401);
     res.json(respond(false, 'Invalid User', null));
   }
-
-
 });
 
 
@@ -512,13 +500,13 @@ let pc = await PC.getPCByUserIDOnline(id);
 app.post('/myInfo/myPc', async function(req, res) {
   const id = req.body.id;
   const auth = req.headers.token;
-  let user = await User.authUser(id, auth);
+  const user = await User.authUser(id, auth);
   if (!user) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
   }
 
-let pc =await   PC.getPCByUserID(id);
+  const pc =await PC.getPCByUserID(id);
 
   if (pc) {
     res.status(200);
@@ -544,7 +532,7 @@ let pc =await   PC.getPCByUserID(id);
 app.post('/auth', async function(req, res) {
   const id = req.body.id;
   const auth = req.headers.token;
-  let user = await User.authUser(id, auth);
+  const user = await User.authUser(id, auth);
 
   if (user) {
     res.status(200);
@@ -553,10 +541,35 @@ app.post('/auth', async function(req, res) {
     res.status(401);
     res.json(respond(false, 'Invalid User', null));
   }
-
-
 });
 
-io.on('connection', function(socket) {});
+io.on('connection', function(socket) {
+  // TODO this user  login from app need to add few   function to  it
+  socket.on('loginPage', function() {});
+  // some  user  or  app get disconnected  from serve
+  socket.on('disconnect', async function() {
+    const pc = await PC.getPCSocketID(socket.id);
+
+    if (pc) {
+      const pcInfo = {};
+      pcInfo.pcOnline = 0;
+      pcInfo.pcSocketID = socket.id;
+      PC.updatePcOnlineStatus(pc._id, pcInfo, {}, function(err, user) {});
+    } else {
+      const user =await User.getUserSocketId(socket.id);
+
+      if (user) {
+        const pc = await PC.getPCUsingID(user.userNowAccessPCID);
+
+
+        if (pc) {
+          const sendUserInfoToApp = {};
+          sendUserInfoToApp.status = false;
+          io.sockets.to(pc.pcSocketID).emit('pcAccessRequest', sendUserInfoToApp);
+        }
+      }
+    }
+  });
+});
 
 

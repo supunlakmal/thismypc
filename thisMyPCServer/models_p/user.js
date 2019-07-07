@@ -160,8 +160,15 @@ module.exports.updateUserCurrentSocketId = function (id, user, option, callback)
   User.findOneAndUpdate(query, update, option, callback);
 };
 //  get  user using SocketId
-module.exports.getUserSocketId = function (userCurrentSocketId, callback) {
-  User.findOne().where('userCurrentSocketId', userCurrentSocketId).exec(callback);
+module.exports.getUserSocketId = function (userCurrentSocketId) {
+  return  new Promise((resolve, reject) => {
+
+  User.findOne().where('userCurrentSocketId', userCurrentSocketId).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
+
+
 };
 //  update  user  password
 module.exports.updateUserPassword = function (id, user, option, callback) {
