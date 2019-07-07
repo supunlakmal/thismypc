@@ -27,6 +27,10 @@ module.exports.createNewUserAndPC = function(userPC, callback) {
   }, callback);
 };
 //  get  pc  using pc key
-module.exports.getUserAndPCUsingKey = function(key, callback) {
-  UserAndPC.findOne().where('pcKeyPublic', key).exec(callback);
+module.exports.getUserAndPCUsingKey = function(key) {
+  return new Promise((resolve,reject)=>{
+  UserAndPC.findOne().where('pcKeyPublic', key).exec(function (err, result) {
+    resolve(result);
+        });
+    }).then(result=>{return result;});
 };

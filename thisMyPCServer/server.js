@@ -621,4 +621,212 @@ io.on('connection', function(socket) {
       }
     }
   });
+  socket.on('pcAccessRequest', async function(input) {
+    const auth = input.auth;
+    const id = input.userID;
+    const pcID = input.pcID;
+    const user = await User.authUser(id, auth);
+    if (user) {
+      const userInfo = {};
+      userInfo.pcID = pcID;
+      User.updateUserNowAccessPCID(id, userInfo, {}, function(err, user) {});
+      const pc= await PC.getPCUsingID(pcID);
+      if (pc) {
+        const sendUserInfoToApp = {};
+        sendUserInfoToApp.email = user.email;
+        sendUserInfoToApp.name = user.name;
+        sendUserInfoToApp.nameLast = user.nameLast;
+        sendUserInfoToApp.status = true;
+        sendUserInfoToApp.userID = user._id;
+        io.sockets.to(pc.pcSocketID).emit('pcAccessRequest', sendUserInfoToApp);
+      }
+    }
+  });
+  /**
+ * get user socketID
+ *
+ * @param {object} pcData
+ * @param {object} user
+ * @param {callback} callback
+ */
+  async function getUserSocketID(pcData, user) {
+    const pc = await PC.getPC(pcData.pcKey);
+    if (pc) {
+      if (pc.publicAccessStatus === 1) {
+        const userAndPc = await UserAndPC.getUserAndPCUsingKey(pc.publicAccessKey);
+        if (userAndPc) {
+          const userData = await User.getUser(userAndPc.userID);
+          // data that need to return from function
+          return userData.ioSocketID;
+        } else {
+          return user.ioSocketID;
+        }
+      } else {
+        return user.ioSocketID;
+      }
+    }
+  }
+  /**
+ * Get owner pc  socket id  or public key socket id
+ *
+ * @param {object} user  user information
+ * @param {string} pcKeyPublic computer public access key
+ * @param {callback} callback
+ */
+  async function getPCSocketID(user, pcKeyPublic, callback) {
+    if (pcKeyPublic === '') {
+      const userPC = await PC.getPCUsingID(user.userNowAccessPCID);
+      return userPC.pcSocketID;
+    } else {
+      const pc =await PC.getPCPublicKey(pcKeyPublic);
+      if (pc.publicAccessStatus === 1) {
+        return pc.pcSocketID;
+      } else {
+        const userPC = PC.getPCUsingID(user.userNowAccessPCID);
+        return userPC.pcSocketID;
+      }
+    }
+  }
+  // from  pc
+  socket.on('hDDList', async function(input) {
+    const id = input.id;
+    const auth = input.auth;
+    const pcKey = md5(input.pcKey);
+    const pc = await PC.authApp(id, auth, pcKey);
+    if (pc) {
+      const user = await User.getUser(id);
+      if (user) {
+      // to  web
+        const socketID = await getUserSocketID(pc, user);
+        io.sockets.in(socketID).emit('hDDList', input.data);
+      }
+    }
+  });
+  socket.on('pcInfoRequest', async function(input) {
+    const auth = input.auth;
+    const id = input.userID;
+    const pcID = input.pcID;
+    const user = await User.authUser(id, auth);
+    if (user) {
+      const userInfo = {};
+      userInfo.pcID = pcID;
+      User.updateUserNowAccessPCID(id, userInfo, {}, function(err, user) {});
+      const pc = await PC.getPCUsingID(pcID);
+      if (pc) {
+        const sendUserInfoToApp = {};
+        sendUserInfoToApp.email = user.email;
+        sendUserInfoToApp.name = user.name;
+        sendUserInfoToApp.nameLast = user.nameLast;
+        sendUserInfoToApp.status = true;
+        sendUserInfoToApp.userID = user._id;
+        io.sockets.to(pc.pcSocketID).emit('pcInfoRequest', sendUserInfoToApp);
+      }
+    }
+  });
+  // pc info send to web
+  socket.on('pcInfo', async function(input) {
+    const auth = input.auth;
+    const id = input.id;
+    const pcKey = md5(input.pcKey);
+    const pc = await PC.authApp(id, auth, pcKey);
+    if (pc) {
+      const user =await User.getUser(id);
+      if (user) {
+      // to  web
+        const socketID = await getUserSocketID(pc, user);
+        io.sockets.in(socketID).emit('pcInfo', input.pcInfo);
+      }
+    }
+  });
+  // from  web
+  socket.on('openFolder', async function(input) {
+    const auth = input.auth;
+    const id = input.id;
+    const pcKeyPublic = input.pcKeyPublic;
+    const user = await User.authUser(id, auth);
+    if (user) {
+      const socket =await getPCSocketID(user, pcKeyPublic );
+      io.sockets.to(socket).emit('openFolderRequest', input);
+    }
+  });
+  // from  pc
+  socket.on('sendOpenFolderRequest', async function(input) {
+    const auth = input.auth;
+    const id = input.id;
+    const pcKey = md5(input.pcKey);
+    const pc = await PC.authApp(id, auth, pcKey);
+    if (pc) {
+      const user = await User.getUser(id);
+      if (user) {
+        // to  web
+        const socketID = await getUserSocketID(pc, user);
+        io.sockets.in(socketID).emit('openFolderRequestToWeb', input.data);
+      }
+    }
+  });
+  // get  access for  public pc key
+  /**
+   * User
+   */
+  app.post('/public/pc/access', async function(req, res) {
+    const auth = req.headers.token;
+    const id = req.body.id;
+    const pcKeyPublic = req.body.pcKeyPublic;
+    const user = await User.authUser(id, auth);
+    if (!user) {
+      res.status(401);
+      return res.json(respond(false, 'Invalid User', null));
+    }
+    const sendUserInfoToApp = {};
+    sendUserInfoToApp.email = user.email;
+    sendUserInfoToApp.name = user.name;
+    sendUserInfoToApp.nameLast = user.nameLast;
+    sendUserInfoToApp.userID = user._id;
+    const pcInfo = await PC.getPCPublicKey(pcKeyPublic);
+    if (pcInfo) {
+      if (pcInfo.publicAccessStatus === 1) {
+        const pc = {};
+        pc.pcKeyPublic = pcKeyPublic;
+        pc.userID = id;
+        UserAndPC.createNewUserAndPC(pc, function(err, output) {});
+        io.sockets.to(pcInfo.pcSocketID).emit('pcAccessRequest', sendUserInfoToApp);
+      }
+    }
+  });
+  // validate folder name
+  app.post('/validateFolderName', async function(req, res) {
+    const auth = req.headers.token;
+    const createFolderName = req.body.createFolderName;
+    const id = req.body.id;
+    const path = req.body.path;
+    const pcKeyPublic = req.body.pcKeyPublic;
+    const user = await User.authUser(id, auth);
+    if (user) {
+      res.status(200);
+      if (!isValidFoldersName(createFolderName)) {
+        res.json(respond(isValidFoldersName(createFolderName), 'Invalid Folder name', null));
+      } else {
+        res.json(respond(true, '', null));
+        const output = {};
+        output.path = path;
+        output.createFolderName = createFolderName;
+        const socket = await getPCSocketID(user, pcKeyPublic);
+        io.sockets.to(socket).emit('validateFolderName', output);
+      }
+    }
+  });
+  // from  pc  send  information after create  folder
+  socket.on('folderCreateCallback', async function(input) {
+    const auth = input.auth;
+    const id = input.id;
+    const pcKey = md5(input.pcKey);
+    const pc = await PC.authApp(id, auth, pcKey);
+    if (pc) {
+      const user = await User.getUser(id);
+      if (user) {
+        const socketID =await getUserSocketID(pc, user);
+        io.sockets.in(socketID).emit('folderCreateCallbackToWeb', input.data);
+      }
+    }
+  });
 });

@@ -33,23 +33,14 @@ module.exports.getSoftware = function(key, callback) {
 };
 //  get active   software using id
 module.exports.getActiveSoftware = function(key) {
-
   return new Promise((resolve,reject)=>{
   Software.findOne().where({
     'versionKey': key,
     'status': 1,
   }).exec(function (err, software) {
-
     resolve(software);
-    
         });
-    
-    
     }).then(result=>{return result;});
-
-
-
-
 };
 //  get  all software
 module.exports.getSoftwares = function(data, callback) {

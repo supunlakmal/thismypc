@@ -207,8 +207,16 @@ module.exports.authApp = function(id, auth, pcKey) {
 }).then(result=>{return result});
 };
 //  get  pc using public access key
-module.exports.getPCPublicKey = function(key, callback) {
-  PC.findOne().where('publicAccessKey', key).exec(callback);
+module.exports.getPCPublicKey = function(key) {
+
+  return  new Promise((resolve, reject) => {
+  PC.findOne().where('publicAccessKey', key).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
+
+
+
 };
 // all active   user
 module.exports.countPC = function(callback) {
