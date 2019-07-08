@@ -22,13 +22,10 @@ const UserAndPC = module.exports = mongoose.model('userAndPC', userAndPC);
 // create   User and pc public access
 module.exports.createNewUserAndPC = function(userPC, callback) {
   return new Promise((resolve,reject)=>{
-
-
   UserAndPC.create({
     'userID': userPC.userID,
     'pcKeyPublic': userPC.pcKeyPublic,
   }, callback);
-
 });
 };
 //  get  pc  using pc key
