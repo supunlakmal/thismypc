@@ -24,21 +24,14 @@ const PCOwner = mongoose.Schema({
 });
 const pCOwner = module.exports = mongoose.model('pcOwner', PCOwner);
 // create   PC and pc Owner
-
 module.exports.pcAndOwner = function(pcOwner) {
-
-
   return new Promise((resolve,reject)=>{
   pCOwner.create({
     'userID': pcOwner.userID,
     'pcID': pcOwner.pcID,
     'pcKey': pcOwner.pcKey,
   }, function (err, owner) {
-
     resolve(owner);
-    
         });
-
     }).then(result=>{return result;});
-
 };

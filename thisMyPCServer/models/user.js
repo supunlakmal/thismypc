@@ -134,7 +134,6 @@ module.exports.createUser = function (user) {
 //  update  user  info
 module.exports.updateUserInfo = function (id, user, option) {
   return  new Promise((resolve, reject) => {
-
   const query = {
     _id: id,
   };
@@ -146,12 +145,8 @@ module.exports.updateUserInfo = function (id, user, option) {
     resolve(user);
   });
 }).then(user=>{return user});
-
-
-
 }; //  update  user  userCurrentSocketId
 module.exports.updateUserCurrentSocketId = function (id, user, option) {
-
   return  new Promise((resolve, reject) => {
   const query = {
     _id: id,
@@ -182,17 +177,13 @@ module.exports.updateUserPassword = function (id, user, option) {
     password: user.password,
   };
   User.findOneAndUpdate(query, update, option, function (err,data) { 
-
-
     resolve(data);
    });
-
  } );
 };
 // user update auth
 module.exports.updateUserAuth = function (id, user, option) {
   return  new Promise((resolve, reject) => {
-
   const query = {
     _id: id,
   };
@@ -202,11 +193,8 @@ module.exports.updateUserAuth = function (id, user, option) {
   User.findOneAndUpdate(query, update, option, function (err , data) {
     resolve(data);
   });
-
   });
-
 };
-
 // user update  status
 module.exports.updateUserStatus = function (id, user, option, callback) {
   const query = {
@@ -226,7 +214,6 @@ module.exports.updateUserNowAccessPCID = function (id, user, option, callback) {
     userNowAccessPCID: user.pcID,
   };
   User.findOneAndUpdate(query, update, option, function (err,data) { resolve(data);  });
-
   });
 };
 // user  info  (My account)
