@@ -148,6 +148,43 @@ fs.readFile(dir + '\/thisMyPC.json',
             return pcInfo;
           }
           /**
+ * Read all contend in given path
+ *
+ * @param {string} path
+ */
+          readFolder(path) {
+            return new Promise((resolve)=>{
+              fse.readdir(path, function(err, content) {
+                if (err) {
+                  console.log(err);
+                  resolve(false);
+                } else {
+                  resolve(content);
+                }
+              });
+            }).then((data)=>{
+              return data;
+            });
+          }
+          /**
+           * check given path is file or  system file that cant access using this app
+           *
+           * @param {string} path
+           */
+          isThisFile(path) {
+            return new Promise((resolve)=>{
+              fse.ensureFile(path, (err) => {
+                if (err) {
+                  resolve(false);
+                } else {
+                  resolve(true);
+                }
+              });
+            }).then((result)=>{
+              return result;
+            });
+          }
+          /**
          * Initialize  functions
          */
           install() {
@@ -207,58 +244,41 @@ fs.readFile(dir + '\/thisMyPC.json',
             </div>`);
           }
         });
-        socket.on('openFolderRequest', function(data) {
+        socket.on('openFolderRequest', async function(data) {
         // homeClass.openFolderRequest(data, function (err, callback) {
           const homedir = data.path;
-          fse.readdir(homedir, function(err, content) {
-            if (err) {} else {
-              for (const file of content) {
-                const path = homedir + '\\' + file;
-                // test if  path folder  or file
-                fse.readdir(path, function(err, content) {
-                  const fileObject = {};
-                  if (err) {
-                    fse.ensureFile(path, (err) => {
-                      if (!err) {
-                        const fileInfo = homeClass.fileInfo(path);
-                        const filetype = homeClass.isFile(path);
-                        // file object send
-                        fileObject.path = `${homedir}\\${file}`;
-                        fileObject.file = filetype;
-                        fileObject.fileName = file;
-                        fileObject.fileInfo = fileInfo;
-                        socket.emit('sendOpenFolderRequest', {
-                          id: id,
-                          auth: auth,
-                          room: ioSocketID,
-                          pcKey: pcKey,
-                          data: fileObject,
-                        });
-                        console.log('new emit 2', fileObject);
-                      }
-                    });
-                  } else {
-                    const fileInfo = homeClass.fileInfo(path);
-                    const filetype = homeClass.isFile(path);
-                    // file object send
-                    fileObject.path = `${homedir}\\${file}`;
-                    fileObject.file = filetype;
-                    fileObject.fileName = file;
-                    fileObject.fileInfo = fileInfo;
-                    socket.emit('sendOpenFolderRequest', {
-                      id: id,
-                      auth: auth,
-                      room: ioSocketID,
-                      pcKey: pcKey,
-                      data: fileObject,
-                    });
-                    console.log('new emit', fileObject);
-                  }
+          const folderContent = await  homeClass.readFolder(homedir);
+          if (folderContent) {
+            for (const file of folderContent) {
+              const path = homedir + '\\' + file;
+              // test if  path folder  or file
+              const folderSubContent = await homeClass.readFolder(path);
+              let sendEmit =true;
+              if (!folderSubContent) {
+                const ensureFile = await homeClass.isThisFile(path);
+                if (!ensureFile) {
+                  sendEmit =false;
+                }
+              }
+              if (sendEmit) {
+                const fileObject = {};
+                const fileInfo = homeClass.fileInfo(path);
+                const filetype = homeClass.isFile(path);
+                fileObject.path = `${homedir}\\${file}`;
+                fileObject.file = filetype;
+                fileObject.fileName = file;
+                fileObject.fileInfo = fileInfo;
+                socket.emit('sendOpenFolderRequest', {
+                  id: id,
+                  auth: auth,
+                  room: ioSocketID,
+                  pcKey: pcKey,
+                  data: fileObject,
                 });
+                console.log('new emit 2', fileObject);
               }
             }
-          });
-        // });
+          }
         });
         // validate folder name before  create
         socket.on('validateFolderName', function(data) {
