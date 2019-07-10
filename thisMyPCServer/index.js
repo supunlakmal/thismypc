@@ -124,7 +124,7 @@ app.post('/register', async function(req, res) {
  * res:Respond
  * res<-
  */
-app.post('/login', async function(req, res) {
+app.post('/user/web/login', async function(req, res) {
   const email = req.body.email;
   const password = md5(req.body.password);
   req.body.password = password;
@@ -522,7 +522,7 @@ io.on('connection', function(socket) {
     out.id = updateUserAuthApp.userID;
     return out;
   }
-  app.post('/login/app', async function(req, res) {
+  app.post('/user/app/login', async function(req, res) {
     const email = req.body.email;
     const key = req.body.appKey;
     const password = md5(req.body.password);

@@ -34,7 +34,7 @@ document.getElementById('submit-login').onclick = function() {
   data['pcKey'] = pcKey;
   data['pcName'] = pcUser.username;
   data['platform'] = platform;
-  fetch('http://thismypc.com:5000/login/app', {
+  fetch('http://thismypc.com:5000/user/app/login', {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, cors, *same-origin
     headers: {

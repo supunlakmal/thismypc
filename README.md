@@ -147,7 +147,7 @@ Run `npm node index.js` to start node server
 Web API| URL | Description
 ------------ | ------------- | -------------
 User Register| thismypc.com:5000/register |[User Register](doc/api/UserRegister.md)
-User Login | thismypc.com:5000/login | [User Login](doc/api/LoginFromWeb.md)
+User Login | thismypc.com:5000/user/web/login | [User Login](doc/api/LoginFromWeb.md)
 User Logout | thismypc.com:5000/logout | -
 User Auth | thismypc.com:5000/auth | -
 User Info | thismypc.com:5000/myInfo | -
@@ -172,7 +172,7 @@ Folder or  hard drive open data   | openFolderRequestToWeb | on | -
 
 APP API| URL | Description
 ------------ | ------------- | -------------
-User Login From App | thismypc.com:5000/login/app | -
+User Login From App | thismypc.com:5000/user/app/login | -
 User Info | thismypc.com:5000/app/myInfo | -
 Notification | thismypc.com:5000/app/notification | -
 

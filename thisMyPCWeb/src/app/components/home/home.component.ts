@@ -58,7 +58,7 @@ export class HomeComponent implements OnInit {
       //  console.log(JSON.stringify(sendData));
       const headers = new HttpHeaders()
         .set('Content-Type', 'application/json');
-      this.http.post(`${config.url}${config.port}/login`,
+      this.http.post(`${config.url}${config.port}/user/web/login`,
           JSON.stringify(sendData), {
             headers
           })
