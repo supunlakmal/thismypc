@@ -13,16 +13,16 @@ const hddSpace = require('hdd-space');
 const {
   machineIdSync,
 } = require('node-machine-id');
-const pcID = machineIdSync({
+const computerID = machineIdSync({
   original: true,
 });
-const pcID2 = machineIdSync();
+const computerID2 = machineIdSync();
 // console.log(pcID2);
-const pcKey = pcID2 + pcID;
+const computerKey = computerID2 + computerID;
 let ioSocketID = '';
-let id = '';
-let auth = '';
-let appKey = '';
+let userID = '';
+let authentication = '';
+let applicationKey='';
 // folder created    mode
 const desiredMode = 0o2775;
 const homedir = os.homedir();
@@ -41,9 +41,9 @@ fs.readFile(dir + '\/thisMyPC.json',
         userInfo = JSON.parse(data); // now it an object
         console.log(userInfo);
         ioSocketID = userInfo.ioSocketID;
-        id = userInfo.id;
-        auth = userInfo.auth;
-        appKey = userInfo.appKey;
+        userID = userInfo.userID;
+        authentication = userInfo.authentication;
+        applicationKey = userInfo.applicationKey;
         class Home {
         /**
          *  constructor
@@ -101,7 +101,7 @@ fs.readFile(dir + '\/thisMyPC.json',
           /**
          * @param  {object} callback
          */
-          getHDDList(callback) {
+          getHDDList() {
             return new Promise((resolve)=>{
               hddSpace({
                 format: 'auto',
@@ -121,14 +121,14 @@ fs.readFile(dir + '\/thisMyPC.json',
          */
           getUserInfo() {
             const data = {};
-            data['id'] = id;
-            data['pcKey'] = pcKey;
+            data['id'] = userID;
+            data['pcKey'] = computerKey;
             fetch(remoteServer + '/app/myInfo', {
               method: 'POST', // *GET, POST, PUT, DELETE, etc.
               mode: 'cors', // no-cors, cors, *same-origin
               headers: {
                 'Content-Type': 'application/json; charset=utf-8',
-                'token': auth,
+                'token': authentication,
               },
               body: JSON.stringify(data), // body data type must match "Content-Type" header
             })
@@ -198,10 +198,10 @@ fs.readFile(dir + '\/thisMyPC.json',
         homeClass.install();
         socket.emit('joinFromApp', {
           data: {
-            id: id,
-            auth: auth,
+            id: userID,
+            auth: authentication,
             ioSocketID: ioSocketID,
-            pcKey: pcKey,
+            pcKey: computerKey,
           },
         });
         /**
@@ -211,9 +211,9 @@ fs.readFile(dir + '\/thisMyPC.json',
        */
         socket.on('pcInfoRequest', function(data) {
           socket.emit('pcInfo', {
-            id: id,
-            auth: auth,
-            pcKey: pcKey,
+            id: userID,
+            auth: authentication,
+            pcKey: computerKey,
             pcInfo: homeClass.getPcInfo(),
           });
         });
@@ -227,15 +227,15 @@ fs.readFile(dir + '\/thisMyPC.json',
 <div class="col-10">
   <div class="font-weight-bolder">
   ${data.name} ${data.nameLast} 
-  ${data.userID === id ? '<span class="badge badge-pill badge-success">You</span>' : ''}</div>
+  ${data.userID === userID ? '<span class="badge badge-pill badge-success">You</span>' : ''}</div>
                                         <div class="font-weight-light">${data.email}</div></div>
 </div>
 `);
             const hDDList = await homeClass.getHDDList();
             socket.emit('hDDList', {
-              id: id,
-              auth: auth,
-              pcKey: pcKey,
+              id: userID,
+              auth: authentication,
+              pcKey: computerKey,
               data: hDDList,
             });
           } else {
@@ -269,10 +269,10 @@ fs.readFile(dir + '\/thisMyPC.json',
                 fileObject.fileName = file;
                 fileObject.fileInfo = fileInfo;
                 socket.emit('sendOpenFolderRequest', {
-                  id: id,
-                  auth: auth,
+                  id: userID,
+                  auth: authentication,
+                  pcKey: computerKey,
                   room: ioSocketID,
-                  pcKey: pcKey,
                   data: fileObject,
                 });
                 console.log('new emit 2', fileObject);
@@ -291,9 +291,9 @@ fs.readFile(dir + '\/thisMyPC.json',
                   .then(() => {
                     console.log('success!');
                     socket.emit('folderCreateCallback', {
-                      id: id,
-                      auth: auth,
-                      pcKey: pcKey,
+                      id: userID,
+                      auth: authentication,
+                      pcKey: computerKey,
                       data: {
                         status: true,
                         message: 'Folder Create Successful',
@@ -304,9 +304,9 @@ fs.readFile(dir + '\/thisMyPC.json',
             } else {
               if (stats.isDirectory()) {
                 socket.emit('folderCreateCallback', {
-                  id: id,
-                  auth: auth,
-                  pcKey: pcKey,
+                  id: userID,
+                  auth: authentication,
+                  pcKey: computerKey,
                   data: {
                     status: false,
                     message: 'Please try different folder name',
@@ -319,8 +319,8 @@ fs.readFile(dir + '\/thisMyPC.json',
         $('#submit-logout').click(function name(params) {
           ipcRenderer.send('loginPage');
           const data = {};
-          data['id'] = id;
-          data['auth'] = auth;
+          data['id'] = userID;
+          data['auth'] = authentication;
           fetch(remoteServer + '/app/logout', {
             method: 'POST', // *GET, POST, PUT, DELETE, etc.
             mode: 'cors', // no-cors, cors, *same-origin

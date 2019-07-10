@@ -56,11 +56,11 @@ document.getElementById('submit-login').onclick = function() {
           }
           console.log(homedir);
           const obj = {};
-          obj.id = response.data.id;
-          obj.name = response.data.name;
+          obj.userID = response.data.id;
+          obj.userName = response.data.name;
           obj.ioSocketID = response.data.ioSocketID;
-          obj.auth = response.data.auth;
-          obj.appKey = appKey;
+          obj.authentication = response.data.auth;
+          obj.applicationKey = appKey;
           const json = JSON.stringify(obj);
           fs.writeFile(dir + '\/thisMyPC.json', json, 'utf8', function() {});
           ipcRenderer.send('systemPage');
