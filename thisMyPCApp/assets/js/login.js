@@ -34,7 +34,7 @@ document.getElementById('submit-login').onclick = function() {
   data['pcKey'] = pcKey;
   data['pcName'] = pcUser.username;
   data['platform'] = platform;
-  fetch('http://thismypc.com:5000/user/app/login', {
+  fetch('http://thismypc.com:5000/login/app', {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, cors, *same-origin
     headers: {
@@ -56,11 +56,11 @@ document.getElementById('submit-login').onclick = function() {
           }
           console.log(homedir);
           const obj = {};
-          obj.id = response.data.id;
-          obj.name = response.data.name;
+          obj.userID = response.data.id;
+          obj.userName = response.data.name;
           obj.ioSocketID = response.data.ioSocketID;
-          obj.auth = response.data.auth;
-          obj.appKey = appKey;
+          obj.authentication = response.data.auth;
+          obj.applicationKey = appKey;
           const json = JSON.stringify(obj);
           fs.writeFile(dir + '\/thisMyPC.json', json, 'utf8', function() {});
           ipcRenderer.send('systemPage');
