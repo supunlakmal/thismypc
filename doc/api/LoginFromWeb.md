@@ -2,7 +2,7 @@
 # Login From Web 
 Loging for web site
 
-**URL** : `http://thismypc.com:5000/user/web/login`
+**URL** : `http://thismypc.com:5000/login`
 
 **Method** : `POST`
 
