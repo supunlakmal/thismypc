@@ -694,7 +694,9 @@ io.on('connection', function(socket) {
       }
     }
   }
-  // from  pc
+/**
+ * Request  Computer Hard drive list
+ */
   socket.on('hDDList', async function(input) {
     const id = input.id;
     const auth = input.auth;
@@ -709,6 +711,10 @@ io.on('connection', function(socket) {
       }
     }
   });
+
+  /**
+   * Request  computer information
+   */
   socket.on('pcInfoRequest', async function(input) {
     const auth = input.auth;
     const id = input.userID;
@@ -730,7 +736,9 @@ io.on('connection', function(socket) {
       }
     }
   });
-  // pc info send to web
+  /**
+   * 
+   */
   socket.on('pcInfo', async function(input) {
     const auth = input.auth;
     const id = input.id;
@@ -745,7 +753,9 @@ io.on('connection', function(socket) {
       }
     }
   });
-  // from  web
+/**
+ * Request for open folder 
+ */
   socket.on('openFolder', async function(input) {
     const auth = input.auth;
     const id = input.id;
