@@ -172,7 +172,7 @@ Folder or  hard drive open data   | openFolderRequestToWeb | on | -
 
 APP API| URL | Description
 ------------ | ------------- | -------------
-User Login From App | thismypc.com:5000/user/app/login | -
+User Login From App | thismypc.com:5000/login/app | -
 User Info | thismypc.com:5000/app/myInfo | -
 Notification | thismypc.com:5000/app/notification | -
 
