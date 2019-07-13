@@ -34,16 +34,6 @@ export class SystemComponent implements OnInit {
   folderList = [];
   // folder  menu option
   folderInfo: any = [];
-  // path that need to copy
-  copyPath = '';
-  // copy File name
-  copyFileName = '';
-  // path that need to  paste
-  pastePath = '';
-  // copy state active
-  copyFile = false;
-  // paste state active
-  pasteFile = false;
   // open folder or hhd path (name)
   openFolderName = '';
   // open folder or hhd path
@@ -264,46 +254,8 @@ export class SystemComponent implements OnInit {
   fileOption(info) {
     this.folderInfo = info;
   }
-  /// click on  copy  option
-  //  todo  on copy alert  dismiss   need fails  bake copyFile
-  // todo  need to  right  copy and paste  functions
-  clickCopy(info) {
-    this.alert.openAlert = true;
-    this.alert.class = 'alert-warning';
-    this.alert.massage = `<strong>Pending Copy</strong> `;
-    this.copyPath = info.path;
-    this.copyFile = true;
-    this.pasteFile = false;
-    this.copyFileName = info.fileName;
-  }
-  clickPaste(info) {
-    this.alert.openAlert = true;
-    this.alert.class = 'alert-primary';
-    this.alert.massage = ` <i class="fas fa-sync-alt fa-spin"></i> <strong> Paste in Progress </strong> `;
-    this.pastePath = info.path + '/' + this.copyFileName;
-    this.copyFile = false;
-    this.pasteFile = true;
-    const id = sessionStorage.getItem('id');
-    const auth = sessionStorage.getItem('auth');
-    /**
-     * Get  copy file and paste  file  location and send to pc side
-     * it will copy
-     */
-    // TODO  only files can be copy this is a bug need to fixed
-    const send = {
-      copyPathSet: this.copyPath,
-      pastePathSet: this.pastePath
-    };
-    // TODO whyyyyyy this happen  need to find
-    //     send.copyPathSet =this.copyPath; //errorr
-    //     send.pastePathSet =this.pastePath; //errorr
-    //   let send ={ }
-    this.socket.emit('copyPasteToPC', {
-      data: send,
-      auth: auth,
-      id: id
-    });
-  }
+
+
   // logout System
   logout() {
     const data = {};
@@ -384,26 +336,7 @@ export class SystemComponent implements OnInit {
   propertyFunction(e) {
     this.property = e;
   }
-  downloadFileRequest(path) {
-    const sendData = {};
-    sendData['pcKeyPublic'] = this.publicPcKey;
-    sendData['id'] = sessionStorage.getItem('id');
-    sendData['path'] = path;
-    console.log(JSON.stringify(sendData));
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    this.http.post(`${config.url}${config.port}/pc/downloadFileRequest`,
-        JSON.stringify(sendData), {
-          headers
-        })
-      .subscribe(
-        (val: any) => {
-          console.log(val);
-        },
-        response => {},
-        () => {});
-  }
+  
   validateFolder(e) {
     const sendData = {};
     sendData['pcKeyPublic'] = this.publicPcKey;
