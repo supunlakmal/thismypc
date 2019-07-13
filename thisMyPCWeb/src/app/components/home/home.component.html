@@ -407,8 +407,10 @@
                     {{error_message_text}}
                   </div>
                 </div>
-                <div class="col-xl-12 form-col"><input type="text" class="type-text" placeholder="Your Name"
-                    [(ngModel)]="name" name="name" required></div>
+                <div class="col-xl-12 form-col"><input type="text" class="type-text" placeholder="First Name"
+                    [(ngModel)]="firstName" name="firstName" required></div>
+                    <div class="col-xl-12 form-col"><input type="text" class="type-text" placeholder="Last Name"
+                      [(ngModel)]="lastName" name="lastName" required></div>
                 <div class="col-xl-12 form-col"><input type="text" class="type-text" placeholder="Email Address"
                     [(ngModel)]="email" name="email" required></div>
                 <div class="col-xl-12 form-col"><input type="password" class="type-text" placeholder="Password"
