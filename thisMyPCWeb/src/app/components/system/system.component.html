@@ -76,17 +76,13 @@
           </div>
         </div>
       </div>
-     
-
         <div class="card-body  col-12"  *ngIf="(breadcrumbObject | json) != '[]'">
 <nav aria-label="breadcrumb" >
   <ol class="breadcrumb">
   <li class="breadcrumb-item" *ngFor="let breadcrumb of breadcrumbObject; "><div class="mouse" (click)="openFolder(breadcrumb.path, breadcrumb.name)">{{breadcrumb.name}}</div></li>
-   
   </ol>
 </nav>
         </div>
-     
       <div class="card-body col-xl-12 intro-step-3" data-intro="All the  hard drives list  down  here." data-step="3">
         <span class="card-box-title">Driver List</span>
         <div class="row" *ngIf="(hDDList.parts | json) != '[]'">
@@ -113,7 +109,6 @@
         </div>
       </div>
     </div>
-
     <div class="row justify-content-between" *ngIf="(folderList | json) != '[]'">
       <div class="col-xl-1 text-right">
         <div class="dropdown">
@@ -127,7 +122,6 @@
     </div>
     <div class="row" *ngIf="(folderList | json) != '[]'">
       <div class="card-body col-xl-12">
-        <!-- <h5 class="card-title">Folder List <i class="fas fa-cogs mouse" data-toggle="modal" data-target="#fileOption"></i></h5> -->
         <div class="row">
           <div class="col-xl-3  " *ngFor="let folder of folderList;  let e = index">
             <div class="box">
@@ -157,7 +151,7 @@
                         <span class="badge badge-pill badge-primary">Pending</span>
                       </div>
                       <div *ngIf="folder.file" class="dropdown-item mouse disabled"
-                        (click)="downloadFileRequest(folder.path)">Download
+                       >Download
                         <span class="badge badge-pill badge-primary">Max 1 MB Pending</span>
                       </div>
                       <div *ngIf="!folder.file" class="dropdown-item mouse  disabled ">Upload
@@ -165,11 +159,10 @@
                       </div>
                       <div (click)="propertyFunction(folder)" class="dropdown-item mouse " data-toggle="modal"
                         data-target="#fileOrFolderProperty">Property
-                        <span class="badge badge-pill badge-primary">On Development </span>
                       </div>
                     </div>
                   </div>
-                  <!--<i class="fas fa-ellipsis-h mouse" data-toggle="modal" data-target="#fileOption" (click)="fileOption(folder)"></i>-->
+             
                 </div>
               </div>
             </div>
@@ -197,37 +190,6 @@
           <li class="list-group-item">Accessed - {{property.fileInfo.accessed}}</li>
           <li class="list-group-item">Modified - {{property.fileInfo.modified}}</li>
         </ul>
-      </div>
-    </div>
-  </div>
-</div>
-<!--TODO Below model need to remove  for  future   modification   -->
-<!-- Modal -->
-<div class="modal fade" id="fileOption" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-  aria-hidden="true">
-  <div class="modal-dialog modal-sm" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"> {{folderInfo.fileName}} ( {{folderInfo.path}})</h5><br>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-xl-12 mouse" (click)="clickCopy(folderInfo)" data-dismiss="modal">
-            <div class="row">
-              <div class="col-xl-2"><i class="far fa-copy"></i></div>
-              <div class="col-xl-10">Copy</div>
-            </div>
-          </div>
-          <div class="col-xl-12 mouse" data-dismiss="modal" (click)="clickPaste(folderInfo)">
-            <div class="row">
-              <div class="col-xl-2"><i class="fas fa-paste"></i></div>
-              <div class="col-xl-10">Paste</div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -270,5 +232,3 @@
     </div>
   </div>
 </div>
-<script>
-</script>
