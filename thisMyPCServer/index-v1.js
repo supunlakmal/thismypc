@@ -760,7 +760,6 @@ if (!await User.authUser(userID, authentication_key)) {
     res.json(respond(true, 'Invalid User', null));
   }
 });
-
 /**
  * Update allow pubic access status
  *
@@ -777,23 +776,17 @@ app.post('/api/v1/user/computer/public/status/update', async function(req, res) 
   const computerKey = req.body.computerKey;
   const userID = req.body.userID;
   const publicAccessStatus = req.body.status;
-
   const user = await User.authUser(userID, authentication_key);
   if (!user) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
   }
-
-
-
   let publicAccessKey = computerKey + Date.now();
   if (publicAccessStatus === 1) {
     publicAccessKey = md5(publicAccessKey);
   } else {
     publicAccessKey = md5(publicAccessKey);
   }
-
-
   const out = {};
   out.publicAccessKey = publicAccessKey;
   out.publicAccessStatus = publicAccessStatus;
@@ -803,7 +796,6 @@ app.post('/api/v1/user/computer/public/status/update', async function(req, res) 
     res.json(respond(true, 'Update Done', out));
   }
 });
-
 /**
  * Update user public key that allow to access other your computer.
  *
@@ -824,10 +816,8 @@ app.post('/api/v1/user/computer/public/key/update', async function(req, res) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
   }
-
   let publicAccessKey = computerKey + Date.now();
   publicAccessKey = md5(publicAccessKey);
-
   const out = {};
   out.publicAccessKey = publicAccessKey;
   const pc = await PC.newPublicAccessKey(pcID, out, {new:true});
@@ -836,7 +826,6 @@ app.post('/api/v1/user/computer/public/key/update', async function(req, res) {
     res.json(respond(true, 'Update Done', out));
   }
 });
-
 /**
  * Get user all online computers list
  *
@@ -865,8 +854,6 @@ app.post('/api/v1/user/computer/online', async function(req, res) {
     res.json(respond(false, 'Invalid User', null));
   }
 });
-
-
 /**
  * Get all user computer names and IDs
  *
@@ -895,8 +882,6 @@ app.post('/api/v1/user/computer', async function(req, res) {
     res.json(respond(false, 'Invalid User', null));
   }
 });
-
-
 /**
  * User authentications
  *
@@ -920,8 +905,6 @@ app.post('/api/v1/user/authentication', async function(req, res) {
     res.json(respond(false, 'Invalid User', null));
   }
 });
-
-
 io.on('connection', function(socket) {
   // TODO this user  login from app need to add few   function to  it
   socket.on('loginPage', function() {});
