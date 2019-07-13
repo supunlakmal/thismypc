@@ -118,14 +118,16 @@ module.exports.authApp = function (id, auth) {
   });
 }).then(result=>{return result});
 };
-// create   user
+// create   user OLD
 module.exports.createUser = function (user) {
   return  new Promise((resolve, reject) => {
   User.create({
-    'name': user.name,
+    'name': user.firstName,
+    'nameLast': user.lastName,
     'email': user.email,
     'password': user.password,
     'ioSocketID': user.ioSocketID,
+    'auth': user.authentication_key,
   }, function(err,user){
     resolve(user);
   });
