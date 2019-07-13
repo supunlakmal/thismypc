@@ -23,17 +23,11 @@ import {config} from '../config/config'
 export class HomeComponent implements OnInit {
   password = '';
   email = '';
-  name = '';
-  fullName = '';
-  email_contribute = '';
+  firstName = '';
+  lastName = '';
   error_message = false;
   error_message_text = '';
-  error_message_contribute = false;
-  message_contribute_done = false;
-  error_message_contribute_text = '';
-  userCount = '';
-  pcCount = '';
-  contribute_alert_show = true;
+  
   constructor(private http: HttpClient, private router: Router) {}
   ngOnInit() {
 
@@ -43,9 +37,7 @@ export class HomeComponent implements OnInit {
   resetModel() {
     this.error_message = false;
   }
-  contribute_alert_close() {
-    this.contribute_alert_show = false;
-  }
+ 
   onSubmit(e) {
     e.preventDefault();
     if (this.email === '' || this.password === '') {
@@ -58,16 +50,17 @@ export class HomeComponent implements OnInit {
       //  console.log(JSON.stringify(sendData));
       const headers = new HttpHeaders()
         .set('Content-Type', 'application/json');
-      this.http.post(`${config.url}${config.port}/login`,
+      this.http.post(`${config.url}${config.port}/api/v1/login`,
           JSON.stringify(sendData), {
             headers
           })
         .subscribe(
           (val: any) => {
-            sessionStorage.setItem('name', val.data.name);
-            sessionStorage.setItem('auth', val.data.auth);
-            sessionStorage.setItem('id', val.data.id);
-            sessionStorage.setItem('ioSocketID', val.data.ioSocketID);
+            sessionStorage.setItem('firstName', val.data.firstName);
+            sessionStorage.setItem('lastName', val.data.lastName);
+            sessionStorage.setItem('authentication_key', val.data.authentication_key);
+            sessionStorage.setItem('userID', val.data.userID);
+          
             //   this.router.navigate(['/system']); //  redirect  to  system
             window.location.replace('/system');
           },
@@ -83,27 +76,28 @@ export class HomeComponent implements OnInit {
   }
   onRegister(e) {
     e.preventDefault();
-    if (this.email === '' || this.password === '' || this.name === '') {
+    if (this.email === '' || this.password === '' || this.firstName === '' || this.lastName === '') {
       this.error_message = true;
       this.error_message_text = 'username/password/name required';
     } else {
       const sendData = {};
       sendData['email'] = this.email;
       sendData['password'] = this.password;
-      sendData['name'] = this.name;
+      sendData['firstName'] = this.firstName;
+      sendData['lastName'] = this.lastName;
       /// console.log(JSON.stringify(sendData));
       const headers = new HttpHeaders()
         .set('Content-Type', 'application/json');
-      this.http.post(`${config.url}${config.port}/register`,
+      this.http.post(`${config.url}${config.port}/api/v1/user/register`,
           JSON.stringify(sendData), {
             headers
           })
         .subscribe(
           (val: any) => {
-            sessionStorage.setItem('name', val.data.name);
-            sessionStorage.setItem('auth', val.data.auth);
-            sessionStorage.setItem('id', val.data.id);
-            sessionStorage.setItem('ioSocketID', val.data.ioSocketID);
+            sessionStorage.setItem('firstName', val.data.firstName);
+            sessionStorage.setItem('lastName', val.data.lastName);
+            sessionStorage.setItem('authentication_key', val.data.authentication_key);
+            sessionStorage.setItem('userID', val.data.userID);
             //   this.router.navigate(['/system']); //  redirect  to  system
             window.location.replace('/system');
           },
