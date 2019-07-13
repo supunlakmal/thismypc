@@ -140,8 +140,8 @@ module.exports.updateUserInfo = function (id, user, option) {
     _id: id,
   };
   const update = {
-    name: user.name,
-    nameLast: user.nameLast,
+    name: user.firstName,
+    nameLast: user.lastName,
   };
   User.findOneAndUpdate(query, update, option, function(err,user){
     resolve(user);
@@ -190,7 +190,7 @@ module.exports.updateUserAuth = function (id, user, option) {
     _id: id,
   };
   const update = {
-    auth: user.auth,
+    auth: user.authentication_key,
   };
   User.findOneAndUpdate(query, update, option, function (err , data) {
     resolve(data);
