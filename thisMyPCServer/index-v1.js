@@ -17,17 +17,11 @@ const validator = require('validator');
  */
 // logger
 const logger = require('./components/logger');
-
-
-
 /**
  * User Resources
  */
-const {userResources} = require('./components/resources/user.resources');
+let  userClass=  require('./components/class/user.class');
 // MongoDB server connection
-
-
-
 mongoose.connect(`mongodb://${db.user}:${db.password}@${db.host}/${db.dbName}`, {
   useNewUrlParser: true,
 });
@@ -63,8 +57,6 @@ const PC = require('./models/pc');
 const UserAndPC = require('./models/userAndPC');
 // pc and PC Owner  module
 const PcOwner = require('./models/PCOwner');
-
-
 app.use(bodyParser.json());
 app.disable('x-powered-by');
 app.use(fileUpload());
@@ -74,8 +66,6 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,token ,uid');
   next();
 });
-
-
 // server port ex-5000
 http.listen(process.env.PORT || config.port);
 logger.log(`Sever start on Port ${config.port}`);
@@ -497,35 +487,33 @@ app.post('/auth', async function(req, res) {
     res.json(respond(false, 'Invalid User', null));
   }
 });
-
-
 /**
  * REST API V1
  */
-
-
 /**
  * API main end point
  */
 app.get('/api/', async function(req, res) {
-
-
     res.status(200).json(respond(true, 'REST API working', null));
-
 });
-
-
 /**
  *  API variation end point
  */
 app.get('/api/v1/', async function(req, res) {
-
   res.status(200).json(respond(true, 'REST API working', null));
-  
 });
-
-
-
+/**
+ *  API variation end point
+ */
+app.get('/api/v1/web/', async function(req, res) {
+  res.status(200).json(respond(true, 'REST API working', null));
+});
+/**
+ *  API variation end point
+ */
+app.get('/api/v1/computer/', async function(req, res) {
+  res.status(200).json(respond(true, 'REST API working', null));
+});
 /**
 * User information  
 *
@@ -537,28 +525,71 @@ app.get('/api/v1/', async function(req, res) {
 * res:Respond
 * res<-
 */
+// TODO  authentication method  
 app.get('/api/v1/user/:userID', async function(req, res) {
-// user ID
+// authentication  key from  headers
+  const authentication_key = req.headers.authentication_key;
+  // user ID
   let userID = req.params.userID;
+  if (!await User.authUser(userID, authentication_key)) {
+    res.status(401);
+    return res.json(respond(false, 'Invalid User', null));
+  }
 // user Information 
 let userInformation = await User.getUser(userID);
-
 if(userInformation){
-// user resources 
-  let user =  userResources(userInformation);
-  res.status(200).json(respond(true, 'User Information', user));
+  // user  class
+let  user   =  new  userClass(userInformation);
+user.userInformation();
+user.withAuthentication();
+  res.status(200).json(respond(true, 'User Information', user.get()));
 }else{
-
   res.status(400).json(respond(fail, 'Invalid User Information', null));
 }
-
-
-
 });
-
-
-
-
+/**
+ * New user registration
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
+app.post('/api/v1/user/register', async function(req, res) {
+  const email = req.body.email;
+  const password = md5(req.body.password);
+  req.body.password = password;
+  const userData = req.body;
+  const dateTime = new Date();
+  const out = {};
+  if (req.body.email === '' || req.body.password === '' || req.body.firstName === '' || req.body.lastName === ''  ) {
+    res.status(401);
+    return res.json(respond(false, 'username/password/first name/last name required', null));
+  }
+  if (!validator.isEmail(email)) {
+    res.status(401);
+    return res.json(respond(false, 'Invalid Email', null));
+  }
+  // search user by user name
+  const user = await User.searchEmailUser(email);
+  if (!user) {
+  // create  room id
+ let ioSocketID = md5(req.body.email + Date.now());
+  userData.ioSocketID =ioSocketID;
+userData.authentication_key =  md5(ioSocketID);
+    const userCrated = await User.createUser(userData);
+ if (userCrated) {
+      res.status(200);
+      res.json(respond(true, 'User login infromation', userCrated));
+    }
+  } else {
+    res.status(401);
+    res.json(respond(false, 'User  Already exit', null));
+  }
+});
 io.on('connection', function(socket) {
   // TODO this user  login from app need to add few   function to  it
   socket.on('loginPage', function() {});
@@ -788,7 +819,6 @@ io.on('connection', function(socket) {
       }
     }
   });
-
   /**
    * Request  computer information
    */
