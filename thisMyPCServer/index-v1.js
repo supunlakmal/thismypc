@@ -1015,12 +1015,12 @@ io.on('connection', function(socket) {
   // join user from  web
   socket.on('joinFromWeb', async function(data) {
   //  logger.log(data);
-    const id = data.data.id;
-    const auth = data.data.auth;
-    const user =await User.authUser(id, auth);
+    const userID = data.data.userID;
+    const authentication_key = data.data.authentication_key;
+    const user =await User.authUser(userID, authentication_key);
     if (user) {
       socket.join(user.ioSocketID);
-      // update user Currentsockett ID
+      // update user Current socket ID
       const userData = {};
       userData.userCurrentSocketId = socket.id;
       const updateUserCurrentSocketId = await User.updateUserCurrentSocketId(user._id, userData, {});
@@ -1050,10 +1050,10 @@ io.on('connection', function(socket) {
     }
   });
   socket.on('pcAccessRequest', async function(input) {
-    const auth = input.auth;
-    const id = input.userID;
+    const authentication_key = input.authentication_key;
+    const userID = input.userID;
     const pcID = input.pcID;
-    const user = await User.authUser(id, auth);
+    const user = await User.authUser(id, authentication_key);
     if (user) {
     // logger.log(user);
       const userInfo = {};
@@ -1138,10 +1138,10 @@ io.on('connection', function(socket) {
    * Request  computer information
    */
   socket.on('pcInfoRequest', async function(input) {
-    const auth = input.auth;
-    const id = input.userID;
+    const authentication_key = input.authentication_key;
+    const userID = input.userID;
     const pcID = input.pcID;
-    const user = await User.authUser(id, auth);
+    const user = await User.authUser(id, authentication_key);
     if (user) {
       const userInfo = {};
       userInfo.pcID = pcID;
@@ -1179,10 +1179,10 @@ io.on('connection', function(socket) {
  * Request for open folder 
  */
   socket.on('openFolder', async function(input) {
-    const auth = input.auth;
-    const id = input.id;
+    const authentication_key = input.authentication_key;
+    const userID = input.userID;
     const pcKeyPublic = input.pcKeyPublic;
-    const user = await User.authUser(id, auth);
+    const user = await User.authUser(userID, authentication_key);
     if (user) {
       const socket =await getPCSocketID(user, pcKeyPublic );
       io.sockets.to(socket).emit('openFolderRequest', input);
