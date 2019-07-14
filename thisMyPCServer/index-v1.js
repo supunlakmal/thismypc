@@ -760,6 +760,41 @@ app.get('/api/v1/user/:userID/logout', async function(req, res) {
     res.json(respond(true, 'Invalid User', null));
   }
 });
+
+
+
+/**
+ * User logout from computer
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
+app.get('/api/v1/user/:userID/computer/logout', async function(req, res) {
+  const userID = req.params.userID;
+  const authentication_key = req.headers.authentication_key;
+  if (!await User.authApp(userID, authentication_key)) {
+    res.status(401);
+    return res.json(respond(false, 'Invalid User', null));
+  }
+  if (user) {
+    const out = {};
+    out.authentication_key = md5(userID + new Date()) + '_logout';
+    await User.updateUserAuth(userID, out, {});
+    res.status(200);
+    res.json(respond(true, 'logout!', null));
+  } else {
+    res.status(401);
+    res.json(respond(true, 'Invalid User', null));
+  }
+});
+
+
+
 /**
  * Update allow pubic access status
  *
@@ -1207,7 +1242,7 @@ io.on('connection', function(socket) {
   /**
    * User
    */
-  app.post('api/v1/computer/public/access', async function(req, res) {
+  app.post('/api/v1/computer/public/access', async function(req, res) {
     const authentication_key = req.headers.authentication_key;
     const userID = req.body.userID;
     const pcKeyPublic = req.body.pcKeyPublic;
