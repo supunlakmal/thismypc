@@ -1,6 +1,6 @@
 'use strict';
-const socket = io.connect('http://thismypc.com:5000');
-const remoteServer = 'http://thismypc.com:5000';
+const socket = io.connect('http://localhost:5000');
+const remoteServer = 'http://localhost:5000';
 const {
   ipcRenderer,
 } = require('electron');
