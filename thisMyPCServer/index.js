@@ -214,7 +214,7 @@ app.post('/api/v1/user/register', async function(req, res) {
  * res:Respond
  * res<-
  */
-app.post('/api/v1/login', async function(req, res) {
+app.post('/api/v1/user/login', async function(req, res) {
   const email = req.body.email;
   const password = md5(req.body.password);
   req.body.password = password;
