@@ -42,7 +42,7 @@ fs.readFile(dir + '\/thisMyPC.json',
         console.log(userInfo);
       
         userID = userInfo.userID;
-        authentication_key = userInfo.authentication;
+        authentication_key = userInfo.authentication_key;
         applicationKey = userInfo.applicationKey;
         class Home {
         /**
