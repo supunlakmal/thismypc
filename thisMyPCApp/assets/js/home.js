@@ -239,7 +239,7 @@ fs.readFile(dir + '\/thisMyPC.json',
         socket.on('openFolderRequest', async function(data) {
         // homeClass.openFolderRequest(data, function (err, callback) {
           const homedir = data.path;
-          const folderContent = await  homeClass.readFolder(homedir);
+          const folderContent = await homeClass.readFolder(homedir);
           if (folderContent) {
             for (const file of folderContent) {
               const path = homedir + '\\' + file;
@@ -315,7 +315,7 @@ fs.readFile(dir + '\/thisMyPC.json',
             headers: {
               'Content-Type': 'application/json; charset=utf-8',
               'authentication_key': authentication_key,
-            }
+            },
             // body data type must match "Content-Type" header
           })
               .then((response) => response.json()).then(function(response) {
