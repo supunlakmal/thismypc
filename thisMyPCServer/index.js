@@ -86,18 +86,7 @@ app.get('/api/', async function(req, res) {
 app.get('/api/v1/', async function(req, res) {
   res.status(200).json(respond(true, 'REST API working', null));
 });
-/**
- *  API variation end point
- */
-app.get('/api/v1/web/', async function(req, res) {
-  res.status(200).json(respond(true, 'REST API working', null));
-});
-/**
- *  API variation end point
- */
-app.get('/api/v1/computer/', async function(req, res) {
-  res.status(200).json(respond(true, 'REST API working', null));
-});
+
 /**
 * User information
 *
