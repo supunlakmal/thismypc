@@ -17,7 +17,7 @@
 [![Gitter](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/Thismypc/community)
 </div>
 
-ThisMyPC is a next-generation open source solution for remote pc. It's a full stack based project that starts as an experiment.
+ThisMyPC is a next-generation open source solution for remote computer. It's a full stack based project that starts as an experiment.
 
 ## Website - http://thismypc.com
 
@@ -25,7 +25,7 @@ ThisMyPC is a next-generation open source solution for remote pc. It's a full st
 
 ## App Screenshots
 
-Desktop App  Login         |  Desktop App Open | Web App  PC  Drivers       |  Web App PC Drivers Open
+Desktop App  Login         |  Desktop App Open | Web App  computer  hard drives       |  Web App computer hard drives Open
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
 <img src="thisMyPCWeb/src/assets/images/screen/app-login.PNG" title="Desktop App  Login " width="100%"> |<img src="thisMyPCWeb/src/assets/images/screen/app-home.PNG" title="Desktop App Open" width="100%">|<img src="thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%"> |<img src="thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%">
 
