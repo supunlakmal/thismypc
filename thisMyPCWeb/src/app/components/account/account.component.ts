@@ -32,8 +32,8 @@ export class AccountComponent implements OnInit {
    * User Info
    */
   user: any = [];
-  name = '';
-  nameLast = '';
+  firstName = '';
+  lastName = '';
   /**
    *
    * Update user Password
@@ -72,13 +72,13 @@ export class AccountComponent implements OnInit {
     const self = this;
     // send  user auth and  test
     const sendData = {};
-    sendData['id'] = sessionStorage.getItem('id');
+    sendData['userID'] = sessionStorage.getItem('userID');
     console.log(JSON.stringify(sendData));
     this.headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
     const headers = this.headers;
-    this.http.post(`${config.url}${config.port}/auth`,
+    this.http.post(`${config.url}${config.port}/api/v1/user/authentication`,
         JSON.stringify(sendData), {
           headers
         })
@@ -91,8 +91,8 @@ export class AccountComponent implements OnInit {
         () => {
           console.log('The POST observable is now completed.');
         });
-    this.http.post(`${config.url}${config.port}/myInfo`,
-        JSON.stringify(sendData), {
+    this.http.get(`${config.url}${config.port}/api/v1/user/${sendData['userID']}`,
+      {
           headers
         })
       .subscribe(
@@ -102,7 +102,7 @@ export class AccountComponent implements OnInit {
         },
         response => {},
         () => {});
-    this.http.post(`${config.url}${config.port}/myInfo/myPC`,
+    this.http.post(`${config.url}${config.port}/api/v1/user/computer/online`,
         JSON.stringify(sendData), {
           headers
         })
@@ -124,14 +124,14 @@ export class AccountComponent implements OnInit {
       this.error_message_text = 'First name / Last name required';
     } else {
       const sendData = {};
-      sendData['nameLast'] = this.nameLast;
-      sendData['name'] = this.name;
-      sendData['id'] = sessionStorage.getItem('id');
+      sendData['lastName'] = this.lastName;
+      sendData['firstName'] = this.firstName;
+      sendData['userID'] = sessionStorage.getItem('userID');
       /// console.log(JSON.stringify(sendData));
       /*const headers = new HttpHeaders()
           .set('Content-Type', 'application/json')
           .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');*/
-      this.http.post(`${config.url}${config.port}/account/myInfo/update`,
+      this.http.post(`${config.url}${config.port}/api/v1/user/update`,
           JSON.stringify(sendData), {
             headers
           })
