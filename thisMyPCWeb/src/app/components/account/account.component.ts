@@ -74,11 +74,11 @@ export class AccountComponent implements OnInit {
     const sendData = {};
     sendData['userID'] = sessionStorage.getItem('userID');
     console.log(JSON.stringify(sendData));
-    this.headers = new HttpHeaders()
+    self.headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
-      .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    const headers = this.headers;
-    this.http.post(`${config.url}${config.port}/api/v1/user/authentication`,
+      .set('authentication_key', sessionStorage.getItem('authentication_key') ? sessionStorage.getItem('authentication_key') : 'thismyPc');
+    const headers = self.headers;
+    self.http.post(`${config.url}${config.port}/api/v1/user/authentication`,
         JSON.stringify(sendData), {
           headers
         })
@@ -91,7 +91,7 @@ export class AccountComponent implements OnInit {
         () => {
           console.log('The POST observable is now completed.');
         });
-    this.http.get(`${config.url}${config.port}/api/v1/user/${sendData['userID']}`,
+        self.http.get(`${config.url}${config.port}/api/v1/user/${sendData['userID']}`,
       {
           headers
         })
@@ -102,7 +102,7 @@ export class AccountComponent implements OnInit {
         },
         response => {},
         () => {});
-    this.http.post(`${config.url}${config.port}/api/v1/user/computer/online`,
+        self.http.post(`${config.url}${config.port}/api/v1/user/computer/online`,
         JSON.stringify(sendData), {
           headers
         })
@@ -116,22 +116,20 @@ export class AccountComponent implements OnInit {
   }
   onUpdate(e) {
     e.preventDefault();
-    const headers = this.headers;
+    
+    const self = this;
+    const headers = self.headers;
     //  alert(this.nameLast);
     // todo  bug found on  system some tim the two variable  get as null  if user did not change
-    if (this.nameLast === '' || this.name === '') {
-      this.error_message = true;
-      this.error_message_text = 'First name / Last name required';
+    if (self.firstName === '' || self.lastName === '') {
+      self.error_message = true;
+      self.error_message_text = 'First name / Last name required';
     } else {
       const sendData = {};
-      sendData['lastName'] = this.lastName;
-      sendData['firstName'] = this.firstName;
+      sendData['lastName'] = self.lastName;
+      sendData['firstName'] = self.firstName;
       sendData['userID'] = sessionStorage.getItem('userID');
-      /// console.log(JSON.stringify(sendData));
-      /*const headers = new HttpHeaders()
-          .set('Content-Type', 'application/json')
-          .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');*/
-      this.http.post(`${config.url}${config.port}/api/v1/user/update`,
+      self.http.post(`${config.url}${config.port}/api/v1/user/update`,
           JSON.stringify(sendData), {
             headers
           })
@@ -150,21 +148,16 @@ export class AccountComponent implements OnInit {
   }
   onUpdatePassword(e) {
     e.preventDefault();
-    const headers = this.headers;
-    /*        if (this.nameLast === '' || this.name === '') {
-                this.error_message = true;
-                this.error_message_text = 'First name / Last name required';
-            } else {*/
+
+    const self = this;
+    const headers = self.headers;
+
     const sendData = {};
-    sendData['password'] = this.password;
-    sendData['newPassword'] = this.newPassword;
-    sendData['confirmNewPassword'] = this.confirmNewPassword;
-    sendData['id'] = sessionStorage.getItem('id');
-    /// console.log(JSON.stringify(sendData));
-    /*        const headers = new HttpHeaders()
-                .set('Content-Type', 'application/json')
-                .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');*/
-    this.http.post(`${config.url}${config.port}/account/password/update`,
+    sendData['password'] = self.password;
+    sendData['newPassword'] = self.newPassword;
+    sendData['confirmNewPassword'] = self.confirmNewPassword;
+    sendData['userID'] = sessionStorage.getItem('userID');
+    self.http.post(`${config.url}${config.port}/api/v1/user/password/edit`,
         JSON.stringify(sendData), {
           headers
         })
@@ -180,7 +173,7 @@ export class AccountComponent implements OnInit {
           //  console.log("The POST observable is now completed.");
         });
   }
-  /*}*/
+  
   allowPublic(id, index, e) {
     let status = 0;
     const self = this;
@@ -192,12 +185,12 @@ export class AccountComponent implements OnInit {
       status = 0;
     }
     const sendData = {};
-    sendData['id'] = sessionStorage.getItem('id');
-    sendData['pcID'] = id;
+    sendData['userID'] = sessionStorage.getItem('userID');
+    sendData['computerKey'] = id;
     sendData['status'] = status;
     console.log(JSON.stringify(sendData));
-    const headers = this.headers;
-    this.http.post(`${config.url}${config.port}/myInfo/myPc/update`,
+    const headers = self.headers;
+    self.http.post(`${config.url}${config.port}/api/v1/user/computer/public/status/update`,
         JSON.stringify(sendData), {
           headers
         })
@@ -210,13 +203,11 @@ export class AccountComponent implements OnInit {
         () => {});
   }
   logout() {
-    const data = {};
-    data['id'] = sessionStorage.getItem('id');
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    this.http.post(`${config.url}${config.port}/logout`,
-        JSON.stringify(data), {
+    const userID =   sessionStorage.getItem('userID');
+    const self = this;
+    const headers = self.headers;
+    self.http.get(`${config.url}${config.port}/api/v1/user/${userID}/logout`,
+         {
           headers
         })
       .subscribe(
