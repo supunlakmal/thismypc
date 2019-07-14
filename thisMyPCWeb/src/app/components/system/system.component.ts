@@ -34,16 +34,6 @@ export class SystemComponent implements OnInit {
   folderList = [];
   // folder  menu option
   folderInfo: any = [];
-  // path that need to copy
-  copyPath = '';
-  // copy File name
-  copyFileName = '';
-  // path that need to  paste
-  pastePath = '';
-  // copy state active
-  copyFile = false;
-  // paste state active
-  pasteFile = false;
   // open folder or hhd path (name)
   openFolderName = '';
   // open folder or hhd path
@@ -79,6 +69,10 @@ export class SystemComponent implements OnInit {
   pcSelect = false;
   //pc info 
   pcInfoData: any = [];
+
+
+    // post Header
+    headers: any = '';
   /**
    *
    * param {HttpClient} http
@@ -131,12 +125,17 @@ export class SystemComponent implements OnInit {
     const self = this;
     // send  user auth and  test
     const sendData = {};
-    sendData['id'] = sessionStorage.getItem('id');
+    sendData['userID'] = sessionStorage.getItem('userID');
     console.log(JSON.stringify(sendData));
-    const headers = new HttpHeaders()
+    self.headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
-      .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    self.http.post(`${config.url}${config.port}/auth`,
+      .set('authentication_key', sessionStorage.getItem('authentication_key') ? sessionStorage.getItem('authentication_key') : 'thismyPc');
+
+      
+      const headers = self.headers;
+
+
+    self.http.post(`${config.url}${config.port}/api/v1/user/authentication`,
         JSON.stringify(sendData), {
           headers
         })
@@ -149,8 +148,8 @@ export class SystemComponent implements OnInit {
         () => {
           console.log('The POST observable is now completed.');
         });
-    self.http.post(`${config.url}${config.port}/myInfo`,
-        JSON.stringify(sendData), {
+    self.http.get(`${config.url}${config.port}/api/v1/user/${sendData['userID']}`,
+       {
           headers
         })
       .subscribe(
@@ -161,14 +160,13 @@ export class SystemComponent implements OnInit {
         response => {},
         () => {});
     // app start
-    const ioSocketID = sessionStorage.getItem('ioSocketID');
-    const id = sessionStorage.getItem('id');
-    const auth = sessionStorage.getItem('auth');
+   
+    const userID = sessionStorage.getItem('userID');
+    const authentication_key = sessionStorage.getItem('authentication_key');
     self.socket.emit('joinFromWeb', {
       data: {
-        id: id,
-        auth: auth,
-        ioSocketID: ioSocketID
+        userID: userID,
+        authentication_key: authentication_key
       }
     });
     self.socket.on('hDDList', function (data) {
@@ -186,7 +184,7 @@ export class SystemComponent implements OnInit {
       self.alert.class = 'alert-success';
       self.alert.massage = ` <strong> Paste Done </strong> `;
     });
-    self.http.post(`${config.url}${config.port}/myInfo/myPC/online`,
+    self.http.post(`${config.url}${config.port}/api/v1/user/computer/online`,
         JSON.stringify(sendData), {
           headers
         })
@@ -228,16 +226,14 @@ export class SystemComponent implements OnInit {
     console.log(path);
     this.openFolderName = path;
     this.breadcrumb(path);
-    const ioSocketID = sessionStorage.getItem('ioSocketID');
-    const id = sessionStorage.getItem('id');
-    const auth = sessionStorage.getItem('auth');
-    console.log(auth);
+    const userID = sessionStorage.getItem('userID');
+    const authentication_key = sessionStorage.getItem('authentication_key');
+    console.log(authentication_key);
     this.folderList = [];
     this.socket.emit('openFolder', {
       path: path + '//',
-      auth: auth,
-      room: ioSocketID,
-      id: id,
+      authentication_key: authentication_key,
+      userID: userID,
       pcKeyPublic: pcKeyPublic
     });
   }
@@ -247,16 +243,14 @@ export class SystemComponent implements OnInit {
     this.openFolderName = fileName;
     this.breadcrumb(path);
     console.log(fileName);
-    const ioSocketID = sessionStorage.getItem('ioSocketID');
-    const id = sessionStorage.getItem('id');
-    const auth = sessionStorage.getItem('auth');
-    console.log(auth);
+    const userID = sessionStorage.getItem('userID');
+    const authentication_key = sessionStorage.getItem('authentication_key');
+    console.log(authentication_key);
     this.folderList = [];
     this.socket.emit('openFolder', {
       path: path + '//',
-      auth: auth,
-      room: ioSocketID,
-      id: id,
+      authentication_key: authentication_key,
+      userID: userID,
       pcKeyPublic: pcKeyPublic
     });
   }
@@ -264,55 +258,15 @@ export class SystemComponent implements OnInit {
   fileOption(info) {
     this.folderInfo = info;
   }
-  /// click on  copy  option
-  //  todo  on copy alert  dismiss   need fails  bake copyFile
-  // todo  need to  right  copy and paste  functions
-  clickCopy(info) {
-    this.alert.openAlert = true;
-    this.alert.class = 'alert-warning';
-    this.alert.massage = `<strong>Pending Copy</strong> `;
-    this.copyPath = info.path;
-    this.copyFile = true;
-    this.pasteFile = false;
-    this.copyFileName = info.fileName;
-  }
-  clickPaste(info) {
-    this.alert.openAlert = true;
-    this.alert.class = 'alert-primary';
-    this.alert.massage = ` <i class="fas fa-sync-alt fa-spin"></i> <strong> Paste in Progress </strong> `;
-    this.pastePath = info.path + '/' + this.copyFileName;
-    this.copyFile = false;
-    this.pasteFile = true;
-    const id = sessionStorage.getItem('id');
-    const auth = sessionStorage.getItem('auth');
-    /**
-     * Get  copy file and paste  file  location and send to pc side
-     * it will copy
-     */
-    // TODO  only files can be copy this is a bug need to fixed
-    const send = {
-      copyPathSet: this.copyPath,
-      pastePathSet: this.pastePath
-    };
-    // TODO whyyyyyy this happen  need to find
-    //     send.copyPathSet =this.copyPath; //errorr
-    //     send.pastePathSet =this.pastePath; //errorr
-    //   let send ={ }
-    this.socket.emit('copyPasteToPC', {
-      data: send,
-      auth: auth,
-      id: id
-    });
-  }
+
+
   // logout System
   logout() {
-    const data = {};
-    data['id'] = sessionStorage.getItem('id');
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    this.http.post(`${config.url}${config.port}/logout`,
-        JSON.stringify(data), {
+    const userID  = sessionStorage.getItem('userID');
+    const self =this;
+    const headers = self.headers;
+    self.http.get(`${config.url}${config.port}/api/v1/user/${userID}/computer/logout`,
+      {
           headers
         })
       .subscribe(
@@ -334,43 +288,45 @@ export class SystemComponent implements OnInit {
     this.processAlert(true);
     this.publicPcKey = '';
     console.log(pcID);
-    const id = sessionStorage.getItem('id');
-    const auth = sessionStorage.getItem('auth');
+    const userID = sessionStorage.getItem('userID');
+    const authentication_key = sessionStorage.getItem('authentication_key');
     this.socket.emit('pcAccessRequest', {
       pcID: pcID,
-      auth: auth,
-      userID: id
+      authentication_key: authentication_key,
+      userID: userID
     });
     this.pcSelect = true;
     this.selectedPC_ID = pcID;
     this.socket.emit('pcInfoRequest', {
       pcID: pcID,
-      auth: auth,
-      userID: id
+      authentication_key: authentication_key,
+      userID: userID
     });
   }
   //  get  pc  information   
   pcInfo() {
     this.processAlert(true);
-    const id = sessionStorage.getItem('id');
-    const auth = sessionStorage.getItem('auth');
+    const userID = sessionStorage.getItem('userID');
+    const authentication_key = sessionStorage.getItem('authentication_key');
     const pcID = this.selectedPC_ID;
     this.socket.emit('pcInfoRequest', {
       pcID: pcID,
-      auth: auth,
-      userID: id
+      authentication_key: authentication_key,
+      userID: userID
     });
   }
   getAccessToPC() {
     this.processAlert(true);
+
+    const self =this;
+    const headers = self.headers;
+
     const sendData = {};
     sendData['pcKeyPublic'] = this.publicPcKey;
-    sendData['id'] = sessionStorage.getItem('id');
+    sendData['userID'] = sessionStorage.getItem('userID');
     console.log(JSON.stringify(sendData));
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    this.http.post(`${config.url}${config.port}/public/pc/access`,
+
+    this.http.post(`${config.url}${config.port}/api/v1/computer/public/access`,
         JSON.stringify(sendData), {
           headers
         })
@@ -384,37 +340,18 @@ export class SystemComponent implements OnInit {
   propertyFunction(e) {
     this.property = e;
   }
-  downloadFileRequest(path) {
-    const sendData = {};
-    sendData['pcKeyPublic'] = this.publicPcKey;
-    sendData['id'] = sessionStorage.getItem('id');
-    sendData['path'] = path;
-    console.log(JSON.stringify(sendData));
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    this.http.post(`${config.url}${config.port}/pc/downloadFileRequest`,
-        JSON.stringify(sendData), {
-          headers
-        })
-      .subscribe(
-        (val: any) => {
-          console.log(val);
-        },
-        response => {},
-        () => {});
-  }
+  
   validateFolder(e) {
     const sendData = {};
+    const self =this;
+    const headers = self.headers;
     sendData['pcKeyPublic'] = this.publicPcKey;
-    sendData['id'] = sessionStorage.getItem('id');
+    sendData['userID'] = sessionStorage.getItem('userID');
     sendData['createFolderName'] = this.createFolderName;
     sendData['path'] = this.openFolderPath;
     console.log(JSON.stringify(sendData));
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('token', sessionStorage.getItem('auth') ? sessionStorage.getItem('auth') : 'thismyPc');
-    this.http.post(`${config.url}${config.port}/validateFolderName`,
+
+    this.http.post(`${config.url}${config.port}/api/v1/user/computer/validateFolderName`,
         JSON.stringify(sendData), {
           headers
         })

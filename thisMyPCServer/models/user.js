@@ -118,14 +118,16 @@ module.exports.authApp = function (id, auth) {
   });
 }).then(result=>{return result});
 };
-// create   user
+// create   user OLD
 module.exports.createUser = function (user) {
   return  new Promise((resolve, reject) => {
   User.create({
-    'name': user.name,
+    'name': user.firstName,
+    'nameLast': user.lastName,
     'email': user.email,
     'password': user.password,
     'ioSocketID': user.ioSocketID,
+    'auth': user.authentication_key,
   }, function(err,user){
     resolve(user);
   });
@@ -138,8 +140,8 @@ module.exports.updateUserInfo = function (id, user, option) {
     _id: id,
   };
   const update = {
-    name: user.name,
-    nameLast: user.nameLast,
+    name: user.firstName,
+    nameLast: user.lastName,
   };
   User.findOneAndUpdate(query, update, option, function(err,user){
     resolve(user);
@@ -188,7 +190,7 @@ module.exports.updateUserAuth = function (id, user, option) {
     _id: id,
   };
   const update = {
-    auth: user.auth,
+    auth: user.authentication_key,
   };
   User.findOneAndUpdate(query, update, option, function (err , data) {
     resolve(data);

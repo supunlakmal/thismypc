@@ -20,7 +20,7 @@
             <div class="nav-link mouse" data-toggle="modal" data-target="#loginModal">
               <div class="dropdown">
                 <div id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Welcome back, {{user.name}}! <i class="fas fa-angle-down"></i>
+                  Welcome back, {{user.firstName}}! <i class="fas fa-angle-down"></i>
                 </div>
                 <div class="dropdown-menu dropdown-menu-right system-font" aria-labelledby="dropdownMenuButton">
                   <a class="dropdown-item" href="/account">Account</a>
@@ -41,7 +41,7 @@
       <div class="card-body col-xl-12">
         <div id="header2_left">
           <h1>
-            {{user.name}} {{user.nameLast}}
+            {{user.firstName}} {{user.lastName}}
           </h1>
           <span class="header2_details">
             {{user.email}}
@@ -82,9 +82,9 @@
                 <div class="col-xl-12 form-col ">
                   <div class="row">
                     <div class="col-xl-6 "><input type="text" class="type-text" placeholder="First Name"
-                        [(ngModel)]="name" name="name" required value="{{user.name}}"></div>
+                        [(ngModel)]="firstName" name="firstName" required value="{{user.firstName}}"></div>
                     <div class="col-xl-6"><input type="text" class="type-text" placeholder="Last Name"
-                        [(ngModel)]="nameLast" name="nameLast" value="{{user.nameLast}}"></div>
+                        [(ngModel)]="lastName" name="lastName" value="{{user.lastName}}"></div>
                   </div>
                 </div>
                 <div class="col-xl-12 form-col">
@@ -103,8 +103,8 @@
               <form class="col-xl-12" action="" (submit)="onUpdatePassword($event)">
                 <div class="col-xl-12 form-col title header">Change Password</div>
                 <div class="col-xl-12 form-col">
-                  <div class="error_message" *ngIf="error_passowrd">
-                    {{error_passowrd_text}}
+                  <div class="error_message" *ngIf="error_password">
+                    {{error_password_text}}
                   </div>
                 </div>
                 <div class="col-xl-12 form-col "><input type="password" class="type-text" placeholder="Current Password"

@@ -1,6 +1,6 @@
 'use strict';
-const socket = io.connect('http://thismypc.com:5000');
-const remoteServer = 'http://thismypc.com:5000';
+const socket = io.connect('http://localhost:5000');
+const remoteServer = 'http://localhost:5000';
 const {
   ipcRenderer,
 } = require('electron');
@@ -19,9 +19,8 @@ const computerID = machineIdSync({
 const computerID2 = machineIdSync();
 // console.log(pcID2);
 const computerKey = computerID2 + computerID;
-let ioSocketID = '';
 let userID = '';
-let authentication = '';
+let authentication_key = '';
 let applicationKey='';
 // folder created    mode
 const desiredMode = 0o2775;
@@ -40,9 +39,8 @@ fs.readFile(dir + '\/thisMyPC.json',
       } else {
         userInfo = JSON.parse(data); // now it an object
         console.log(userInfo);
-        ioSocketID = userInfo.ioSocketID;
         userID = userInfo.userID;
-        authentication = userInfo.authentication;
+        authentication_key = userInfo.authentication_key;
         applicationKey = userInfo.applicationKey;
         class Home {
         /**
@@ -120,21 +118,16 @@ fs.readFile(dir + '\/thisMyPC.json',
          * get user  info
          */
           getUserInfo() {
-            const data = {};
-            data['id'] = userID;
-            data['pcKey'] = computerKey;
-            fetch(remoteServer + '/app/myInfo', {
-              method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            fetch(remoteServer + `/api/v1/user/${userID}/computer/${computerKey}`, {
+              method: 'GET', // *GET, POST, PUT, DELETE, etc.
               mode: 'cors', // no-cors, cors, *same-origin
               headers: {
                 'Content-Type': 'application/json; charset=utf-8',
-                'token': authentication,
-              },
-              body: JSON.stringify(data), // body data type must match "Content-Type" header
-            })
+                'authentication_key': authentication_key,
+              }})
                 .then((response) => response.json()).then(function(response) {
                   if (response.status) {
-                    $('#userName').text(response.data.name + ' ' + response.data.nameLast);
+                    $('#userName').text(response.data.firstName + ' ' + response.data.lastName);
                   }
                 });
           }
@@ -198,9 +191,8 @@ fs.readFile(dir + '\/thisMyPC.json',
         homeClass.install();
         socket.emit('joinFromApp', {
           data: {
-            id: userID,
-            auth: authentication,
-            ioSocketID: ioSocketID,
+            userID: userID,
+            authentication_key: authentication_key,
             pcKey: computerKey,
           },
         });
@@ -211,8 +203,8 @@ fs.readFile(dir + '\/thisMyPC.json',
        */
         socket.on('pcInfoRequest', function(data) {
           socket.emit('pcInfo', {
-            id: userID,
-            auth: authentication,
+            userID: userID,
+            authentication_key: authentication_key,
             pcKey: computerKey,
             pcInfo: homeClass.getPcInfo(),
           });
@@ -233,9 +225,9 @@ fs.readFile(dir + '\/thisMyPC.json',
 `);
             const hDDList = await homeClass.getHDDList();
             socket.emit('hDDList', {
-              id: userID,
-              auth: authentication,
-              pcKey: computerKey,
+              userID: userID,
+              authentication_key: authentication_key,
+              computerKey: computerKey,
               data: hDDList,
             });
           } else {
@@ -247,7 +239,7 @@ fs.readFile(dir + '\/thisMyPC.json',
         socket.on('openFolderRequest', async function(data) {
         // homeClass.openFolderRequest(data, function (err, callback) {
           const homedir = data.path;
-          const folderContent = await  homeClass.readFolder(homedir);
+          const folderContent = await homeClass.readFolder(homedir);
           if (folderContent) {
             for (const file of folderContent) {
               const path = homedir + '\\' + file;
@@ -269,10 +261,9 @@ fs.readFile(dir + '\/thisMyPC.json',
                 fileObject.fileName = file;
                 fileObject.fileInfo = fileInfo;
                 socket.emit('sendOpenFolderRequest', {
-                  id: userID,
-                  auth: authentication,
+                  userID: userID,
+                  authentication_key: authentication_key,
                   pcKey: computerKey,
-                  room: ioSocketID,
                   data: fileObject,
                 });
                 console.log('new emit 2', fileObject);
@@ -291,9 +282,9 @@ fs.readFile(dir + '\/thisMyPC.json',
                   .then(() => {
                     console.log('success!');
                     socket.emit('folderCreateCallback', {
-                      id: userID,
-                      auth: authentication,
-                      pcKey: computerKey,
+                      userID: userID,
+                      authentication_key: authentication_key,
+                      computerKey: computerKey,
                       data: {
                         status: true,
                         message: 'Folder Create Successful',
@@ -304,9 +295,9 @@ fs.readFile(dir + '\/thisMyPC.json',
             } else {
               if (stats.isDirectory()) {
                 socket.emit('folderCreateCallback', {
-                  id: userID,
-                  auth: authentication,
-                  pcKey: computerKey,
+                  userID: userID,
+                  authentication_key: authentication_key,
+                  computerKey: computerKey,
                   data: {
                     status: false,
                     message: 'Please try different folder name',
@@ -318,18 +309,14 @@ fs.readFile(dir + '\/thisMyPC.json',
         });
         $('#submit-logout').click(function name(params) {
           ipcRenderer.send('loginPage');
-          const data = {};
-          data['id'] = userID;
-          data['auth'] = authentication;
-          fetch(remoteServer + '/app/logout', {
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+          fetch(remoteServer + `/api/v1/user/${userID}/computer/logout`, {
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
             mode: 'cors', // no-cors, cors, *same-origin
             headers: {
-              // "Content-Type": "application/x-www-form-urlencoded",
               'Content-Type': 'application/json; charset=utf-8',
+              'authentication_key': authentication_key,
             },
             // body data type must match "Content-Type" header
-            body: JSON.stringify(data),
           })
               .then((response) => response.json()).then(function(response) {
                 if (response.status) {}
