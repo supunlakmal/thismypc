@@ -79,9 +79,9 @@ Android  | Developing
 
 #### Clone Project
 
-    ```shell
-    git clone https://github.com/supunlakmal/thismypc.git
-    ```
+```shell
+git clone https://github.com/supunlakmal/thismypc.git
+```
 ![git clone https://github.com/supunlakmal/thismypc.git](doc/gifAnimations/gitClone.gif)
 
 This Command  will copy a full  project  to your local  environment
@@ -90,10 +90,10 @@ This Command  will copy a full  project  to your local  environment
 
 ### Setting up Angular Project
 
-    ```shell
+```shell
     cd thisMyPCWeb
     npm i
-    ```
+```
 
 ![Setting up Angular Project](doc/gifAnimations/angularSetup.gif)
 
@@ -108,10 +108,10 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 ### Setting up Electron Project
 
-    ```shell
-    cd thisMyPCApp
-    npm i
-    ```
+```shell
+cd thisMyPCApp
+npm i
+```
 
 ![ Setting up Electron Project](doc/gifAnimations/electronSetup.gif)
 
@@ -126,10 +126,10 @@ Run `npm run start` start electron app in debug mode
 
 ### Setting up Node Server
 
-    ```shell
-    cd thisMyPCServer
-    npm i
-    ```
+```shell
+cd thisMyPCServer
+npm i
+```
 
 `cd thisMyPCServer` Move into  Node  Project Folder
 `npm i` install all  dependency.
