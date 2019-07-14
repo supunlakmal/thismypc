@@ -227,10 +227,14 @@ fs.readFile(dir + '\/thisMyPC.json',
 </div>
 `);
             const hDDList = await homeClass.getHDDList();
+
+
+console.log(hDDList);
+
             socket.emit('hDDList', {
               userID: userID,
               authentication_key: authentication_key,
-              pcKey: computerKey,
+              computerKey: computerKey,
               data: hDDList,
             });
           } else {
