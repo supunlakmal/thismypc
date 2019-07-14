@@ -126,7 +126,7 @@ export class SystemComponent implements OnInit {
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('authentication_key', sessionStorage.getItem('authentication_key') ? sessionStorage.getItem('authentication_key') : 'thismyPc');
-    self.http.post(`${config.url}${config.port}/auth`,
+    self.http.post(`${config.url}${config.port}/api/v1/user/authentication`,
         JSON.stringify(sendData), {
           headers
         })
@@ -139,8 +139,8 @@ export class SystemComponent implements OnInit {
         () => {
           console.log('The POST observable is now completed.');
         });
-    self.http.post(`${config.url}${config.port}/myInfo`,
-        JSON.stringify(sendData), {
+    self.http.get(`${config.url}${config.port}/api/v1/user/${sendData['userID']}`,
+       {
           headers
         })
       .subscribe(
@@ -175,7 +175,7 @@ export class SystemComponent implements OnInit {
       self.alert.class = 'alert-success';
       self.alert.massage = ` <strong> Paste Done </strong> `;
     });
-    self.http.post(`${config.url}${config.port}/myInfo/myPC/online`,
+    self.http.post(`${config.url}${config.port}/api/v1/user/computer/online`,
         JSON.stringify(sendData), {
           headers
         })
@@ -258,8 +258,8 @@ export class SystemComponent implements OnInit {
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('authentication_key', sessionStorage.getItem('authentication_key') ? sessionStorage.getItem('authentication_key') : 'thismyPc');
-    this.http.post(`${config.url}${config.port}/logout`,
-        JSON.stringify(data), {
+    this.http.get(`${config.url}${config.port}/api/v1/user/${data['userID']}/computer/logout`,
+      {
           headers
         })
       .subscribe(
@@ -317,7 +317,7 @@ export class SystemComponent implements OnInit {
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('authentication_key', sessionStorage.getItem('authentication_key') ? sessionStorage.getItem('authentication_key') : 'thismyPc');
-    this.http.post(`${config.url}${config.port}/public/pc/access`,
+    this.http.post(`${config.url}${config.port}/api/v1/computer/public/access`,
         JSON.stringify(sendData), {
           headers
         })
@@ -342,7 +342,7 @@ export class SystemComponent implements OnInit {
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('authentication_key', sessionStorage.getItem('authentication_key') ? sessionStorage.getItem('authentication_key') : 'thismyPc');
-    this.http.post(`${config.url}${config.port}/validateFolderName`,
+    this.http.post(`${config.url}${config.port}/api/v1/user/computer/validateFolderName`,
         JSON.stringify(sendData), {
           headers
         })
