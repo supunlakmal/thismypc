@@ -48,8 +48,8 @@ export class AccountComponent implements OnInit {
   // todo  convert  all  errors  to  one  json object
   error_message = false;
   error_message_text = '';
-  error_passowrd = false;
-  error_passowrd_text = '';
+  error_password = false;
+  error_password_text = '';
   // post Header
   headers: any = '';
   constructor(private http: HttpClient, private router: Router, private connectionService: ConnectionService) {
@@ -166,8 +166,8 @@ export class AccountComponent implements OnInit {
           window.location.replace('/account');
         },
         response => {
-          this.error_passowrd = true;
-          this.error_passowrd_text = response.error.message;
+          this.error_password = true;
+          this.error_password_text = response.error.message;
         },
         () => {
           //  console.log("The POST observable is now completed.");
