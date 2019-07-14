@@ -53,6 +53,8 @@ const PC = require('./models/pc');
 const UserAndPC = require('./models/userAndPC');
 // pc and PC Owner  module
 const PcOwner = require('./models/PCOwner');
+
+
 app.use(bodyParser.json());
 app.use(fileUpload());
 // REST API output header
@@ -61,6 +63,8 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,token ,uid');
   next();
 });
+
+
 // server port ex-5000
 http.listen(process.env.PORT || config.port);
 logger.log(`Sever start on Port ${config.port}`);
@@ -367,7 +371,7 @@ app.post('/myInfo/myPc/update', async function(req, res) {
   const out = {};
   out.publicAccessKey = publicAccessKey;
   out.publicAccessStatus = publicAccessStatus;
-  const pc= await PC.updatePublicAccessStatus(pcID, out, {new:true});
+  const pc= await PC.updatePublicAccessStatus(pcID, out, {new: true});
   if (pc) {
     res.status(200);
     res.json(respond(true, 'Update Done', out));
@@ -397,7 +401,7 @@ app.post('/myInfo/myPc/publicKey/update', async function(req, res) {
   }
   const out = {};
   out.publicAccessKey = publicAccessKey;
-  const pc = await PC.newPublicAccessKey(pcID, out, {new:true});
+  const pc = await PC.newPublicAccessKey(pcID, out, {new: true});
   if (pc) {
     res.status(200);
     res.json(respond(true, 'Update Done', out));
@@ -694,7 +698,7 @@ io.on('connection', function(socket) {
       }
     }
   }
-/**
+  /**
  * Request  Computer Hard drive list
  */
   socket.on('hDDList', async function(input) {
@@ -737,7 +741,7 @@ io.on('connection', function(socket) {
     }
   });
   /**
-   * 
+   *
    */
   socket.on('pcInfo', async function(input) {
     const auth = input.auth;
@@ -753,8 +757,8 @@ io.on('connection', function(socket) {
       }
     }
   });
-/**
- * Request for open folder 
+  /**
+ * Request for open folder
  */
   socket.on('openFolder', async function(input) {
     const auth = input.auth;
