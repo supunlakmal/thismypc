@@ -1,5 +1,5 @@
 let config = {
-  "url": "http://thismypc.com",
+  "url": "http://localhost",
   "port": ":5000",
 }
 export {
