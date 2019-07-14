@@ -29,7 +29,7 @@ Desktop App  Login         |  Desktop App Open | Web App  PC  Drivers       |  W
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
 <img src="thisMyPCWeb/src/assets/images/screen/app-login.PNG" title="Desktop App  Login " width="100%"> |<img src="thisMyPCWeb/src/assets/images/screen/app-home.PNG" title="Desktop App Open" width="100%">|<img src="thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%"> |<img src="thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%">
 
-##  Folder Structure
+## Folder Structure
 
     .
     ├── .github/ISSUE_TEMPLATE
@@ -45,14 +45,17 @@ Desktop App  Login         |  Desktop App Open | Web App  PC  Drivers       |  W
     └── README.md
 
 ## What (This my pc) ?
+
 The concept behind thismypc app was transferred your computer folder and file information trough nodeJS server to web end as a json data.  
 
 ## Why (This my pc) ?
+
 - The app's responsive web interface helps you to browse file in any resolution device
 - You can use sours code for your own projects.
 - It works well in low bandwidth environments.
 
 ## How to (Wiki) ?
+
 All usage instruction and information update on [Github Wiki](https://github.com/supunlakmal/thismypc/wiki)
 
 ## Developing
@@ -68,81 +71,83 @@ Android  | Developing
 
 #### Built With
 
-* [Node JS](https://nodejs.org/en/)
-* [Angular](https://angularjs.org/)
-* [Electron JS](https://electronjs.org/)
-* [Mongodb](https://www.mongodb.com/)
-* [React Native](https://facebook.github.io/react-native/)
+- [Node JS](https://nodejs.org/en/)
+- [Angular](https://angularjs.org/)
+- [Electron JS](https://electronjs.org/)
+- [Mongodb](https://www.mongodb.com/)
+- [React Native](https://facebook.github.io/react-native/)
 
 #### Clone Project
 
-```shell
-git clone https://github.com/supunlakmal/thismypc.git
-```
+    ```shell
+    git clone https://github.com/supunlakmal/thismypc.git
+    ```
 ![git clone https://github.com/supunlakmal/thismypc.git](doc/gifAnimations/gitClone.gif)
 
 This Command  will copy a full  project  to your local  environment
 
 ## Angular Project
 
+### Setting up Angular Project
 
-#### Setting up Angular Project
-
-```shell
-cd thisMyPCWeb
-npm i
-```
+    ```shell
+    cd thisMyPCWeb
+    npm i
+    ```
 
 ![Setting up Angular Project](doc/gifAnimations/angularSetup.gif)
 
 `cd thisMyPCWeb` Move into angular Project Folder
 `npm i` install all  dependency.
 
-#### Run Angular Project
+### Run Angular Project
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Electron Project
 
-#### Setting up Electron Project
+### Setting up Electron Project
 
-```shell
-cd thisMyPCApp
-npm i
-```
+    ```shell
+    cd thisMyPCApp
+    npm i
+    ```
+
 ![ Setting up Electron Project](doc/gifAnimations/electronSetup.gif)
 
 `cd thisMyPCWeb` Move into  Electron  Project Folder
 `npm i` install all  dependency.
 
-#### Run Electron  Project
+### Run Electron  Project
 
 Run `npm run start` start electron app in debug mode
 
 ## Node Server
 
-#### Setting up Node Server
+### Setting up Node Server
 
-```shell
-cd thisMyPCServer
-npm i
-```
+    ```shell
+    cd thisMyPCServer
+    npm i
+    ```
 
 `cd thisMyPCServer` Move into  Node  Project Folder
 `npm i` install all  dependency.
 
-#### Run Node  Project
+### Run Node  Project
 
 Run `npm node index.js` to start node server
 
 ## REST  API
 
-#### API Reference
+### API Reference
 
-* PC - Personal Computer
-* thismypc.com:5000 - This is Thismypc web site API url. You can use your own Thismypc server link instead default Link.
+- PC - Personal Computer
+- thismypc.com:5000 - This is Thismypc web site API url. You can use your own localhost erver link instead default Link.
+- ":userID" -  User ID
+- ":computerKey"
 
-#### Web API
+### Web API
 
 Web API| URL | Description
 ------------ | ------------- | -------------
@@ -158,7 +163,7 @@ Update User Account | thismypc.com:5000/account/myInfo/update | -
 Update User Password | thismypc.com:5000/account/password/update | -
 Update User PC Info | thismypc.com:5000/myInfo/myPc/update | -
 
-#### Web socket IO
+### Web socket IO
 
 Socket Name| Socket | Type | Description
 ------------ | ------------- |------------- | -------------
@@ -168,7 +173,7 @@ PC access  Requests  | pcAccessRequest | emit | -
 Get Hard Drive List | hDDList | on | -
 Folder or  hard drive open data   | openFolderRequestToWeb | on | -
 
-#### App API
+### App API
 
 APP API| URL | Description
 ------------ | ------------- | -------------
@@ -176,7 +181,7 @@ User Login From App | thismypc.com:5000/login/app | -
 User Info | thismypc.com:5000/app/myInfo | -
 Notification | thismypc.com:5000/app/notification | -
 
-#### App socket IO
+### App socket IO
 
 Socket Name| Socket | Type | Description
 ------------ | ------------- |------------- | -------------
@@ -191,7 +196,6 @@ Folder Validation   | validateFolderName | on | -
 ## Database
 
 MongoDB use as Database.
-
 
 ## Licensing
 
