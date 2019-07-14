@@ -152,7 +152,7 @@ Run `npm node index.js` to start node server
 Web API| URL | Description
 ------------ | ------------- | -------------
 User Register| /api/v1/user/register | -
-User Login | /api/v1/login | -
+User Login | /api/v1/user/login | -
 User Logout | /api/v1/user/:userID/logout | -
 User Auth | /api/v1/user/authentication | -
 User Info | /api/v1/user/:userID | -
