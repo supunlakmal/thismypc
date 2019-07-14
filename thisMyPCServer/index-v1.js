@@ -655,7 +655,7 @@ app.post('/api/v1/login', async function(req, res) {
   if (userLogin) {
     const date = new Date();
     userLogin.authentication_key = md5(userLogin._id + date);
-    const user =  await User.updateUserAuth(userLogin._id, userLogin, {new: true});
+    const user = await User.updateUserAuth(userLogin._id, userLogin, {new: true});
     const userClassData = new userClass(user);
     userClassData.userInformation();
     userClassData.withAuthentication();
@@ -1003,10 +1003,10 @@ io.on('connection', function(socket) {
           if (pcOwnerData) {
             const userInformation = await User.getUser(user._id);
 
-const computerClassData = await updateAppUserAuth(user, pcKey);
-let computerClassObject = new computerClass(computerClassData);
-computerClassObject.withAuthentication();
-computerClassObject.withUserInformation(userInformation);
+            const computerClassData = await updateAppUserAuth(user, pcKey);
+            const computerClassObject = new computerClass(computerClassData);
+            computerClassObject.withAuthentication();
+            computerClassObject.withUserInformation(userInformation);
             res.status(200);
             res.json(respond(true, 'Hello!', computerClassObject.get()));
           }
@@ -1155,8 +1155,7 @@ computerClassObject.withUserInformation(userInformation);
  * Request  Computer Hard drive list
  */
   socket.on('hDDList', async function(input) {
-
-console.log(input);
+    console.log(input);
 
     const userID = input.userID;
     const authentication_key = input.authentication_key;
