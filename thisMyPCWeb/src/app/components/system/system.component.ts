@@ -69,6 +69,10 @@ export class SystemComponent implements OnInit {
   pcSelect = false;
   //pc info 
   pcInfoData: any = [];
+
+
+    // post Header
+    headers: any = '';
   /**
    *
    * param {HttpClient} http
@@ -123,9 +127,14 @@ export class SystemComponent implements OnInit {
     const sendData = {};
     sendData['userID'] = sessionStorage.getItem('userID');
     console.log(JSON.stringify(sendData));
-    const headers = new HttpHeaders()
+    self.headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('authentication_key', sessionStorage.getItem('authentication_key') ? sessionStorage.getItem('authentication_key') : 'thismyPc');
+
+      
+      const headers = self.headers;
+
+
     self.http.post(`${config.url}${config.port}/api/v1/user/authentication`,
         JSON.stringify(sendData), {
           headers
@@ -253,12 +262,10 @@ export class SystemComponent implements OnInit {
 
   // logout System
   logout() {
-    const data = {};
-    data['userID'] = sessionStorage.getItem('userID');
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('authentication_key', sessionStorage.getItem('authentication_key') ? sessionStorage.getItem('authentication_key') : 'thismyPc');
-    this.http.get(`${config.url}${config.port}/api/v1/user/${data['userID']}/computer/logout`,
+    const userID  = sessionStorage.getItem('userID');
+    const self =this;
+    const headers = self.headers;
+    self.http.get(`${config.url}${config.port}/api/v1/user/${userID}/computer/logout`,
       {
           headers
         })
@@ -310,13 +317,15 @@ export class SystemComponent implements OnInit {
   }
   getAccessToPC() {
     this.processAlert(true);
+
+    const self =this;
+    const headers = self.headers;
+
     const sendData = {};
     sendData['pcKeyPublic'] = this.publicPcKey;
     sendData['userID'] = sessionStorage.getItem('userID');
     console.log(JSON.stringify(sendData));
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('authentication_key', sessionStorage.getItem('authentication_key') ? sessionStorage.getItem('authentication_key') : 'thismyPc');
+
     this.http.post(`${config.url}${config.port}/api/v1/computer/public/access`,
         JSON.stringify(sendData), {
           headers
@@ -334,14 +343,14 @@ export class SystemComponent implements OnInit {
   
   validateFolder(e) {
     const sendData = {};
+    const self =this;
+    const headers = self.headers;
     sendData['pcKeyPublic'] = this.publicPcKey;
     sendData['userID'] = sessionStorage.getItem('userID');
     sendData['createFolderName'] = this.createFolderName;
     sendData['path'] = this.openFolderPath;
     console.log(JSON.stringify(sendData));
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('authentication_key', sessionStorage.getItem('authentication_key') ? sessionStorage.getItem('authentication_key') : 'thismyPc');
+
     this.http.post(`${config.url}${config.port}/api/v1/user/computer/validateFolderName`,
         JSON.stringify(sendData), {
           headers
