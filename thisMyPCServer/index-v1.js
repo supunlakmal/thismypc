@@ -1002,7 +1002,7 @@ io.on('connection', function(socket) {
           const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
           if (pcOwnerData) {
             const userInformation = await User.getUser(user._id);
-logger.log(userInformation);
+
 const computerClassData = await updateAppUserAuth(user, pcKey);
 let computerClassObject = new computerClass(computerClassData);
 computerClassObject.withAuthentication();
@@ -1155,12 +1155,15 @@ computerClassObject.withUserInformation(userInformation);
  * Request  Computer Hard drive list
  */
   socket.on('hDDList', async function(input) {
+
+console.log(input);
+
     const userID = input.userID;
     const authentication_key = input.authentication_key;
     const computerKey = md5(input.computerKey);
     const pc = await PC.authApp(userID, authentication_key, computerKey);
     if (pc) {
-      const user = await User.getUser(id);
+      const user = await User.getUser(userID);
       if (user) {
       // to  web
         const socketID = await getUserSocketID(pc, user);
@@ -1179,7 +1182,7 @@ computerClassObject.withUserInformation(userInformation);
     if (user) {
       const userInfo = {};
       userInfo.pcID = pcID;
-      await User.updateUserNowAccessPCID(id, userInfo, {});
+      await User.updateUserNowAccessPCID(userID, userInfo, {});
       const pc = await PC.getPCUsingID(pcID);
       if (pc) {
         const sendUserInfoToApp = {};
@@ -1197,11 +1200,11 @@ computerClassObject.withUserInformation(userInformation);
    */
   socket.on('pcInfo', async function(input) {
     const authentication_key = input.authentication_key;
-    const id = input.id;
+    const userID = input.userID;
     const pcKey = md5(input.pcKey);
-    const pc = await PC.authApp(id, authentication_key, pcKey);
+    const pc = await PC.authApp(userID, authentication_key, pcKey);
     if (pc) {
-      const user =await User.getUser(id);
+      const user =await User.getUser(userID);
       if (user) {
       // to  web
         const socketID = await getUserSocketID(pc, user);
