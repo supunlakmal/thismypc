@@ -21,6 +21,7 @@ const logger = require('./components/logger');
  * User Resources
  */
 const userClass= require('./components/class/user.class');
+const computerClass= require('./components/class/computer.class');
 // MongoDB server connection
 mongoose.connect(`mongodb://${db.user}:${db.password}@${db.host}/${db.dbName}`, {
   useNewUrlParser: true,
@@ -63,7 +64,7 @@ app.use(fileUpload());
 // REST API output header
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,token ,uid');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,authentication_key ,userID');
   next();
 });
 // server port ex-5000
@@ -650,11 +651,11 @@ app.post('/api/v1/login', async function(req, res) {
     return res.json(respond(false, 'username/password required', null));
   }
   // wait till the promise resolves (*)
-  const user = await User.loginUser(email, password);
-  if (user) {
+  const userLogin = await User.loginUser(email, password);
+  if (userLogin) {
     const date = new Date();
-    user.auth = md5(user._id + date);
-    await User.updateUserAuth(user._id, user, {});
+    userLogin.authentication_key = md5(userLogin._id + date);
+    const user =  await User.updateUserAuth(userLogin._id, userLogin, {new: true});
     const userClassData = new userClass(user);
     userClassData.userInformation();
     userClassData.withAuthentication();
@@ -969,10 +970,7 @@ io.on('connection', function(socket) {
     input.auth = md5(user._id + date + pcKey);
     input.id = user._id;
     const updateUserAuthApp = await PC.updateUserAuthApp(pcKey, input, {new: true} );
-    const out = {};
-    out.auth = updateUserAuthApp.authApp;
-    out.id = updateUserAuthApp.userID;
-    return out;
+    return updateUserAuthApp;
   }
   app.post('/api/v1/user/computer/login', async function(req, res) {
     const email = req.body.email;
@@ -1003,12 +1001,14 @@ io.on('connection', function(socket) {
           pcOwner.userID = user._id;
           const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
           if (pcOwnerData) {
-            const out = await updateAppUserAuth(user, pcKey);
-            const userClassData = new userClass(out);
-            userClassData.userInformation();
-            userClassData.withComputerAuthentication();
+            const userInformation = await User.getUser(user._id);
+logger.log(userInformation);
+const computerClassData = await updateAppUserAuth(user, pcKey);
+let computerClassObject = new computerClass(computerClassData);
+computerClassObject.withAuthentication();
+computerClassObject.withUserInformation(userInformation);
             res.status(200);
-            res.json(respond(true, 'Hello!', userClassData.get()));
+            res.json(respond(true, 'Hello!', computerClassObject.get()));
           }
         } else {
           const pc = {};
