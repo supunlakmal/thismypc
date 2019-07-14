@@ -14,6 +14,10 @@ withAuthentication(){
     this.user.authentication_key = this.setUserObject.auth;
     return this;
 }
+withComputerAuthentication(){
+    this.user.authentication_key = this.setUserObject.authApp;
+    return this;
+}
 get(){
     return  this.user;
 }
