@@ -19,7 +19,6 @@ const computerID = machineIdSync({
 const computerID2 = machineIdSync();
 // console.log(pcID2);
 const computerKey = computerID2 + computerID;
-
 let userID = '';
 let authentication_key = '';
 let applicationKey='';
@@ -40,7 +39,6 @@ fs.readFile(dir + '\/thisMyPC.json',
       } else {
         userInfo = JSON.parse(data); // now it an object
         console.log(userInfo);
-      
         userID = userInfo.userID;
         authentication_key = userInfo.authentication_key;
         applicationKey = userInfo.applicationKey;
@@ -120,7 +118,6 @@ fs.readFile(dir + '\/thisMyPC.json',
          * get user  info
          */
           getUserInfo() {
-           
             fetch(remoteServer + `/api/v1/user/${userID}/computer/${computerKey}`, {
               method: 'GET', // *GET, POST, PUT, DELETE, etc.
               mode: 'cors', // no-cors, cors, *same-origin
@@ -227,10 +224,6 @@ fs.readFile(dir + '\/thisMyPC.json',
 </div>
 `);
             const hDDList = await homeClass.getHDDList();
-
-
-console.log(hDDList);
-
             socket.emit('hDDList', {
               userID: userID,
               authentication_key: authentication_key,
@@ -316,18 +309,14 @@ console.log(hDDList);
         });
         $('#submit-logout').click(function name(params) {
           ipcRenderer.send('loginPage');
-      
-
           fetch(remoteServer + `/api/v1/user/${userID}/computer/logout`, {
             method: 'GET', // *GET, POST, PUT, DELETE, etc.
             mode: 'cors', // no-cors, cors, *same-origin
             headers: {
-        
               'Content-Type': 'application/json; charset=utf-8',
               'authentication_key': authentication_key,
             }
             // body data type must match "Content-Type" header
-         
           })
               .then((response) => response.json()).then(function(response) {
                 if (response.status) {}
