@@ -760,9 +760,6 @@ app.get('/api/v1/user/:userID/logout', async function(req, res) {
     res.json(respond(true, 'Invalid User', null));
   }
 });
-
-
-
 /**
  * User logout from computer
  *
@@ -792,9 +789,6 @@ app.get('/api/v1/user/:userID/computer/logout', async function(req, res) {
     res.json(respond(true, 'Invalid User', null));
   }
 });
-
-
-
 /**
  * Update allow pubic access status
  *
@@ -980,7 +974,7 @@ io.on('connection', function(socket) {
     out.id = updateUserAuthApp.userID;
     return out;
   }
-  app.post('/login/app', async function(req, res) {
+  app.post('/api/v1/user/computer/login', async function(req, res) {
     const email = req.body.email;
     const key = req.body.appKey;
     const password = md5(req.body.password);
@@ -1010,8 +1004,11 @@ io.on('connection', function(socket) {
           const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
           if (pcOwnerData) {
             const out = await updateAppUserAuth(user, pcKey);
+            const userClassData = new userClass(out);
+            userClassData.userInformation();
+            userClassData.withComputerAuthentication();
             res.status(200);
-            res.json(respond(true, 'Hello!', out));
+            res.json(respond(true, 'Hello!', userClassData.get()));
           }
         } else {
           const pc = {};
@@ -1031,9 +1028,11 @@ io.on('connection', function(socket) {
             const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
             if (pcOwnerData) {
               const out = await updateAppUserAuth(user, pcKey);
-              out.ioSocketID = 'room1';
+              const userClassData = new userClass(out);
+              userClassData.userInformation();
+              userClassData.withAuthentication();
               res.status(200);
-              res.json(respond(true, 'Hello!', out));
+              res.json(respond(true, 'Hello!', userClassData.get()));
             }
           }
         }
@@ -1293,7 +1292,7 @@ io.on('connection', function(socket) {
   socket.on('folderCreateCallback', async function(input) {
     const authentication_key = input.authentication_key;
     const userID = input.userID;
-    const computerKey = md5(input.pcKey);
+    const computerKey = md5(input.computerKey);
     const computer = await PC.authApp(userID, authentication_key, computerKey);
     if (computer) {
       const user = await User.getUser(userID);
