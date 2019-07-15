@@ -19,7 +19,7 @@
 
 ThisMyPC is a next-generation open source solution for remote computer. It's a full stack based project that starts as an experiment.
 
-## Website - http://thismypc.com
+## Demo - http://thismypc.com
 
 ![Web Site System](doc/gifAnimations/web_site_system.gif)
 
