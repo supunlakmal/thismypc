@@ -147,11 +147,11 @@ html {
   color: #e53935;
 }
 
+.error_message,
+.info_message,
+.promo_message,
 .success_message,
 .warning_message,
-.error_message,
-.promo_message,
-.info_message,
 .resolved_message {
   border-radius: 5px;
   border-style: solid;
@@ -235,10 +235,6 @@ html {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.btn-big {
-  /* height: 48px !important; */
 }
 
 .breadcrumb li {
@@ -330,19 +326,6 @@ a.linkd_in_link {
   font-size: 19px;
 }
 
-/*
-.circle{
-  padding: 37px 44px;
-  border-radius: 50%;
-  background-color: #ffffff;
-  color: #0080ff;
-  max-height: 129px;
-  z-index: 2;
-  border: 1px solid #0080ff;
-  font-size: 30px;
-}
-.circle img{ max-height: 129px;}
-*/
 .full-new:after {
   left: calc(50% - 0px) !important;
 }
@@ -519,7 +502,6 @@ a.linkd_in_link {
 }
 
 .featured-content-popup-interstitial {
-  /*border: 3px solid #0080ff;*/
   -webkit-animation-duration: 3200ms;
           animation-duration: 3200ms;
   -webkit-animation-iteration-count: 1;
@@ -836,9 +818,6 @@ Home  block end
 @media (min-width: 320px) and (max-width: 768px) {
   .ftco-navbar-light .navbar-nav > .nav-item.cta > a {
     border-left: unset;
-  }
-  .nav-bar-bg {
-    /*padding-bottom: 12px;*/
   }
   .onScrolled .nav-item.cta > a {
     border-left: unset !important;
