@@ -102,7 +102,7 @@ export class AccountComponent implements OnInit {
         },
         response => {},
         () => {});
-        self.http.post(`${config.url}${config.port}/api/v1/user/computer/online`,
+        self.http.post(`${config.url}${config.port}/api/v1/user/computer`,
         JSON.stringify(sendData), {
           headers
         })
