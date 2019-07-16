@@ -28,7 +28,7 @@
                 </div>
                 <div class="dropdown-menu dropdown-menu-right system-font" aria-labelledby="dropdownMenuButton">
                   <a class="dropdown-item" href="/account">Account</a>
-                  <a class="dropdown-item" href="/system">PC</a>
+                  <a class="dropdown-item" href="/system">Computer</a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="#" (click)="logout()">Logout</a>
                 </div>
@@ -45,22 +45,22 @@
       <div class="card-body col-xl-6 col-md-4 intro-step-1" data-intro="List Down All Your Online Pc that Belong To your Account"
         data-step="1">
         <select *ngIf="(pcs | json) != '[]'" name="" id="" class="type-text" #pc (change)="selectPC(pc.value)">
-          <option value="*">Select Pc</option>
+          <option value="*">Select Computer</option>
           <option *ngFor="let pc of pcs; let p = index;" [value]="pc._id">
             {{pc.pcName}}
             {{pc.platform}}
           </option>
         </select>
-        <span *ngIf="(pcs | json) === '[]'">Online Pc not available</span>
+        <span *ngIf="(pcs | json) === '[]'">Online Computer not available</span>
       </div>
       <div class=" card-body col-xl-6 col-md-8 intro-step-2" data-intro="You can Connect to another  pc using this Public PC Key"
         data-step="2">
         <form action="" (submit)="getAccessToPC()">
           <div class="row">
             <div class="col-xl-8 col-md-8"><input type="text" name="publicPcKey" [(ngModel)]="publicPcKey" class="type-text"
-                placeholder="Public PC Key"></div>
+                placeholder="Public Computer Key"></div>
             <div class="col-xl-4 col-md-4">
-              <button type="submit" class="btn btn-primary w-100 blue-btn btn-big ">Access PC
+              <button type="submit" class="btn btn-primary w-100 blue-btn btn-big ">Access Computer
               </button>
             </div>
           </div>
@@ -141,22 +141,8 @@
                     <i class="blue-text fas fa-angle-down mouse " data-toggle="dropdown" aria-haspopup="true"
                       aria-expanded="false"></i>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                      <div class="dropdown-item disabled mouse" *ngIf="folder.file">Cut <span
-                          class="badge badge-pill badge-primary">Pending</span>
-                      </div>
-                      <div class="dropdown-item mouse disabled" *ngIf="folder.file">Copy <span
-                          class="badge badge-pill badge-primary">Pending</span>
-                      </div>
-                      <div *ngIf="!folder.file" class="dropdown-item mouse disabled">Paste
-                        <span class="badge badge-pill badge-primary">Pending</span>
-                      </div>
-                      <div *ngIf="folder.file" class="dropdown-item mouse disabled"
-                       >Download
-                        <span class="badge badge-pill badge-primary">Max 1 MB Pending</span>
-                      </div>
-                      <div *ngIf="!folder.file" class="dropdown-item mouse  disabled ">Upload
-                        <span class="badge badge-pill badge-primary">Max 1 MB Pending</span>
-                      </div>
+       
+       
                       <div (click)="propertyFunction(folder)" class="dropdown-item mouse " data-toggle="modal"
                         data-target="#fileOrFolderProperty">Property
                       </div>

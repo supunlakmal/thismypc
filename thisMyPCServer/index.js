@@ -475,7 +475,7 @@ app.post('/api/v1/user/computer', async function(req, res) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
   }
-  const pc =await PC.getPCByUserID(id);
+  const pc =await PC.getPCByUserID(userID);
   if (pc) {
     res.status(200);
     res.json(respond(true, 'good call', pc));
@@ -507,6 +507,18 @@ app.post('/api/v1/user/authentication', async function(req, res) {
     res.json(respond(false, 'Invalid User', null));
   }
 });
+
+let isValidFoldersName = (function () {
+    var rg1 = /^[^\\/:\*\?"<>\|]+$/; // forbidden characters \ / : * ? " < > |
+    var rg2 = /^\./; // cannot start with dot (.)
+    var rg3 = /^(nul|prn|con|lpt[0-9]|com[0-9])(\.|$)/i; // forbidden file names
+    return function isValidFoldersName(fname) {
+        return rg1.test(fname) && !rg2.test(fname) && !rg3.test(fname);
+    }
+})();
+
+
+
 io.on('connection', function(socket) {
   // TODO this user  login from app need to add few   function to  it
   socket.on('loginPage', function() {});
@@ -841,7 +853,7 @@ io.on('connection', function(socket) {
     }
   });
   // validate folder name
-  app.post('api/v1/user/computer/validateFolderName', async function(req, res) {
+  app.post('/api/v1/user/computer/validateFolderName', async function(req, res) {
     const authentication_key = req.headers.authentication_key;
     const createFolderName = req.body.createFolderName;
     const userID = req.body.userID;

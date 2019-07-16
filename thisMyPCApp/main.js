@@ -19,7 +19,7 @@ function createWindow() {
     height: 600,
     minHeight: 500,
     minWidth: 500,
-    width: 1200,
+    width: 900,
     icon: 'assets/images/logo/logo-icon.png',
     show: false,
     /* , frame: false*/
