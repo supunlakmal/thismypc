@@ -475,7 +475,7 @@ app.post('/api/v1/user/computer', async function(req, res) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
   }
-  const pc =await PC.getPCByUserID(id);
+  const pc =await PC.getPCByUserID(userID);
   if (pc) {
     res.status(200);
     res.json(respond(true, 'good call', pc));
