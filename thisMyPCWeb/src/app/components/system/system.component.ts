@@ -242,10 +242,9 @@ export class SystemComponent implements OnInit {
     const pcKeyPublic = this.publicPcKey;
     this.openFolderName = fileName;
     this.breadcrumb(path);
-    console.log(fileName);
+this.openFolderPath= path;
     const userID = sessionStorage.getItem('userID');
     const authentication_key = sessionStorage.getItem('authentication_key');
-    console.log(authentication_key);
     this.folderList = [];
     this.socket.emit('openFolder', {
       path: path + '//',
@@ -345,10 +344,10 @@ export class SystemComponent implements OnInit {
     const sendData = {};
     const self =this;
     const headers = self.headers;
-    sendData['pcKeyPublic'] = this.publicPcKey;
+    sendData['pcKeyPublic'] = self.publicPcKey;
     sendData['userID'] = sessionStorage.getItem('userID');
-    sendData['createFolderName'] = this.createFolderName;
-    sendData['path'] = this.openFolderPath;
+    sendData['createFolderName'] = self.createFolderName;
+    sendData['path'] = self.openFolderPath;
     console.log(JSON.stringify(sendData));
 
     this.http.post(`${config.url}${config.port}/api/v1/user/computer/validateFolderName`,
