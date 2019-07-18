@@ -392,10 +392,19 @@ app.post('/api/v1/user/computer/public/status/update', async function(req, res) 
   const out = {};
   out.publicAccessKey = publicAccessKey;
   out.publicAccessStatus = publicAccessStatus;
-  const pc= await PC.updatePublicAccessStatus(pcID, out, {new: true});
-  if (pc) {
+  const computerClassData= await PC.updatePublicAccessStatus(computerKey, out, {new: true});
+  if (computerClassData) {
+
+
+    
+    const computerClassObject = new computerClass(computerClassData);
+
+    computerClassObject.withPublicAccessStatus();
+    computerClassObject.withPublicAccessKey();
+
+
     res.status(200);
-    res.json(respond(true, 'Update Done', out));
+    res.json(respond(true, 'Update Done', computerClassObject.get()));
   }
 });
 /**

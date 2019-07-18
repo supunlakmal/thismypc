@@ -11,7 +11,7 @@ import {
   RouterModule,
   Routes
 } from '@angular/router';
-
+import * as $ from 'jquery';
 import {config} from '../config/config'
 
 
@@ -31,8 +31,11 @@ export class HomeComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router) {}
   ngOnInit() {
 
-    console.log('%c My code DOESN’T work, I have no idea why. My code WORKS, I have no idea why! ', 'font-size: 20px; background: #0080ff; color: #fff');
-    const self = this;
+     const self = this;
+    
+    $("#close_contribute_alert").click(function(d){
+      $("#contribute_alert").remove();
+    });
   }
   resetModel() {
     this.error_message = false;

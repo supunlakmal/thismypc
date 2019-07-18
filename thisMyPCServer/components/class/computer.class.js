@@ -12,6 +12,14 @@ withAuthentication(){
     this.computer.authentication_key = this.setComputerObject.authApp;
     return this;
 }
+withPublicAccessStatus(){
+    this.computer.publicAccessStatus = this.setComputerObject.publicAccessStatus;
+    return this;
+}
+withPublicAccessKey(){
+    this.computer.publicAccessKey = this.setComputerObject.publicAccessKey;
+    return this;
+}
 
 
 withUserInformation(userObject){
