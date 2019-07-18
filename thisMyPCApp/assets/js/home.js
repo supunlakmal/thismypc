@@ -1,6 +1,6 @@
 'use strict';
-const socket = io.connect('http://thismypc.com:5000');
-const remoteServer = 'http://thismypc.com:5000';
+const socket = io.connect('http://localhost:5000');
+const remoteServer = 'http://localhost:5000';
 const {
   ipcRenderer,
 } = require('electron');
@@ -13,305 +13,314 @@ const hddSpace = require('hdd-space');
 const {
   machineIdSync,
 } = require('node-machine-id');
-const pcID = machineIdSync({
+const computerID = machineIdSync({
   original: true,
 });
-const pcID2 = machineIdSync();
+const computerID2 = machineIdSync();
 // console.log(pcID2);
-const pcKey = pcID2 + pcID;
-let ioSocketID = '';
-let id = '';
-let auth = '';
-let appKey = '';
+const computerKey = computerID2 + computerID;
+let userID = '';
+let authentication_key = '';
+let applicationKey='';
 // folder created    mode
 const desiredMode = 0o2775;
 const homedir = os.homedir();
 let userInfo = {};
 const dir = homedir + '\/.thisMyPC';
 fs.readFile(dir + '\/thisMyPC.json',
-  'utf8',
-  /**
+    'utf8',
+    /**
    * @param  {object} err
    * @param  {object} data
    */
-  function readFileCallback(err, data) {
-    if (err) {
-      console.log(err);
-    } else {
-      userInfo = JSON.parse(data); // now it an object
-      console.log(userInfo);
-      ioSocketID = userInfo.ioSocketID;
-      id = userInfo.id;
-      auth = userInfo.auth;
-      appKey = userInfo.appKey;
-      class Home {
+    function readFileCallback(err, data) {
+      if (err) {
+        console.log(err);
+      } else {
+        userInfo = JSON.parse(data); // now it an object
+        console.log(userInfo);
+        userID = userInfo.userID;
+        authentication_key = userInfo.authentication_key;
+        applicationKey = userInfo.applicationKey;
+        class Home {
         /**
          *  constructor
          */
-        constructor() {
-          this.homedir = os.homedir();
-        }
-        /**
+          constructor() {
+            this.homedir = os.homedir();
+          }
+          /**
          * @param  {string} pathFile
          * get  all file and folder  from path  as  list  to main  left side screen #file-dr-list
          * @return {boolean}
          */
-        isFile(pathFile) {
-          return fs.statSync(pathFile).isFile();
-        }
-        /**
+          isFile(pathFile) {
+            return fs.statSync(pathFile).isFile();
+          }
+          /**
          * @param  {number} bytes
          * @param  {string} si
          * get  file all
          * @return {string}
          */
-        fileSize(bytes, si) {
-          const thresh = si ? 1000 : 1024;
-          if (Math.abs(bytes) < thresh) {
-            return bytes + ' B';
+          fileSize(bytes, si) {
+            const thresh = si ? 1000 : 1024;
+            if (Math.abs(bytes) < thresh) {
+              return bytes + ' B';
+            }
+            const units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+            let u = -1;
+            do {
+              bytes /= thresh;
+              ++u;
+            } while (Math.abs(bytes) >= thresh && u < units.length - 1);
+            return bytes.toFixed(1) + ' ' + units[u];
           }
-          const units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-          let u = -1;
-          do {
-            bytes /= thresh;
-            ++u;
-          } while (Math.abs(bytes) >= thresh && u < units.length - 1);
-          return bytes.toFixed(1) + ' ' + units[u];
-        }
-        /**
+          /**
          * @param  {object} t
          * @return {string}
          */
-        timeStampToDateTimeText(t) {
-          return t.getFullYear() + '-' + t.getMonth() + '-' + t.getDay() + ' ' + t.getHours() + ':' + t.getMinutes();
-        }
-        /**
+          timeStampToDateTimeText(t) {
+            return t.getFullYear() + '-' + t.getMonth() + '-' + t.getDay() + ' ' + t.getHours() + ':' + t.getMinutes();
+          }
+          /**
          * @param  {string} pathFile
          * @return {object}
          */
-        fileInfo(pathFile) {
-          const property = {};
-          const info = fs.statSync(pathFile);
-          property.sizeText = this.fileSize(info.size, true);
-          property.birthTime = this.timeStampToDateTimeText(info.birthtime);
-          property.accessed = this.timeStampToDateTimeText(info.atime);
-          property.modified = this.timeStampToDateTimeText(info.mtime);
-          return property;
-        }
-        /**
+          fileInfo(pathFile) {
+            const property = {};
+            const info = fs.statSync(pathFile);
+            property.sizeText = this.fileSize(info.size, true);
+            property.birthTime = this.timeStampToDateTimeText(info.birthtime);
+            property.accessed = this.timeStampToDateTimeText(info.atime);
+            property.modified = this.timeStampToDateTimeText(info.mtime);
+            return property;
+          }
+          /**
          * @param  {object} callback
          */
-        getHDDList(callback) {
-          hddSpace({
-            format: 'auto',
-          }, function (info) {
-            callback(info);
-          });
-        }
-        /**
+          getHDDList() {
+            return new Promise((resolve)=>{
+              hddSpace({
+                format: 'auto',
+              }, function(info) {
+                resolve(info);
+              });
+            }).then((hDDList)=>{
+              return hDDList;
+            });
+          }
+          /**
          * User Log Out
          */
-        logOut() {}
-        /**
+          logOut() {}
+          /**
          * get user  info
          */
-        getUserInfo() {
-          const data = {};
-          data['id'] = id;
-          data['pcKey'] = pcKey;
-          fetch(remoteServer + '/app/myInfo', {
-              method: 'POST', // *GET, POST, PUT, DELETE, etc.
+          getUserInfo() {
+            fetch(remoteServer + `/api/v1/user/${userID}/computer/${computerKey}`, {
+              method: 'GET', // *GET, POST, PUT, DELETE, etc.
               mode: 'cors', // no-cors, cors, *same-origin
               headers: {
                 'Content-Type': 'application/json; charset=utf-8',
-                'token': auth,
-              },
-              body: JSON.stringify(data), // body data type must match "Content-Type" header
-            })
-            .then((response) => response.json()).then(function (response) {
-              if (response.status) {
-                $('#userName').text(response.data.name + ' ' + response.data.nameLast);
-              }
+                'authentication_key': authentication_key,
+              }})
+                .then((response) => response.json()).then(function(response) {
+                  if (response.status) {
+                    $('#userName').text(response.data.firstName + ' ' + response.data.lastName);
+                  }
+                });
+          }
+          getPcInfo() {
+            const self = this;
+            console.log(`${os.totalmem()}${os.uptime()}`);
+            const pcInfo = {};
+            pcInfo.totalMemory = self.fileSize(os.totalmem(), true);
+            // calculate  PC use memory
+            pcInfo.useMemory = self.fileSize(os.totalmem()-os.freemem(), true);
+            return pcInfo;
+          }
+          /**
+ * Read all contend in given path
+ *
+ * @param {string} path
+ */
+          readFolder(path) {
+            return new Promise((resolve)=>{
+              fse.readdir(path, function(err, content) {
+                if (err) {
+                  console.log(err);
+                  resolve(false);
+                } else {
+                  resolve(content);
+                }
+              });
+            }).then((data)=>{
+              return data;
             });
-        }
-        getPcInfo() {
-          let self = this;
-          console.log(`
-${os.totalmem()}
-${os.uptime()}
-`);
-          let pcInfo = {};
-          pcInfo.totalmem = self.fileSize(os.totalmem(), true);
-          return pcInfo;
-        }
-        /**
+          }
+          /**
+           * check given path is file or  system file that cant access using this app
+           *
+           * @param {string} path
+           */
+          isThisFile(path) {
+            return new Promise((resolve)=>{
+              fse.ensureFile(path, (err) => {
+                if (err) {
+                  resolve(false);
+                } else {
+                  resolve(true);
+                }
+              });
+            }).then((result)=>{
+              return result;
+            });
+          }
+          /**
          * Initialize  functions
          */
-        install() {
-          this.getUserInfo();
-          this.logOut();
+          install() {
+            this.getUserInfo();
+            this.logOut();
+          }
         }
-      }
-      const homeClass = new Home();
-      console.log(os);
-      console.log(os.platform());
-      homeClass.install();
-      socket.emit('joinFromApp', {
-        data: {
-          id: id,
-          auth: auth,
-          ioSocketID: ioSocketID,
-          pcKey: pcKey,
-        },
-      });
-      /**
+        const homeClass = new Home();
+        console.log(os);
+        console.log(os.platform());
+        homeClass.install();
+        socket.emit('joinFromApp', {
+          data: {
+            userID: userID,
+            authentication_key: authentication_key,
+            pcKey: computerKey,
+          },
+        });
+        /**
        * @param  {} 'pcInfoRequest'
        * @param  {} function(data)
        * send pc  information  to web end
        */
-      socket.on('pcInfoRequest', function (data) {
-        socket.emit('pcInfo', {
-          id: id,
-          auth: auth,
-          pcKey: pcKey,
-          pcInfo: homeClass.getPcInfo()
+        socket.on('pcInfoRequest', function(data) {
+          socket.emit('pcInfo', {
+            userID: userID,
+            authentication_key: authentication_key,
+            pcKey: computerKey,
+            pcInfo: homeClass.getPcInfo(),
+          });
         });
-      });
-      // this is  privet   message
-      socket.on('pcAccessRequest', function (data) {
-        console.log(data);
-        if (data.status) {
-          $('#remoteUserBox').html(`
+        // this is  privet   message
+        socket.on('pcAccessRequest', async function(data) {
+          console.log(data);
+          if (data.status) {
+            $('#remoteUserBox').html(`
 <div class="row align-items-center">
 <div class="col-2"><i class="fas fa-circle-notch  fa-spin"></i></div>
 <div class="col-10">
   <div class="font-weight-bolder">
   ${data.name} ${data.nameLast} 
-  ${data.userID === id ? '<span class="badge badge-pill badge-success">You</span>' : ''}</div>
+  ${data.userID === userID ? '<span class="badge badge-pill badge-success">You</span>' : ''}</div>
                                         <div class="font-weight-light">${data.email}</div></div>
 </div>
 `);
-          homeClass.getHDDList(function (callback) {
+            const hDDList = await homeClass.getHDDList();
             socket.emit('hDDList', {
-              id: id,
-              auth: auth,
-              pcKey: pcKey,
-              data: callback
+              userID: userID,
+              authentication_key: authentication_key,
+              computerKey: computerKey,
+              data: hDDList,
             });
-          });
-        } else {
-          $('#remoteUserBox').html(`<div class="font-weight-bolder">
+          } else {
+            $('#remoteUserBox').html(`<div class="font-weight-bolder">
             User Not Available
             </div>`);
-        }
-      });
-      socket.on('openFolderRequest', function (data) {
+          }
+        });
+        socket.on('openFolderRequest', async function(data) {
         // homeClass.openFolderRequest(data, function (err, callback) {
-        const homedir = data.path;
-        fse.readdir(homedir, function (err, content) {
-          if (err) {} else {
-            for (const file of content) {
+          const homedir = data.path;
+          const folderContent = await homeClass.readFolder(homedir);
+          if (folderContent) {
+            for (const file of folderContent) {
               const path = homedir + '\\' + file;
               // test if  path folder  or file
-              fse.readdir(path, function (err, content) {
-                const fileObject = {};
-                if (err) {
-                  fse.ensureFile(path, (err) => {
-                    if (!err) {
-                      const fileInfo = homeClass.fileInfo(path);
-                      const filetype = homeClass.isFile(path);
-                      // file object send
-                      fileObject.path = `${homedir}\\${file}`;
-                      fileObject.file = filetype;
-                      fileObject.fileName = file;
-                      fileObject.fileInfo = fileInfo;
-                      socket.emit('sendOpenFolderRequest', {
-                        id: id,
-                        auth: auth,
-                        room: ioSocketID,
-                        pcKey: pcKey,
-                        data: fileObject,
-                      });
-                      console.log('new emit 2', fileObject);
-                    }
-                  });
-                } else {
-                  const fileInfo = homeClass.fileInfo(path);
-                  const filetype = homeClass.isFile(path);
-                  // file object send
-                  fileObject.path = `${homedir}\\${file}`;
-                  fileObject.file = filetype;
-                  fileObject.fileName = file;
-                  fileObject.fileInfo = fileInfo;
-                  socket.emit('sendOpenFolderRequest', {
-                    id: id,
-                    auth: auth,
-                    room: ioSocketID,
-                    pcKey: pcKey,
-                    data: fileObject,
-                  });
-                  console.log('new emit', fileObject);
+              const folderSubContent = await homeClass.readFolder(path);
+              let sendEmit =true;
+              if (!folderSubContent) {
+                const ensureFile = await homeClass.isThisFile(path);
+                if (!ensureFile) {
+                  sendEmit =false;
                 }
-              });
+              }
+              if (sendEmit) {
+                const fileObject = {};
+                const fileInfo = homeClass.fileInfo(path);
+                const filetype = homeClass.isFile(path);
+                fileObject.path = `${homedir}\\${file}`;
+                fileObject.file = filetype;
+                fileObject.fileName = file;
+                fileObject.fileInfo = fileInfo;
+                socket.emit('sendOpenFolderRequest', {
+                  userID: userID,
+                  authentication_key: authentication_key,
+                  pcKey: computerKey,
+                  data: fileObject,
+                });
+                console.log('new emit 2', fileObject);
+              }
             }
           }
         });
-        // });
-      });
-      // validate folder name before  create
-      socket.on('validateFolderName', function (data) {
-        console.log(data);
-        const dir = `${data.path}\\${data.createFolderName}`;
-        fs.stat(dir, function (err, stats) {
-          if (err) {
-            console.log(dir);
-            fse.ensureDir(dir, desiredMode)
-              .then(() => {
-                console.log('success!');
+        // validate folder name before  create
+        socket.on('validateFolderName', function(data) {
+          console.log(data);
+          const dir = `${data.path}\\${data.createFolderName}`;
+          fs.stat(dir, function(err, stats) {
+            if (err) {
+              console.log(dir);
+              fse.ensureDir(dir, desiredMode)
+                  .then(() => {
+                    console.log('success!');
+                    socket.emit('folderCreateCallback', {
+                      userID: userID,
+                      authentication_key: authentication_key,
+                      computerKey: computerKey,
+                      data: {
+                        status: true,
+                        message: 'Folder Create Successful',
+                      },
+                    });
+                  })
+                  .catch((err) => {});
+            } else {
+              if (stats.isDirectory()) {
                 socket.emit('folderCreateCallback', {
-                  id: id,
-                  auth: auth,
-                  pcKey: pcKey,
+                  userID: userID,
+                  authentication_key: authentication_key,
+                  computerKey: computerKey,
                   data: {
-                    status: true,
-                    message: 'Folder Create Successful',
+                    status: false,
+                    message: 'Please try different folder name',
                   },
                 });
-              })
-              .catch((err) => {});
-          } else {
-            if (stats.isDirectory()) {
-              socket.emit('folderCreateCallback', {
-                id: id,
-                auth: auth,
-                pcKey: pcKey,
-                data: {
-                  status: false,
-                  message: 'Please try different folder name',
-                },
-              });
+              }
             }
-          }
+          });
         });
-      });
-      $('#submit-logout').click(function name(params) {
-        ipcRenderer.send('loginPage');
-        const data = {};
-        data['id'] = id;
-        data['auth'] = auth;
-        fetch(remoteServer + '/app/logout', {
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        $('#submit-logout').click(function name(params) {
+          ipcRenderer.send('loginPage');
+          fetch(remoteServer + `/api/v1/user/${userID}/computer/logout`, {
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
             mode: 'cors', // no-cors, cors, *same-origin
             headers: {
-              // "Content-Type": "application/x-www-form-urlencoded",
               'Content-Type': 'application/json; charset=utf-8',
+              'authentication_key': authentication_key,
             },
             // body data type must match "Content-Type" header
-            body: JSON.stringify(data),
           })
-          .then((response) => response.json()).then(function (response) {
-            if (response.status) {}
-          });
-      });
-    }
-  });
+              .then((response) => response.json()).then(function(response) {
+                if (response.status) {}
+              });
+        });
+      }
+    });

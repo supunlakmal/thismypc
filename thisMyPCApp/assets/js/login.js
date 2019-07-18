@@ -1,7 +1,7 @@
 const {
   ipcRenderer,
 } = require('electron');
-const socket = io.connect('http://thismypc.com:5000');
+const socket = io.connect('http://localhost:5000');
 // get os  Data
 const $ = require('jquery');
 const os = require('os');
@@ -34,7 +34,7 @@ document.getElementById('submit-login').onclick = function() {
   data['pcKey'] = pcKey;
   data['pcName'] = pcUser.username;
   data['platform'] = platform;
-  fetch('http://thismypc.com:5000/login/app', {
+  fetch('http://localhost:5000/api/v1/user/computer/login', {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, cors, *same-origin
     headers: {
@@ -56,11 +56,11 @@ document.getElementById('submit-login').onclick = function() {
           }
           console.log(homedir);
           const obj = {};
-          obj.id = response.data.id;
-          obj.name = response.data.name;
-          obj.ioSocketID = response.data.ioSocketID;
-          obj.auth = response.data.auth;
-          obj.appKey = appKey;
+          obj.userID = response.data.userID;
+          obj.firstName = response.data.firstName;
+          obj.lastName = response.data.lastName;
+          obj.authentication_key = response.data.authentication_key;
+          obj.applicationKey = appKey;
           const json = JSON.stringify(obj);
           fs.writeFile(dir + '\/thisMyPC.json', json, 'utf8', function() {});
           ipcRenderer.send('systemPage');

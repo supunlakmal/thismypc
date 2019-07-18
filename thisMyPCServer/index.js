@@ -1,16 +1,43 @@
+'use strict';
+// https://javascript.info/async-await
 const app = require('express')();
 const bodyParser = require('body-parser');
-const db = require('./db');
+// MongoDb config variables
+const db = require('./config/db');
+// config  variables
+const config = require('./config/config');
 const fileUpload = require('express-fileupload');
+// md5 encrypt
 const md5 = require('js-md5');
 const mongoose = require('mongoose');
+// validate inputs
 const validator = require('validator');
-mongoose.connect(`mongodb://${db.user}:${db.password}@localhost/${db.db}`, {
+/**
+ * components
+ */
+// logger
+const logger = require('./components/logger');
+/**
+ * User Resources
+ */
+const userClass= require('./components/class/user.class');
+const computerClass= require('./components/class/computer.class');
+// MongoDB server connection
+mongoose.connect(`mongodb://${db.user}:${db.password}@${db.host}/${db.dbName}`, {
   useNewUrlParser: true,
 });
+// Set mongoose.Promise to any Promise implementation
+mongoose.Promise = Promise;
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-// functions
+/**
+ * REST api call  convert to  json object before send
+ *
+ * @param {object} type
+ * @param {object} msg
+ * @param {object} data
+ * @return {object}
+ */
 function respond(type, msg, data) {
   const res = {};
   res.data = data;
@@ -18,295 +45,220 @@ function respond(type, msg, data) {
   res.status = type;
   return res;
 }
-// mongoDB models
-User = require('./models/user');
-// admin module
-Admin = require('./models/admin');
+/**
+ * Mongo DB modules
+ */
+// user module
+const User = require('./models/user');
 // software module
-Software = require('./models/software');
+const Software = require('./models/software');
 // pc  module
-PC = require('./models/pc');
+const PC = require('./models/pc');
 // pc and user  module
-UserAndPC = require('./models/userAndPC');
+const UserAndPC = require('./models/userAndPC');
 // pc and PC Owner  module
-PcOwner = require('./models/PCOwner');
-
-
+const PcOwner = require('./models/PCOwner');
 app.use(bodyParser.json());
+app.disable('x-powered-by');
 app.use(fileUpload());
+// REST API output header
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,token ,uid');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,authentication_key ,userID');
   next();
 });
-http.listen(process.env.PORT || 5000);
+// server port ex-5000
+http.listen(process.env.PORT || config.port);
+logger.log(`Sever start on Port ${config.port}`);
+
 /**
- * Custom function  for user 
+ * REST API V1
  */
-// pc owner socket id or  pc public key user socket id
-function getUserSocketID(pcData, user, callback) {
-  PC.getPC(pcData.pcKey, function(err, pc) {
-    if (pc) {
-      if (pc.publicAccessStatus === 1) {
-        UserAndPC.getUserAndPCUsingKey(pc.publicAccessKey, function(err, userAndPc) {
-          if (userAndPc) {
-            User.getUser(userAndPc.userID, function(err, userData) {
-              // data that need to return from function
-              callback(userData.ioSocketID);
-            });
-          } else {
-            callback(user.ioSocketID);
-          }
-        });
-      } else {
-        callback(user.ioSocketID);
-      }
-    }
-  });
-}
-// owner pc  socket id  or public key socket id
-function getPCSocketID(user, pcKeyPublic, callback) {
-  if (pcKeyPublic === '') {
-    PC.getPCUsingID(user.userNowAccessPCID, function(err, userPC) {
-      // //console.log(err);
-      // console.log(pc);
-      callback(userPC.pcSocketID);
-    });
-  } else {
-    PC.getPCPublicKey(pcKeyPublic, function(err, pc) {
-      if (pc.publicAccessStatus === 1) {
-        callback(pc.pcSocketID);
-      } else {
-        PC.getPCUsingID(user.userNowAccessPCID, function(err, userPC) {
-          // //console.log(err);
-          // console.log(pc);
-          callback(userPC.pcSocketID);
-        });
-      }
-    });
-  }
-}
-const isValidFoldersName = (function() {
-  const rg1 = /^[^\\/:\*\?"<>\|]+$/; // forbidden characters \ / : * ? " < > |
-  const rg2 = /^\./; // cannot start with dot (.)
-  const rg3 = /^(nul|prn|con|lpt[0-9]|com[0-9])(\.|$)/i; // forbidden file names
-  return function isValidFoldersName(fname) {
-    return rg1.test(fname) && !rg2.test(fname) && !rg3.test(fname);
-  };
-})();
-app.get('/siteInfo', function(req, res) {
-  const outPut = {};
-  User.countUsers(function(err, userCount) {
-    PC.countPC(function(err, pcCount) {
-      outPut.userCount = userCount;
-      outPut.pcCount = pcCount;
-      res.status(200);
-      res.json(respond(true, 'good call', outPut));
-    });
-  });
+/**
+ * API main end point
+ */
+app.get('/api/', async function(req, res) {
+  res.status(200).json(respond(true, 'REST API working', null));
 });
-// todo all  user  id  must  set as  uID add  it should call from headers
-app.post('/auth', function(req, res) {
-  //  //console.log(req.headers.token);
-  const id = req.body.id;
-  const auth = req.headers.token;
-  User.authUser(id, auth, function(err, user) {
-    if (user) {
-      res.status(200);
-      res.json(respond(true, 'good call', null));
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Invalid User', null));
-    }
-  });
+/**
+ *  API variation end point
+ */
+app.get('/api/v1/', async function(req, res) {
+  res.status(200).json(respond(true, 'REST API working', null));
 });
-// get all pc
-app.post('/myInfo/myPc', function(req, res) {
-  //  //console.log(req.headers.token);
-  const id = req.body.id;
-  const auth = req.headers.token;
-  User.authUser(id, auth, function(err, user) {
-    if (!user) {
-      res.status(401);
-      return res.json(respond(false, 'Invalid User', null));
-    }
-  });
-  PC.getPCByUserID(id, function(err, pc) {
-    if (pc) {
-      res.status(200);
-      res.json(respond(true, 'good call', pc));
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Invalid User', null));
-    }
-  });
-});
-// get all online  pc
-app.post('/myInfo/myPc/online', function(req, res) {
-  //  //console.log(req.headers.token);
-  const id = req.body.id;
-  const auth = req.headers.token;
-  User.authUser(id, auth, function(err, user) {
-    if (!user) {
-      res.status(401);
-      return res.json(respond(false, 'Invalid User', null));
-    }
-  });
-  PC.getPCByUserIDOnline(id, function(err, pc) {
-    if (pc) {
-      res.status(200);
-      res.json(respond(true, 'good call', pc));
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Invalid User', null));
-    }
-  });
-});
-app.post('/myInfo/myPc/publicKey/update', function(req, res) {
-  //  //console.log(req.headers.token);
-  const auth = req.headers.token;
-  const pcID = req.body.pcID;
-  const userID = req.body.id;
-  let publicAccessKey = pcID + Date.now();
-  publicAccessKey = md5(publicAccessKey);
-  User.authUser(userID, auth, function(err, user) {
-    if (!user) {
-      res.status(401);
-      return res.json(respond(false, 'Invalid User', null));
-    }
-  });
-  const out = {};
-  out.publicAccessKey = publicAccessKey;
-  // console.log(out, pcID);
-  PC.newPublicAccessKey(pcID, out, {}, function(err, pc) {
-    res.status(200);
-    res.json(respond(true, 'Update Done', out));
-  });
-});
-app.post('/myInfo/myPc/update', function(req, res) {
-  //  //console.log(req.headers.token);
-  const auth = req.headers.token;
-  const pcID = req.body.pcID;
-  const userID = req.body.id;
-  const publicAccessStatus = req.body.status;
-  let publicAccessKey = pcID + Date.now();
-  if (publicAccessStatus === 1) {
-    publicAccessKey = md5(publicAccessKey);
-  } else {
-    publicAccessKey = md5(publicAccessKey);
-  }
-  User.authUser(userID, auth, function(err, user) {
-    if (!user) {
-      res.status(401);
-      return res.json(respond(false, 'Invalid User', null));
-    }
-  });
-  const out = {};
-  out.publicAccessKey = publicAccessKey;
-  // out.auth = md5(user._id + date);
-  out.publicAccessStatus = publicAccessStatus;
-  // out.ioSocketID = user.ioSocketID;
-  // console.log(out, pcID);
-  PC.updatePublicAccessStatus(pcID, out, {}, function(err, pc) {
-    res.status(200);
-    res.json(respond(true, 'Update Done', out));
-  });
-});
-// get user  info
-app.post('/myInfo', function(req, res) {
-  //  //console.log(req.headers.token);
-  const auth = req.headers.token;
-  const id = req.body.id;
-  User.authUser(id, auth, function(err, user) {
-    if (!user) {
-      res.status(401);
-      return res.json(respond(false, 'Invalid User', null));
-    }
-  });
-  User.userInfo(id, auth, function(err, user) {
-    if (user) {
-      res.status(200);
-      res.json(respond(true, 'good call', user));
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Invalid User', null));
-    }
-  });
-});
-// get user  info
-app.post('/app/myInfo', function(req, res) {
-  //  //console.log(req.headers.token);
-  const auth = req.headers.token;
-  const id = req.body.id;
-  const pcKey = req.body.pcKey;
-  PC.authApp(id, auth, pcKey, function(err, pc) {
-    User.getUserPublic(id, function(err, user) {
-      if (!user) {
-        res.status(401);
-        return res.json(respond(false, 'Invalid User', null));
-      } else {
-        res.status(200);
-        res.json(respond(true, 'good call', user));
-      }
-    });
-  });
-});
-// get user  notification  and  app notification
-app.post('/app/notification', function(req, res) {
-  //  //console.log(req.headers.token);
-  const auth = req.headers.token;
-  const id = req.body.id;
-  const pcKey = req.body.pcKey;
-  PC.authApp(id, auth, pcKey, function(err, pc) {
-    User.getUserPublic(id, function(err, user) {
-      if (!user) {
-        res.status(401);
-        return res.json(respond(false, 'Invalid User', null));
-      } else {
-        res.status(200);
-        res.json(respond(true, 'good call', null));
-      }
-    });
-  });
-});
-// update account  info
-app.post('/account/myInfo/update', function(req, res) {
-  //  //console.log(req.headers.token);
-  const auth = req.headers.token;
-  const id = req.body.id;
-  User.authUser(id, auth, function(err, user) {
-    if (!user) {
-      res.status(401);
-      return res.json(respond(false, 'Invalid User', null));
-    }
-  });
-  if (req.body.name === '' || req.body.nameLast === '') {
+
+/**
+* User information
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
+// TODO  authentication method
+app.get('/api/v1/user/:userID', async function(req, res) {
+// authentication  key from  headers
+  const authentication_key = req.headers.authentication_key;
+  // user ID
+  const userID = req.params.userID;
+  if (!await User.authUser(userID, authentication_key)) {
     res.status(401);
-    return res.json(respond(false, 'username/password/name required', null));
+    return res.json(respond(false, 'Invalid User', null));
   }
-  const out = {};
-  out.name = req.body.name;
-  // out.auth = md5(user._id + date);
-  out.nameLast = req.body.nameLast;
-  // out.ioSocketID = user.ioSocketID;
-  User.updateUserInfo(id, out, {}, function(err, user) {});
-  res.status(200);
-  res.json(respond(true, 'Update Done', null));
+  // user Information
+  const userInformation = await User.getUser(userID);
+  if (userInformation) {
+  // user  class
+    const userClassData = new userClass(userInformation);
+    userClassData.userInformation();
+    userClassData.withAuthentication();
+    res.status(200).json(respond(true, 'User Information', userClassData.get()));
+  } else {
+    res.status(400).json(respond(fail, 'Invalid User Information', null));
+  }
 });
-// update account  password
-app.post('/account/password/update', function(req, res) {
-  //  //console.log(req.headers.token);
-  const auth = req.headers.token;
-  const confirmNewPassword = md5(req.body.confirmNewPassword);
-  const id = req.body.id;
+/**
+* User information
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
+// TODO  authentication method
+app.get('/api/v1/user/:userID/computer/:computerKey', async function(req, res) {
+  // authentication  key from  headers
+  const authentication_key = req.headers.authentication_key;
+  // user ID
+  const userID = req.params.userID;
+  const computerKey = md5(req.params.computerKey);
+  if (!await PC.authApp(userID, authentication_key, computerKey)) {
+    res.status(401);
+    return res.json(respond(false, 'Invalid User', null));
+  }
+  // user Information
+  const userInformation = await User.getUser(userID);
+  if (userInformation) {
+    // user  class
+    const userClassData = new userClass(userInformation);
+    userClassData.userInformation();
+    userClassData.withAuthentication();
+    res.status(200).json(respond(true, 'User Information', userClassData.get()));
+  } else {
+    res.status(400).json(respond(fail, 'Invalid User Information', null));
+  }
+});
+/**
+ * New user registration
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
+app.post('/api/v1/user/register', async function(req, res) {
+  const email = req.body.email;
+  const password = md5(req.body.password);
+  req.body.password = password;
+  const userData = req.body;
+  if (req.body.email === '' || req.body.password === '' || req.body.firstName === '' || req.body.lastName === '' ) {
+    res.status(401);
+    return res.json(respond(false, 'username/password/first name/last name required', null));
+  }
+  if (!validator.isAlpha(req.body.firstName) || !validator.isAlpha(req.body.lastName)) {
+    res.status(401);
+    return res.json(respond(false, 'First Name and Last Name need to be only string', null));
+  }
+  if (!validator.isEmail(email)) {
+    res.status(401);
+    return res.json(respond(false, 'Invalid Email', null));
+  }
+  // search user by user name
+  const user = await User.searchEmailUser(email);
+  if (!user) {
+  // create  room id
+    const ioSocketID = md5(req.body.email + Date.now());
+    userData.ioSocketID =ioSocketID;
+    userData.authentication_key = md5(ioSocketID);
+    const newUser = await User.createUser(userData);
+    if (newUser) {
+      // user  class
+      const userClassData = new userClass(newUser);
+      userClassData.userInformation();
+      userClassData.withAuthentication();
+      res.status(200);
+      res.json(respond(true, 'User login infromation', userClassData.get()));
+    }
+  } else {
+    res.status(401);
+    res.json(respond(false, 'User  Already exit', null));
+  }
+});
+/**
+ * User logging {async}
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
+app.post('/api/v1/user/login', async function(req, res) {
+  const email = req.body.email;
+  const password = md5(req.body.password);
+  req.body.password = password;
+  if (req.body.email === '' || req.body.password === '') {
+    res.status(401);
+    return res.json(respond(false, 'username/password required', null));
+  }
+  // wait till the promise resolves (*)
+  const userLogin = await User.loginUser(email, password);
+  if (userLogin) {
+    const date = new Date();
+    userLogin.authentication_key = md5(userLogin._id + date);
+    const user = await User.updateUserAuth(userLogin._id, userLogin, {new: true});
+    const userClassData = new userClass(user);
+    userClassData.userInformation();
+    userClassData.withAuthentication();
+    res.status(200);
+    res.json(respond(true, 'User login infromation', userClassData.get()));
+  } else {
+    res.status(401);
+    res.json(respond(false, 'Invalid User', null));
+  }
+});
+/**
+ * Update user password
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
+app.post('/api/v1/user/password/edit', async function(req, res) {
+// authentication  key from  headers
+  const authentication_key = req.headers.authentication_key;
+  const userID = req.body.userID;
   const newPassword = md5(req.body.newPassword);
   const password = md5(req.body.password);
-  User.authUser(id, auth, function(err, user) {
-    if (!user) {
-      res.status(401);
-      return res.json(respond(false, 'Invalid User', null));
-    }
-  });
+  if (!await User.authUser(userID, authentication_key)) {
+    res.status(401);
+    return res.json(respond(false, 'Invalid User', null));
+  }
   if (req.body.password === '' || req.body.newPassword === '' || req.body.confirmNewPassword === '') {
     res.status(401);
     return res.json(respond(false, 'Password/New Password/Confirm Password required', null));
@@ -315,540 +267,305 @@ app.post('/account/password/update', function(req, res) {
     res.status(401);
     return res.json(respond(false, 'New Password and  Confirm Password not equal', null));
   }
-  User.passwordConfirm(id, password, function(err, user) {
-    if (!user) {
-      res.status(401);
-      return res.json(respond(false, 'Invalid User', null));
-    }
-  });
-  const out = {};
-  out.password = newPassword;
-  // out.auth = md5(user._id + date);
-  // out.ioSocketID = user.ioSocketID;
-  User.updateUserPassword(id, out, {}, function(err, user) {});
+  const user = await User.passwordConfirm(userID, password);
+  if (!user) {
+    res.status(401);
+    return res.json(respond(false, 'Invalid User', null));
+  }
+  user.password = newPassword;
+  await User.updateUserPassword(userID, user, {});
   res.status(200);
   res.json(respond(true, 'Update Done', null));
 });
-
-app.post('/register', function(req, res) {
-  const email = req.body.email;
-  const password = md5(req.body.password);
-  req.body.password = password;
-  const userData = req.body;
-  // create  room id
-  userData.ioSocketID = md5(req.body.email + Date.now());
-  if (req.body.email === '' || req.body.password === '' || req.body.name === '') {
+/**
+ * update user information
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
+app.post('/api/v1/user/update', async function(req, res) {
+// authentication  key from  headers
+  const authentication_key = req.headers.authentication_key;
+  const userID = req.body.userID;
+  if (!await User.authUser(userID, authentication_key)) {
     res.status(401);
-    return res.json(respond(false, 'username/password/name required', null));
+    return res.json(respond(false, 'Invalid User', null));
   }
-  // todo this  must  fixed bug
-  /*  if (!validator.isLength(req.body.password, 7 ,15)) {
-          res.status(401);
-          return res.json(respond(false,req.body.password.length, null));
-      }*/
-  // TODO  need to   validate   for name  with spaces
-  /* if (!validator.isAlpha(req.body.name)) {
-        res.status(401);
-        return res.json(respond(false, 'Name  must only  characters  ', null));
-    }*/
-  if (!validator.isEmail(email)) {
+  if (req.body.firstName === '' || req.body.lastName === '' ) {
     res.status(401);
-    return res.json(respond(false, 'Invalid Email', null));
+    return res.json(respond(false, 'First name /Last name required', null));
   }
-  User.searchEmailUser(email, function(err, user) {
-    //    //console.log(user);
-    if (!user) {
-      //      //console.log('No New User');
-      User.createUser(userData, function(err, user) {
-        //       //console.log('add New User');
-        if (err) {
-          throw err;
-        }
-        User.loginUser(email, password, function(err, user) {
-          const date = new Date();
-          const out = {};
-          out.auth = md5(user._id + date);
-          out.id = user._id;
-          out.ioSocketID = user.ioSocketID;
-          out.name = user.name;
-          User.updateUserAuth(user._id, out, {}, function(err, user) {});
-          // Todo this will no need in future
-          out.ioSocketID = 'room1';
-          res.status(200);
-          res.json(respond(true, 'Hello!', out));
-        });
-      });
-    } else {
-      res.status(401);
-      res.json(respond(false, 'User  Already exit', null));
-    }
-  });
+  await User.updateUserInfo(userID, req.body, {});
+  res.status(200);
+  res.json(respond(true, 'Update Done', null));
 });
-// this user  login
-app.post('/login', function(req, res) {
-  const email = req.body.email;
-  const password = md5(req.body.password);
-  req.body.password = password;
-  const userData = req.body;
-  if (req.body.email === '' || req.body.password === '') {
+/**
+ * User logout from web
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
+app.get('/api/v1/user/:userID/logout', async function(req, res) {
+  const userID = req.params.userID;
+  const authentication_key = req.headers.authentication_key;
+  if (!await User.authUser(userID, authentication_key)) {
     res.status(401);
-    return res.json(respond(false, 'username/password required', null));
+    return res.json(respond(false, 'Invalid User', null));
   }
-  User.loginUser(email, password, function(err, user) {
-    if (user) {
-      const date = new Date();
-      const out = {};
-      out.auth = md5(user._id + date);
-      out.id = user._id;
-      out.ioSocketID = user.ioSocketID;
-      out.name = user.name;
-      User.updateUserAuth(user._id, out, {}, function(err, user) {});
-      // Todo this will no need in future
-      out.ioSocketID = 'room1';
-      res.status(200);
-      res.json(respond(true, 'Hello!', out));
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Invalid User', null));
-    }
-  });
-});
-// logout
-app.post('/logout', function(req, res) {
-  const id = req.body.id;
-  const auth = req.headers.token;
-  User.authUser(id, auth, function(err, user) {
-    if (user) {
-      const date = new Date();
-      const out = {};
-      out.auth = md5(user._id + date) + '_logout';
-      out.id = user._id;
-      out.name = user.name;
-      //  out.ioSocketID = user.ioSocketID;
-      User.updateUserAuth(user._id, out, {}, function(err, user) {});
-      res.status(200);
-      res.json(respond(true, 'logout!', null));
-    } else {
-      res.status(401);
-      res.json(respond(true, 'Invalid User', null));
-    }
-  });
-});
-// logout
-// todo  need to  fix
-app.post('/app/logout', function(req, res) {
-  const id = req.body.id;
-  const auth = req.body.auth;
-  User.authApp(id, auth, function(err, user) {
-    if (user) {
-      const date = new Date();
-      const out = {};
-      out.auth = md5(user._id + date) + '_logout';
-      out.id = user._id;
-      out.name = user.name;
-      //  out.ioSocketID = user.ioSocketID;
-      User.updateUserAuthApp(user._id, out, {}, function(err, user) {});
-      res.status(200);
-      res.json(respond(true, 'logout!', null));
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Invalid User', null));
-    }
-  });
-});
-// this api  function    for  admin
-// create  app frp for app Store
-app.post('/admin/create/app', function(req, res) {
-  const limit = req.body.limit;
-  const out = {};
-  out.auth = req.headers.token;
-  out.uID = req.headers.uid;
-  User.authUser(out.uID, out.auth, function(err, user) {
-    if (user) {
-      Admin.authAdmin(out.uID, function(err, admin) {
-        if (admin) {
-          const app = {};
-          app.appImageUrl = req.body.appImageUrl;
-          app.appInfo = req.body.appInfo;
-          app.appName = req.body.appName;
-          app.userID = req.body.userID;
-          app.version = req.body.version;
-          App.createApp(app, function(err, app) {});
-          res.status(200);
-          res.json(respond(true, 'Done', app));
-        } else {
-          res.status(401);
-          res.json(respond(false, 'Authenticating Error Admin', null));
-        }
-      });
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Authenticating Error', null));
-    }
-  });
-});
-// delete  app frp for app Store
-app.post('/admin/update/app/image', function(req, res) {
-  const id = req.body.id;
-  const image = req.files.image;
-  const imageName = image.name;
-  console.log(id);
-  console.log(image.mimetype);
-  const out = {};
-  out.auth = req.headers.token;
-  out.uID = req.headers.uid;
-  User.authUser(out.uID, out.auth, function(err, user) {
-    if (user) {
-      Admin.authAdmin(out.uID, function(err, admin) {
-        if (admin) {
-          const imagePath = 'assets/images/app/' + imageName;
-          image.mv('../' + imagePath, function(err) {
-            if (err) return res.status(500).send(err);
-            //
-            //
-            // res.send('File uploaded!');
-            App.appImageUpdate(id, imagePath, {}, function(err, update) {});
-            res.status(200);
-            res.json(respond(true, 'Image Update Done', app));
-          });
-          // res.status(200);
-          // res.json(respond(true, 'Delete Done', app));
-        } else {
-          res.status(401);
-          res.json(respond(false, 'Authenticating Error Admin', null));
-        }
-      });
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Authenticating Error', null));
-    }
-  });
-});
-app.post('/admin/update/app', function(req, res) {
-  const id = req.body.id;
-  const out = {};
-  out.auth = req.headers.token;
-  out.uID = req.headers.uid;
-  User.authUser(out.uID, out.auth, function(err, user) {
-    if (user) {
-      Admin.authAdmin(out.uID, function(err, admin) {
-        if (admin) {
-          App.appUpdateData(id, req.body, {}, function(err, data) {});
-          res.status(200);
-          res.json(respond(true, 'info Update Done', app));
-        } else {
-          res.status(401);
-          res.json(respond(false, 'Authenticating Error Admin', null));
-        }
-      });
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Authenticating Error', null));
-    }
-  });
-});
-// delete  app frp for app Store
-app.post('/admin/delete/app', function(req, res) {
-  const id = req.body.id;
-  const out = {};
-  out.auth = req.headers.token;
-  out.uID = req.headers.uid;
-  User.authUser(out.uID, out.auth, function(err, user) {
-    if (user) {
-      Admin.authAdmin(out.uID, function(err, admin) {
-        if (admin) {
-          App.deleteApp(id, function(err, app) {});
-          res.status(200);
-          res.json(respond(true, 'Delete Done', app));
-        } else {
-          res.status(401);
-          res.json(respond(false, 'Authenticating Error Admin', null));
-        }
-      });
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Authenticating Error', null));
-    }
-  });
-});
-
-// get all  PC
-app.post('/admin/pc', function(req, res) {
-  const limit = req.body.limit;
-  const out = {};
-  out.auth = req.headers.token;
-  out.uID = req.headers.uid;
-  User.authUser(out.uID, out.auth, function(err, user) {
-    if (user) {
-      Admin.authAdmin(out.uID, function(err, admin) {
-        if (admin) {
-          PC.getAllPC(limit, function(err, pc) {
-            if (user) {
-              res.status(200);
-              res.json(respond(true, 'All PC', pc));
-            } else {
-              res.status(401);
-              res.json(respond(false, 'Invalid User', null));
-            }
-          });
-        } else {
-          res.status(401);
-          res.json(respond(false, 'Authenticating Error Admin', null));
-        }
-      });
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Authenticating Error', null));
-    }
-  });
-});
-// get all  users
-app.post('/admin/users', function(req, res) {
-  const limit = req.body.limit;
-  const out = {};
-  out.auth = req.headers.token;
-  out.uID = req.headers.uid;
-  User.authUser(out.uID, out.auth, function(err, user) {
-    if (user) {
-      Admin.authAdmin(out.uID, function(err, admin) {
-        if (admin) {
-          User.getUsers(limit, function(err, user) {
-            if (user) {
-              res.status(200);
-              res.json(respond(true, 'All Users', user));
-            } else {
-              res.status(401);
-              res.json(respond(false, 'Invalid User', null));
-            }
-          });
-        } else {
-          res.status(401);
-          res.json(respond(false, 'Authenticating Error Admin', null));
-        }
-      });
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Authenticating Error', null));
-    }
-  });
-});
-app.post('/admin/admin/create', function(req, res) {
-  const out = {};
-  out.auth = req.headers.token;
-  out.id = req.body.userID;
-  out.uID = req.headers.uid;
-  User.authUser(out.uID, out.auth, function(err, user) {
-    if (user) {
-      Admin.authAdmin(out.uID, function(err, admin) {
-        if (admin) {
-          Admin.searchAdmin(out.id, function(err, admin) {
-            // //console.log(admin);
-            if (!admin) {
-              Admin.createAdmin(out, function(err, admin) {
-                //   //console.log('add New Admin');
-                if (err) {
-                  throw err;
-                }
-                //  get user info  using   id
-                User.getUser(out.id, function(err, user) {
-                  if (user) {
-                    res.status(200);
-                    res.json(respond(true, ' New Admin', user));
-                  } else {
-                    res.status(401);
-                    res.json(respond(false, 'Invalid User', null));
-                  }
-                });
-              });
-            } else {
-              res.status(401);
-              res.json(respond(false, 'Admin  Already exit', null));
-            }
-          });
-        } else {
-          res.status(401);
-          res.json(respond(false, 'Authenticating Error Admin', null));
-        }
-      });
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Authenticating Error', null));
-    }
-  });
-});
-app.post('/admin/user/status', function(req, res) {
-  const out = {};
-  out.auth = req.headers.token;
-  out.id = req.body.userID;
-  out.status = req.body.status;
-  out.uID = req.headers.uid;
-  User.authUser(out.uID, out.auth, function(err, user) {
-    if (user) {
-      Admin.authAdmin(out.uID, function(err, admin) {
-        if (admin) {
-          User.updateUserStatus(out.id, out, {}, function(err, user) {
-            User.getUser(out.id, function(err, userWithNewStatus) {
-              res.status(200);
-              res.json(respond(true, 'Status Update', userWithNewStatus));
-            });
-          });
-        } else {
-          res.status(401);
-          res.json(respond(false, 'Authenticating Error Admin', null));
-        }
-      });
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Authenticating Error', null));
-    }
-  });
-});
-//  create   software   version
-app.post('/admin/software/create', function(req, res) {
-  const out = {};
-  out.auth = req.headers.token;
-  out.status = req.body.status;
-  out.uID = req.headers.uid;
-  out.version = req.body.version;
-  out.versionKey = md5(req.body.version);
-  User.authUser(out.uID, out.auth, function(err, user) {
-    if (user) {
-      Admin.authAdmin(out.uID, function(err, admin) {
-        if (admin) {
-          Software.getSoftware(out.versionKey, function(err, softwareIn) {
-            if (!softwareIn) {
-              Software.createSoftwareVersion(out, function(err, software) {
-                //       //console.log('add New User');
-                if (err) {
-                  throw err;
-                }
-                res.status(200);
-                res.json(respond(true, 'new Software ', software));
-              });
-            } else {
-              res.status(401);
-              res.json(respond(false, 'Software  Already exit', null));
-            }
-          });
-        } else {
-          res.status(401);
-          res.json(respond(false, 'Authenticating Error Admin', null));
-        }
-      });
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Authenticating Error', null));
-    }
-  });
-});
-//  get all   software   version
-app.post('/admin/software/all', function(req, res) {
-  const out = {};
-  out.auth = req.headers.token;
-  out.limit = req.body.limit;
-  out.uID = req.headers.uid;
-  User.authUser(out.uID, out.auth, function(err, user) {
-    if (user) {
-      Admin.authAdmin(out.uID, function(err, admin) {
-        if (admin) {
-          Software.getSoftwares(out, function(err, software) {
-            res.status(200);
-            res.json(respond(software, true, 'All Software '));
-          });
-        } else {
-          res.status(401);
-          res.json(respond(false, 'Authenticating Error Admin', null));
-        }
-      });
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Authenticating Error', null));
-    }
-  });
-});
-// TODO  need to  complete
-app.post('/admin/software/notification', function(req, res) {
-  const out = {};
-  out.auth = req.headers.token;
-  out.status = req.body.status;
-  out.uID = req.headers.uid;
-  out.version = req.body.version;
-  out.versionKey = md5(req.body.version);
-  User.authUser(out.uID, out.auth, function(err, user) {
-    if (user) {
-      Admin.authAdmin(out.uID, function(err, admin) {
-        if (admin) {
-          Software.getSoftware(out.versionKey, function(err, softwareIn) {
-            if (!softwareIn) {
-              Software.createSoftwareVersion(out, function(err, software) {
-                //       //console.log('add New User');
-                if (err) {
-                  throw err;
-                }
-                res.status(200);
-                res.json(respond(true, 'new Software ', software));
-              });
-            } else {
-              res.status(401);
-              res.json(respond(false, 'Software  Already exit', null));
-            }
-          });
-        } else {
-          res.status(401);
-          res.json(respond(false, 'Authenticating Error Admin', null));
-        }
-      });
-    } else {
-      res.status(401);
-      res.json(respond(false, 'Authenticating Error', null));
-    }
-  });
-});
-io.on('connection', function(socket) {
-  // console.log(socket.id);
-  // //console.log('socket run......');
-  // TODO this user  login from app need to add few   function to  it
-  socket.on('loginPage', function() {
-    //   //console.log('You Are  in  Login Page');
-  });
-  // some  user  or  app get disconnected  from serve
-  socket.on('disconnect', function() {
-    //  console.log('user  get  disconnected->' + socket);
-    PC.getPCSocketID(socket.id, function(err, pc) {
-      if (pc) {
-        //   console.log(pc);
-        const pcInfo = {};
-        pcInfo.pcOnline = 0;
-        pcInfo.pcSocketID = socket.id;
-        PC.updatePcOnlineStatus(pc._id, pcInfo, {}, function(err, user) {});
-      } else {
-        User.getUserSocketId(socket.id, function(err, user) {
-          if (user) {
-            // //console.log(user);
-            PC.getPCUsingID(user.userNowAccessPCID, function(err, pc) {
-              const sendUserInfoToApp = {};
-              sendUserInfoToApp.status = false;
-              io.sockets.to(pc.pcSocketID).emit('pcAccessRequest', sendUserInfoToApp);
-              console.log('when  user  disconnect', pc.pcSocketID);
-              //  socket.leave(pc.pcSocketID);
-            });
-          }
-        });
-      }
-    });
-  });
-
-  function updateAppUserAuth(user, pcKey) {
-    const date = new Date();
+  if (user) {
     const out = {};
-    out.auth = md5(user._id + date + pcKey);
-    out.id = user._id;
-    PC.updateUserAuthApp(pcKey, out, {}, function(err, user) {
-      console.log(out);
-    });
-    return out;
+    out.authentication_key = md5(userID + new Date()) + '_logout';
+    await User.updateUserAuth(userID, out, {});
+    res.status(200);
+    res.json(respond(true, 'logout!', null));
+  } else {
+    res.status(401);
+    res.json(respond(true, 'Invalid User', null));
   }
-  app.post('/login/app', function(req, res) {
+});
+/**
+ * User logout from computer
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
+app.get('/api/v1/user/:userID/computer/logout', async function(req, res) {
+  const userID = req.params.userID;
+  const authentication_key = req.headers.authentication_key;
+  if (!await User.authApp(userID, authentication_key)) {
+    res.status(401);
+    return res.json(respond(false, 'Invalid User', null));
+  }
+  if (user) {
+    const out = {};
+    out.authentication_key = md5(userID + new Date()) + '_logout';
+    await User.updateUserAuth(userID, out, {});
+    res.status(200);
+    res.json(respond(true, 'logout!', null));
+  } else {
+    res.status(401);
+    res.json(respond(true, 'Invalid User', null));
+  }
+});
+/**
+ * Update allow pubic access status
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
+app.post('/api/v1/user/computer/public/status/update', async function(req, res) {
+  const authentication_key = req.headers.authentication_key;
+  const computerKey = req.body.computerKey;
+  const userID = req.body.userID;
+  const publicAccessStatus = req.body.status;
+  const user = await User.authUser(userID, authentication_key);
+  if (!user) {
+    res.status(401);
+    return res.json(respond(false, 'Invalid User', null));
+  }
+  let publicAccessKey = computerKey + Date.now();
+  if (publicAccessStatus === 1) {
+    publicAccessKey = md5(publicAccessKey);
+  } else {
+    publicAccessKey = md5(publicAccessKey);
+  }
+  const out = {};
+  out.publicAccessKey = publicAccessKey;
+  out.publicAccessStatus = publicAccessStatus;
+  const computerClassData= await PC.updatePublicAccessStatus(computerKey, out, {new: true});
+  if (computerClassData) {
+
+
+    
+    const computerClassObject = new computerClass(computerClassData);
+
+    computerClassObject.withPublicAccessStatus();
+    computerClassObject.withPublicAccessKey();
+
+
+    res.status(200);
+    res.json(respond(true, 'Update Done', computerClassObject.get()));
+  }
+});
+/**
+ * Update user public key that allow to access other your computer.
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
+app.post('/api/v1/user/computer/public/key/update', async function(req, res) {
+  const authentication_key = req.headers.authentication_key;
+  const computerKey = req.body.computerKey;
+  const userID = req.body.userID;
+  const user =await User.authUser(userID, authentication_key);
+  if (!user) {
+    res.status(401);
+    return res.json(respond(false, 'Invalid User', null));
+  }
+  let publicAccessKey = computerKey + Date.now();
+  publicAccessKey = md5(publicAccessKey);
+  const out = {};
+  out.publicAccessKey = publicAccessKey;
+  const pc = await PC.newPublicAccessKey(pcID, out, {new: true});
+  if (pc) {
+    res.status(200);
+    res.json(respond(true, 'Update Done', out));
+  }
+});
+/**
+ * Get user all online computers list
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
+app.post('/api/v1/user/computer/online', async function(req, res) {
+  const userID = req.body.userID;
+  const authentication_key = req.headers.authentication_key;
+  const user =await User.authUser(userID, authentication_key);
+  if (!user) {
+    res.status(401);
+    return res.json(respond(false, 'Invalid User', null));
+  }
+  const pc = await PC.getPCByUserIDOnline(userID);
+  if (pc) {
+    res.status(200);
+    res.json(respond(true, 'Computer  Information', pc));
+  } else {
+    res.status(401);
+    res.json(respond(false, 'Invalid User', null));
+  }
+});
+/**
+ * Get all user computer names and IDs
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
+app.post('/api/v1/user/computer', async function(req, res) {
+  const userID = req.body.userID;
+  const authentication_key = req.headers.authentication_key;
+  const user = await User.authUser(userID, authentication_key);
+  if (!user) {
+    res.status(401);
+    return res.json(respond(false, 'Invalid User', null));
+  }
+  const pc =await PC.getPCByUserID(userID);
+  if (pc) {
+    res.status(200);
+    res.json(respond(true, 'good call', pc));
+  } else {
+    res.status(401);
+    res.json(respond(false, 'Invalid User', null));
+  }
+});
+/**
+ * User authentications
+ *
+ * @param  {json} req
+ * req : Request
+ * req->
+ *
+ * @param  {json} res
+ * res:Respond
+ * res<-
+ */
+app.post('/api/v1/user/authentication', async function(req, res) {
+  const userID = req.body.userID;
+  const authentication_key = req.headers.authentication_key;
+  const user = await User.authUser(userID, authentication_key);
+  if (user) {
+    res.status(200);
+    res.json(respond(true, 'good call', null));
+  } else {
+    res.status(401);
+    res.json(respond(false, 'Invalid User', null));
+  }
+});
+
+let isValidFoldersName = (function () {
+    var rg1 = /^[^\\/:\*\?"<>\|]+$/; // forbidden characters \ / : * ? " < > |
+    var rg2 = /^\./; // cannot start with dot (.)
+    var rg3 = /^(nul|prn|con|lpt[0-9]|com[0-9])(\.|$)/i; // forbidden file names
+    return function isValidFoldersName(fname) {
+        return rg1.test(fname) && !rg2.test(fname) && !rg3.test(fname);
+    }
+})();
+
+
+
+io.on('connection', function(socket) {
+  // TODO this user  login from app need to add few   function to  it
+  socket.on('loginPage', function() {});
+  // some  user  or  app get disconnected  from serve
+  socket.on('disconnect', async function() {
+    const pc = await PC.getPCSocketID(socket.id);
+    if (pc) {
+      const pcInfo = {};
+      pcInfo.pcOnline = 0;
+      pcInfo.pcSocketID = socket.id;
+      await PC.updatePcOnlineStatus(pc._id, pcInfo, {});
+    } else {
+      const user =await User.getUserSocketId(socket.id);
+      if (user) {
+        const pc = await PC.getPCUsingID(user.userNowAccessPCID);
+        if (pc) {
+          const sendUserInfoToApp = {};
+          sendUserInfoToApp.status = false;
+          io.sockets.to(pc.pcSocketID).emit('pcAccessRequest', sendUserInfoToApp);
+        }
+      }
+    }
+  });
+  /**
+   *
+   * @param {object} user  user information
+   * @param {*} pcKey  Computer key
+   * @return {object} new auth key
+   */
+  async function updateAppUserAuth(user, pcKey) {
+    const date = new Date();
+    const input = {};
+    input.auth = md5(user._id + date + pcKey);
+    input.id = user._id;
+    const updateUserAuthApp = await PC.updateUserAuthApp(pcKey, input, {new: true} );
+    return updateUserAuthApp;
+  }
+  app.post('/api/v1/user/computer/login', async function(req, res) {
     const email = req.body.email;
     const key = req.body.appKey;
     const password = md5(req.body.password);
@@ -856,454 +573,328 @@ io.on('connection', function(socket) {
     const pcName = req.body.pcName;
     const platform = req.body.platform;
     req.body.password = password;
-    const userData = req.body;
     if (req.body.email === '' || req.body.password === '') {
       res.status(401);
       return res.json(respond(false, 'username/password required', null));
     }
-    Software.getActiveSoftware(key, function(err, software) {
-      if (software) {
-        User.loginUser(email, password, function(err, user) {
-          if (user) {
-            //  set  if  user  got  new pc  key  or  update  if  got  old one
-            PC.getPCByUserIDAndPCKey(pcKey, user._id, function(err, pc) {
-              if (pc) {
-                const pcInfo = {};
-                pcInfo.pcOnline = 1;
-                pcInfo.pcSocketID = socket.id;
-                PC.updatePcOnlineStatus(pc._id, pcInfo, {}, function(err, user) {});
-                const pcOwner = {};
-                pcOwner.pcID = pc._id;
-                pcOwner.pcKey = pcKey;
-                pcOwner.userID = user._id;
-                PcOwner.pcAndOwner(pcOwner, function(err, pcOwner) {
-                  //     console.log(err, pcOwner);
-                  const out = updateAppUserAuth(user, pcKey);
-                  out.ioSocketID = 'room1';
-                  res.status(200);
-                  res.json(respond(true, 'Hello!', out));
-                });
-              } else {
-                const pc = {};
-                pc.pcKey = pcKey;
-                pc.pcName = pcName;
-                pc.pcOnline = 1;
-                pc.pcSocketID = socket.id;
-                pc.platform = platform;
-                pc.publicAccessKey = md5(pcKey + Date.now());
-                pc.userID = user._id;
-                PC.createNewPC(pc, function(err, pc) {
-                  const pcOwner = {};
-                  pcOwner.pcID = pc._id;
-                  pcOwner.pcKey = pcKey;
-                  pcOwner.userID = user._id;
-                  PcOwner.pcAndOwner(pcOwner, function(err, pcOwner) {
-                    //       console.log(err, pcOwner);
-                    const out = updateAppUserAuth(user, pcKey);
-                    out.ioSocketID = 'room1';
-                    res.status(200);
-                    res.json(respond(true, 'Hello!', out));
-                  });
-                });
-              }
-            });
-            //  socket.room = user.ioSocketID;
-            socket.join(user.ioSocketID);
-            //  //console.log(`This App create  new  Room ${roomID} and join to it`);
-            // pc app create new  room  and other user need to join it to manage pc
-            // //console.log('WEBPC------->>>>',io.sockets);
-            /*   var clients_in_the_room = io.sockets.adapter.rooms[roomID].sockets;
-                           for (var clientId in clients_in_the_room) {
-                               //console.log('client: %s', clientId); //Seeing is believing
-                           }*/
-            // Todo this will no need in future
-          } else {
-            res.status(401);
-            res.json(respond(false, 'Invalid User', null));
-          }
-        });
-      } else {
-        res.status(401);
-        res.json(respond(false, 'This  software version  no  longer  work', null));
-      }
-    });
-  });
-  // join user from  web
-  socket.on('joinFromWeb', function(data) {
-    const id = data.data.id;
-    const auth = data.data.auth;
-    User.authUser(id, auth, function(err, user) {
+    const software = await Software.getActiveSoftware(key);
+    if (software) {
+      const user =await User.loginUser(email, password);
       if (user) {
-        // console.log(`User send data ${data}`);
-        socket.join(user.ioSocketID);
-        // update user Currentsockett ID
-        const userData = {};
-        userData.userCurrentSocketId = socket.id;
-        User.updateUserCurrentSocketId(user._id, userData, {}, function(user) {});
-        // console.log(`User Join to PC App Room ${user.ioSocketID}`);
-        // pulling data from app
-        io.sockets.in(user.ioSocketID).emit('getAppData', {
-          data: 'start',
-        });
-        const clients_in_the_room = io.sockets.adapter.rooms[user.ioSocketID].sockets;
-        for (const clientId in clients_in_the_room) {
-          //    console.log('client -web: %s', clientId); //Seeing is believing
-        }
-      }
-    });
-  });
-  // join user from  app
-  socket.on('joinFromApp', function(data) {
-    const auth = data.data.auth;
-    const id = data.data.id;
-    const pcKey = md5(data.data.pcKey);
-    // let roomID = '';
-    // console.log('joinFromApp >>>>>>>>', data);
-    PC.authApp(id, auth, pcKey, function(err, pc) {
-      if (pc) {
-        User.getUser(id, function(err, user) {
-          if (user) {
-            //       console.log(` joinFromApp >>>>>>>> user data error >>>>>>>>> ${err}`);
-            //       console.log(` joinFromApp >>>>>>>> room ${user.ioSocketID}  >>>>>>> user data >>>>>>>>>`);
-            socket.join(user.ioSocketID);
-            PC.getPC(pcKey, function(err, pcData) {
-              //  console.log('this is  app socket ->>>>>', socket.id);
-              const pcInfo = {};
-              pcInfo.pcSocketID = socket.id;
-              PC.updatePcSocketID(pcData._id, pcInfo, {}, function(err, pc) {
-                //     console.log(err);
-              });
-            });
-            // console.log(`App Join to PC App Room ${user.ioSocketID}`);
-            //     io.sockets.in(user.ioSocketID).emit('getAppData', {data: 'start'});
-            const clients_in_the_room = io.sockets.adapter.rooms[user.ioSocketID].sockets;
-            for (const clientId in clients_in_the_room) {
-              // console.log('client -web: %s', clientId); //Seeing is believing
+        //  set  if  user  got  new pc  key  or  update  if  got  old one
+        const pc = await PC.getPCByUserIDAndPCKey(pcKey, user._id);
+        if (pc) {
+          const pcInfo = {};
+          pcInfo.pcOnline = 1;
+          pcInfo.pcSocketID = socket.id;
+          await PC.updatePcOnlineStatus(pc._id, pcInfo, {});
+          const pcOwner = {};
+          pcOwner.pcID = pc._id;
+          pcOwner.pcKey = pcKey;
+          pcOwner.userID = user._id;
+          const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
+          if (pcOwnerData) {
+            const userInformation = await User.getUser(user._id);
+
+            const computerClassData = await updateAppUserAuth(user, pcKey);
+            const computerClassObject = new computerClass(computerClassData);
+            computerClassObject.withAuthentication();
+            computerClassObject.withUserInformation(userInformation);
+            res.status(200);
+            res.json(respond(true, 'Hello!', computerClassObject.get()));
+          }
+        } else {
+          const pc = {};
+          pc.pcKey = pcKey;
+          pc.pcName = pcName;
+          pc.pcOnline = 1;
+          pc.pcSocketID = socket.id;
+          pc.platform = platform;
+          pc.publicAccessKey = md5(pcKey + Date.now());
+          pc.userID = user._id;
+          const pcData = await PC.createNewPC(pc);
+          if (pcData) {
+            const pcOwner = {};
+            pcOwner.pcID = pcData._id;
+            pcOwner.pcKey = pcKey;
+            pcOwner.userID = user._id;
+            const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
+            if (pcOwnerData) {
+              const out = await updateAppUserAuth(user, pcKey);
+              const userClassData = new userClass(out);
+              userClassData.userInformation();
+              userClassData.withAuthentication();
+              res.status(200);
+              res.json(respond(true, 'Hello!', userClassData.get()));
             }
           }
-        });
-      }
-    });
-  });
-  /*   socket.on('sendList', function (msg) {
-           ////console.log('get list from app ', msg);
-           //   io.sockets.emit('sendToWeb', msg);
-       });*/
-  socket.on('pcAccessRequest', function(input) {
-    //  console.log('PC Access from drop down', input);
-    const auth = input.auth;
-    const id = input.userID;
-    const pcID = input.pcID;
-    User.authUser(id, auth, function(err, user) {
-      console.log('user select   pc');
-      if (user) {
-        const userInfo = {};
-        userInfo.pcID = pcID;
-        User.updateUserNowAccessPCID(id, userInfo, {}, function(err, user) {});
-        // //console.log(user);
-        PC.getPCUsingID(pcID, function(err, pc) {
-          const sendUserInfoToApp = {};
-          sendUserInfoToApp.email = user.email;
-          sendUserInfoToApp.name = user.name;
-          sendUserInfoToApp.nameLast = user.nameLast;
-          sendUserInfoToApp.status = true;
-          sendUserInfoToApp.userID = user._id;
-          console.log(pc);
-          io.sockets.to(pc.pcSocketID).emit('pcAccessRequest', sendUserInfoToApp);
-          console.log('user ask  for  pc', pc.pcSocketID);
-        });
-      }
-    });
-    // //console.log('get list from app ', msg);
-    //   io.sockets.emit('sendToWeb', msg);
-  });
-  // from  pc
-  socket.on('hDDList', function(input) {
-    //  //console.log(input);
-    const id = input.id;
-    const auth = input.auth;
-    const pcKey = md5(input.pcKey);
-    // console.log('hDDList >>>>>>>>', input);
-    PC.authApp(id, auth, pcKey, function(err, pc) {
-      if (pc) {
-        User.getUser(id, function(err, user) {
-          if (user) {
-            //            console.log(` hDDList >>>>>>>> room ${user.ioSocketID}>>>> user data error >>>>>>>>> ${err}`);
-            //      //console.log(input);
-            //   //console.log('get list from app ', input.data);
-            // to  web
-            getUserSocketID(pc, user, function(socketID) {
-              // /          console.log('User new socket id >>>>>>>>>>>>>> ', socketID);
-              io.sockets.in(socketID).emit('hDDList', input.data);
-            });
-            //  io.sockets.in(newSocketID).emit('hDDList', input.data);
-          }
-        });
-      }
-    });
-  });
-
-  socket.on('pcInfoRequest', function(input) {
-    //  console.log('PC Access from drop down', input);
-    const auth = input.auth;
-    const id = input.userID;
-    const pcID = input.pcID;
-    User.authUser(id, auth, function(err, user) {
-      console.log('user select   pc');
-      if (user) {
-        const userInfo = {};
-        userInfo.pcID = pcID;
-        User.updateUserNowAccessPCID(id, userInfo, {}, function(err, user) {});
-        // //console.log(user);
-        PC.getPCUsingID(pcID, function(err, pc) {
-          const sendUserInfoToApp = {};
-          sendUserInfoToApp.email = user.email;
-          sendUserInfoToApp.name = user.name;
-          sendUserInfoToApp.nameLast = user.nameLast;
-          sendUserInfoToApp.status = true;
-          sendUserInfoToApp.userID = user._id;
-          console.log(pc);
-          io.sockets.to(pc.pcSocketID).emit('pcInfoRequest', sendUserInfoToApp);
-          console.log('user ask  for  pc', pc.pcSocketID);
-        });
-      }
-    });
-    // //console.log('get list from app ', msg);
-    //   io.sockets.emit('sendToWeb', msg);
-  });
-
-  // pc info send to web
-  socket.on('pcInfo', function(input) {
-    //  //console.log(input);
-    const auth = input.auth;
-    const id = input.id;
-    const pcKey = md5(input.pcKey);
-
-    PC.authApp(id, auth, pcKey, function(err, pc) {
-      if (pc) {
-        User.getUser(id, function(err, user) {
-          if (user) {
-
-            // to  web
-            getUserSocketID(pc, user, function(socketID) {
-       
-
-              io.sockets.in(socketID).emit('pcInfo', input.pcInfo);
-            });
-       
-          }
-        });
-      }
-    });
-  });
-
-
-  // from  web
-  socket.on('openFolder', function(input) {
-    const auth = input.auth;
-    const id = input.id;
-    const pcKeyPublic = input.pcKeyPublic;
-    User.authUser(id, auth, function(err, user) {
-      // console.log(input);
-      if (user) {
-        // console.log(user);
-        //     //console.log('open Folder Request ', input);
-        // to pc
-        //        io.sockets.in(user.ioSocketID)
-        // //console.log(user);
-        /*  PC.getPCUsingID(user.userNowAccessPCID, function (err, pc) {
-                      // //console.log(err);
-                      //console.log(pc);
-                      io.sockets.to(pc.pcSocketID).emit('openFolderRequest', input);
-                  });*/
-        getPCSocketID(user, pcKeyPublic, function(socket) {
-          io.sockets.to(socket).emit('openFolderRequest', input);
-        });
-      }
-    });
-  });
-  // from  pc
-  socket.on('sendOpenFolderRequest', function(input) {
-    const auth = input.auth;
-    const id = input.id;
-    const pcKey = md5(input.pcKey);
-    //   console.log('sendOpenFolderRequest >>>>>>>>', input);
-    PC.authApp(id, auth, pcKey, function(err, pc) {
-      if (pc) {
-        User.getUser(id, function(err, user) {
-          if (user) {
-            //    console.log(` sendOpenFolderRequest >>>>>>>> room ${user.ioSocketID} >>>>>> user data error >>>>>>>>> ${err}`);
-            // console.log('open Folder get ', input);
-            //  io.sockets.emit('openFolderRequestToWeb', msg);
-            // to  web
-            getUserSocketID(pc, user, function(socketID) {
-              //  console.log('User new socket id >>>>>>>>>>>>>> ', socketID);
-              // io.sockets.in(socketID).emit('hDDList', input.data);
-              io.sockets.in(socketID).emit('openFolderRequestToWeb', input.data);
-            });
-          }
-        });
-      }
-    });
-  });
-  // copy file  location ad paste file  location
-  socket.on('copyPasteToPC', function(input) {
-    const auth = input.auth;
-    const id = input.id;
-    User.authUser(id, auth, function(err, user) {
-      // console.log(user);
-      if (user) {
-        // console.log(input);
-        io.sockets.in(user.ioSocketID).emit('copyPasteToPCApp', input.data);
-      }
-    });
-  });
-  // copy  and paste  Done
-  socket.on('pasteDone', function(input) {
-    const auth = input.auth;
-    const id = input.id;
-    const pcKey = md5(input.pcKey);
-    let roomID = '';
-    // console.log('pasteDone >>>>>>>', input);
-    PC.authApp(id, auth, pcKey, function(err, pc) {
-      User.getUser(id, function(err, user) {
-        if (user) {
-          roomID = user.ioSocketID;
         }
+        socket.join(user.ioSocketID);
+      } else {
+        res.status(401);
+        res.json(respond(false, 'Invalid User', null));
+      }
+    } else {
+      res.status(401);
+      res.json(respond(false, 'This  software version  no  longer  work', null));
+    }
+  });
+  // join user from  web
+  socket.on('joinFromWeb', async function(data) {
+  //  logger.log(data);
+    const userID = data.data.userID;
+    const authentication_key = data.data.authentication_key;
+    const user =await User.authUser(userID, authentication_key);
+    if (user) {
+      socket.join(user.ioSocketID);
+      // update user Current socket ID
+      const userData = {};
+      userData.userCurrentSocketId = socket.id;
+      await User.updateUserCurrentSocketId(user._id, userData, {});
+      // pulling data from app
+      io.sockets.in(user.ioSocketID).emit('getAppData', {
+        data: 'start',
       });
-      //  console.log(` pasteDone >>>>>>>> room ${roomID} >>>>>> user data error >>>>>>>>> ${err}`);
+    }
+  });
+  // join user from  app
+  socket.on('joinFromApp', async function(data) {
+    const authentication_key = data.data.authentication_key;
+    const userID = data.data.userID;
+    const pcKey = md5(data.data.pcKey);
+    const pc = await PC.authApp(userID, authentication_key, pcKey);
+    if (pc) {
+      const user= await User.getUser(userID);
+      if (user) {
+        socket.join(user.ioSocketID);
+        const pcData =await PC.getPC(pcKey);
+        if (pcData) {
+          const pcInfo = {};
+          pcInfo.pcSocketID = socket.id;
+          await PC.updatePcSocketID(pcData._id, pcInfo, {});
+        }
+      }
+    }
+  });
+  socket.on('pcAccessRequest', async function(input) {
+    const authentication_key = input.authentication_key;
+    const userID = input.userID;
+    const pcID = input.pcID;
+    const user = await User.authUser(userID, authentication_key);
+    if (user) {
+    // logger.log(user);
+      const userInfo = {};
+      userInfo.pcID = pcID;
+      await User.updateUserNowAccessPCID(userID, userInfo, {});
+      const pc= await PC.getPCUsingID(pcID);
       if (pc) {
-        // console.log(input);
-        io.sockets.in(user.ioSocketID).emit('pasteDone', input.data);
+      //  logger.log(pc);
+        const sendUserInfoToApp = {};
+        sendUserInfoToApp.email = user.email;
+        sendUserInfoToApp.name = user.name;
+        sendUserInfoToApp.nameLast = user.nameLast;
+        sendUserInfoToApp.status = true;
+        sendUserInfoToApp.userID = user._id;
+        io.sockets.to(pc.pcSocketID).emit('pcAccessRequest', sendUserInfoToApp);
       }
-    });
+    }
   });
-  // file  transfer
-  socket.on('uploadFileInfo_to_pc', function(input) {
-    const auth = input.auth;
-    const id = input.id;
-    User.authUser(id, auth, function(err, user) {
-      // console.log(user);
+  /**
+ * get user socketID
+ *
+ * @param {object} pcData
+ * @param {object} user
+ * @param {callback} callback
+ */
+  async function getUserSocketID(pcData, user) {
+    const pc = await PC.getPC(pcData.pcKey);
+    if (pc) {
+      if (pc.publicAccessStatus === 1) {
+        const userAndPc = await UserAndPC.getUserAndPCUsingKey(pc.publicAccessKey);
+        if (userAndPc) {
+          const userData = await User.getUser(userAndPc.userID);
+          // data that need to return from function
+          return userData.ioSocketID;
+        } else {
+          return user.ioSocketID;
+        }
+      } else {
+        return user.ioSocketID;
+      }
+    }
+  }
+  /**
+ * Get owner pc  socket id  or public key socket id
+ *
+ * @param {object} user  user information
+ * @param {string} pcKeyPublic computer public access key
+ * @param {callback} callback
+ */
+  async function getPCSocketID(user, pcKeyPublic, callback) {
+    if (pcKeyPublic === '') {
+      const userPC = await PC.getPCUsingID(user.userNowAccessPCID);
+      return userPC.pcSocketID;
+    } else {
+      const pc =await PC.getPCPublicKey(pcKeyPublic);
+      if (pc.publicAccessStatus === 1) {
+        return pc.pcSocketID;
+      } else {
+        const userPC = PC.getPCUsingID(user.userNowAccessPCID);
+        return userPC.pcSocketID;
+      }
+    }
+  }
+  /**
+ * Request  Computer Hard drive list
+ */
+  socket.on('hDDList', async function(input) {
+    console.log(input);
+
+    const userID = input.userID;
+    const authentication_key = input.authentication_key;
+    const computerKey = md5(input.computerKey);
+    const pc = await PC.authApp(userID, authentication_key, computerKey);
+    if (pc) {
+      const user = await User.getUser(userID);
       if (user) {
-        // console.log(input);
-        io.sockets.in(user.ioSocketID).emit('uploadFileInfo_from_web', input.data);
+      // to  web
+        const socketID = await getUserSocketID(pc, user);
+        io.sockets.in(socketID).emit('hDDList', input.data);
       }
-    });
+    }
   });
-  socket.on('uploadFile_chunk_to_pc', function(input) {
-    const auth = input.auth;
-    const id = input.id;
-    User.authUser(id, auth, function(err, user) {
-      // console.log(user);
+  /**
+   * Request  computer information
+   */
+  socket.on('pcInfoRequest', async function(input) {
+    const authentication_key = input.authentication_key;
+    const userID = input.userID;
+    const pcID = input.pcID;
+    const user = await User.authUser(userID, authentication_key);
+    if (user) {
+      const userInfo = {};
+      userInfo.pcID = pcID;
+      await User.updateUserNowAccessPCID(userID, userInfo, {});
+      const pc = await PC.getPCUsingID(pcID);
+      if (pc) {
+        const sendUserInfoToApp = {};
+        sendUserInfoToApp.email = user.email;
+        sendUserInfoToApp.name = user.name;
+        sendUserInfoToApp.nameLast = user.nameLast;
+        sendUserInfoToApp.status = true;
+        sendUserInfoToApp.userID = user._id;
+        io.sockets.to(pc.pcSocketID).emit('pcInfoRequest', sendUserInfoToApp);
+      }
+    }
+  });
+  /**
+   *
+   */
+  socket.on('pcInfo', async function(input) {
+    const authentication_key = input.authentication_key;
+    const userID = input.userID;
+    const pcKey = md5(input.pcKey);
+    const pc = await PC.authApp(userID, authentication_key, pcKey);
+    if (pc) {
+      const user =await User.getUser(userID);
       if (user) {
-        // console.log(input);
-        io.sockets.in(user.ioSocketID).emit('uploadFile_chunk_from_web', input.data);
+      // to  web
+        const socketID = await getUserSocketID(pc, user);
+        io.sockets.in(socketID).emit('pcInfo', input.pcInfo);
       }
-    });
+    }
   });
-  socket.on('fileSendingFromPc', function(input) {
-    //  console.log(input);
+  /**
+ * Request for open folder
+ */
+  socket.on('openFolder', async function(input) {
+    const authentication_key = input.authentication_key;
+    const userID = input.userID;
+    const pcKeyPublic = input.pcKeyPublic;
+    const user = await User.authUser(userID, authentication_key);
+    if (user) {
+      const socket =await getPCSocketID(user, pcKeyPublic );
+      io.sockets.to(socket).emit('openFolderRequest', input);
+    }
+  });
+  // from  pc
+  socket.on('sendOpenFolderRequest', async function(input) {
+    const authentication_key = input.authentication_key;
+    const userID = input.userID;
+    const pcKey = md5(input.pcKey);
+    const pc = await PC.authApp(userID, authentication_key, pcKey);
+    if (pc) {
+      const user = await User.getUser(userID);
+      if (user) {
+        // to  web
+        const socketID = await getUserSocketID(pc, user);
+        io.sockets.in(socketID).emit('openFolderRequestToWeb', input.data);
+      }
+    }
   });
   // get  access for  public pc key
   /**
-     * User
-     */
-  app.post('/public/pc/access', function(req, res) {
-    const auth = req.headers.token;
-    const id = req.body.id;
+   * User
+   */
+  app.post('/api/v1/computer/public/access', async function(req, res) {
+    const authentication_key = req.headers.authentication_key;
+    const userID = req.body.userID;
     const pcKeyPublic = req.body.pcKeyPublic;
-    User.authUser(id, auth, function(err, user) {
-      if (!user) {
-        res.status(401);
-        return res.json(respond(false, 'Invalid User', null));
+    const user = await User.authUser(userID, authentication_key);
+    if (!user) {
+      res.status(401);
+      return res.json(respond(false, 'Invalid User', null));
+    }
+    const sendUserInfoToApp = {};
+    sendUserInfoToApp.email = user.email;
+    sendUserInfoToApp.name = user.name;
+    sendUserInfoToApp.nameLast = user.nameLast;
+    sendUserInfoToApp.userID = user._id;
+    const pcInfo = await PC.getPCPublicKey(pcKeyPublic);
+    if (pcInfo) {
+      if (pcInfo.publicAccessStatus === 1) {
+        const pc = {};
+        pc.pcKeyPublic = pcKeyPublic;
+        pc.userID = id;
+        await UserAndPC.createNewUserAndPC(pc);
+        io.sockets.to(pcInfo.pcSocketID).emit('pcAccessRequest', sendUserInfoToApp);
       }
-      const sendUserInfoToApp = {};
-      sendUserInfoToApp.email = user.email;
-      sendUserInfoToApp.name = user.name;
-      sendUserInfoToApp.nameLast = user.nameLast;
-      sendUserInfoToApp.userID = user._id;
-      //    console.log('User Auth >>>>>>>> ');
-      PC.getPCPublicKey(pcKeyPublic, function(err, pcInfo) {
-        if (pcInfo) {
-          if (pcInfo.publicAccessStatus === 1) {
-            //      console.log('pc allow to access from public');
-            const pc = {};
-            pc.pcKeyPublic = pcKeyPublic;
-            pc.userID = id;
-            UserAndPC.createNewUserAndPC(pc, function(err, output) {});
-            io.sockets.to(pcInfo.pcSocketID).emit('pcAccessRequest', sendUserInfoToApp);
-          }
-        }
-      });
-    });
-  });
-  app.post('/pc/downloadFileRequest', function(req, res) {
-    const auth = req.headers.token;
-    const id = req.body.id;
-    const path = req.body.path;
-    const pcKeyPublic = req.body.pcKeyPublic;
-    User.authUser(id, auth, function(err, user) {
-      // console.log(input);
-      if (user) {
-        const output = {};
-        output.path = path;
-        //     console.log('User Auth >>>>>>>> ');
-        // console.log(user);
-        //     //console.log('open Folder Request ', input);
-        // to pc
-        //        io.sockets.in(user.ioSocketID)
-        // //console.log(user);
-        /*  PC.getPCUsingID(user.userNowAccessPCID, function (err, pc) {
-                      // //console.log(err);
-                      //console.log(pc);
-                      io.sockets.to(pc.pcSocketID).emit('openFolderRequest', input);
-                  });*/
-        getPCSocketID(user, pcKeyPublic, function(socket) {
-          io.sockets.to(socket).emit('downloadFileRequest', output);
-        });
-      }
-    });
+    }
   });
   // validate folder name
-  app.post('/validateFolderName', function(req, res) {
-    const auth = req.headers.token;
+  app.post('/api/v1/user/computer/validateFolderName', async function(req, res) {
+    const authentication_key = req.headers.authentication_key;
     const createFolderName = req.body.createFolderName;
-    const id = req.body.id;
+    const userID = req.body.userID;
     const path = req.body.path;
     const pcKeyPublic = req.body.pcKeyPublic;
-    User.authUser(id, auth, function(err, user) {
-      // console.log(input);
-      if (user) {
-        res.status(200);
-        if (!isValidFoldersName(createFolderName)) {
-          res.json(respond(isValidFoldersName(createFolderName), 'Invalid Folder name', null));
-        } else {
-          res.json(respond(true, '', null));
-          const output = {};
-          output.path = path;
-          output.createFolderName = createFolderName;
-          getPCSocketID(user, pcKeyPublic, function(socket) {
-            io.sockets.to(socket).emit('validateFolderName', output);
-          });
-        }
+    const user = await User.authUser(userID, authentication_key);
+    if (user) {
+      res.status(200);
+      if (!isValidFoldersName(createFolderName)) {
+        res.json(respond(isValidFoldersName(createFolderName), 'Invalid Folder name', null));
+      } else {
+        res.json(respond(true, '', null));
+        const output = {};
+        output.path = path;
+        output.createFolderName = createFolderName;
+        const socket = await getPCSocketID(user, pcKeyPublic);
+        io.sockets.to(socket).emit('validateFolderName', output);
       }
-    });
+    }
   });
   // from  pc  send  information after create  folder
-  socket.on('folderCreateCallback', function(input) {
-    const auth = input.auth;
-    const id = input.id;
-    const pcKey = md5(input.pcKey);
-    PC.authApp(id, auth, pcKey, function(err, pc) {
-      if (pc) {
-        User.getUser(id, function(err, user) {
-          if (user) {
-            getUserSocketID(pc, user, function(socketID) {
-              io.sockets.in(socketID).emit('folderCreateCallbackToWeb', input.data);
-            });
-          }
-        });
+  socket.on('folderCreateCallback', async function(input) {
+    const authentication_key = input.authentication_key;
+    const userID = input.userID;
+    const computerKey = md5(input.computerKey);
+    const computer = await PC.authApp(userID, authentication_key, computerKey);
+    if (computer) {
+      const user = await User.getUser(userID);
+      if (user) {
+        const socketID =await getUserSocketID(computer, user);
+        io.sockets.in(socketID).emit('folderCreateCallbackToWeb', input.data);
       }
-    });
+    }
   });
 });

@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 const pcSchema = mongoose.Schema({
-  pcKey: {
+  pcKey: { // Personal Computer Unique Key
     type: String,
     required: true,
   },
-  userID: {
+  userID: { // User ID
     type: String,
     required: true,
   },
-  status: {
+  status: { 
     type: Number,
     required: true,
     default: 1, //
@@ -17,7 +17,7 @@ const pcSchema = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  publicAccessKey: {
+  publicAccessKey: { //Personal computer Public Access Key
     type: String,
     default: Date.now,
     unique: true,
@@ -27,27 +27,28 @@ const pcSchema = mongoose.Schema({
     required: true,
     default: 0, //
   },
-  pcName: {
+  pcName: { // Person Computer name
     type: String,
   },
-  platform: {
+  platform: { // Computer OS
     type: String,
   },
-  pcOnline: {
+  pcOnline: { // Computer offline online
     type: Number,
     required: true,
     default: 0, //
   },
-  pcSocketID: {
+  pcSocketID: { // Computer  socket ID
     type: String,
   },
-  authApp: {
+  authApp: { // Auth key from App side
     type: String,
   },
 });
 const PC = module.exports = mongoose.model('pc', pcSchema);
 // create   pc
-module.exports.createNewPC = function(pc, callback) {
+module.exports.createNewPC = function(pc) {
+  return new Promise((resolve,reject)=>{
   PC.create({
     'pcKey': pc.pcKey,
     'userID': pc.userID,
@@ -56,44 +57,71 @@ module.exports.createNewPC = function(pc, callback) {
     'publicAccessKey': pc.publicAccessKey,
     'pcOnline': pc.pcOnline,
     'pcSocketID': pc.pcSocketID,
-  }, callback);
+  }, function (err, pc) {
+    resolve(pc);
+        });
+      }).then(result=>{return result;});
 };
 //  get  pc using _id
 module.exports.getPCUsingID = function(key, callback) {
-  PC.findOne().where('_id', key).exec(callback);
+  return new Promise((resolve,reject)=>{
+  PC.findOne().where('_id', key).exec(function (err, pc) {
+    resolve(pc);
+        });
+    }).then(result=>{return result;});
 };
 //  get all pc
 module.exports.getAllPC = function(limit, callback) {
   PC.find(callback).limit(limit);
 };
 //  get  pc using pcKey
-module.exports.getPC = function(key, callback) {
-  PC.findOne().where('pcKey', key).exec(callback);
+module.exports.getPC = function(key) {
+  return new Promise((resolve,reject)=>{
+  PC.findOne().where('pcKey', key).exec(function (err, pc) {
+    resolve(pc);
+        });
+    }).then(result=>{return result;});
 }; //  get  pc using socket ID
-module.exports.getPCSocketID = function(pcSocketID, callback) {
-  PC.findOne().where('pcSocketID', pcSocketID).exec(callback);
+module.exports.getPCSocketID = function(pcSocketID) {
+  return new Promise((resolve,reject)=>{
+  PC.findOne().where('pcSocketID', pcSocketID).exec(function (err, pc) {
+    resolve(pc);
+        });
+    }).then(result=>{return result;});
 };
 //  get  pc using pcKey and user ID
 module.exports.getPCByUserIDAndPCKey = function(key, userID, callback) {
+  return new Promise((resolve,reject)=>{
   PC.findOne().where({
     'pcKey': key,
     'userID': userID,
-  }).exec(callback);
+  }).exec(function (err, pc) {
+    resolve(pc);
+        });
+    }).then(result=>{return result;});
 };
 //  get all  pc using  user id
-module.exports.getPCByUserID = function(userID, callback) {
+module.exports.getPCByUserID = function(userID) {
+  return new Promise((resolve,reject)=>{
   PC.find().where({
     'userID': userID,
     'status': 1,
-  }).exec(callback);
+  }).exec(function (err, pc) {
+    resolve(pc);
+        });
+    }).then(result=>{return result;});
 };
 //  get all online  pc using  user id
-module.exports.getPCByUserIDOnline = function(userID, callback) {
+module.exports.getPCByUserIDOnline = function(userID) {
+  return new Promise((resolve,reject)=>{
   PC.find().select('_id pcName platform email').where({
     'userID': userID,
     'status': 1,
     'pcOnline': 1,
-  }).exec(callback);
+  }).exec(function (err, pc) {
+resolve(pc);
+    });
+}).then(result=>{return result;});
 }; //  get   pc using  pc id
 module.exports.getPCByPCID = function(pcID, callback) {
   PC.findOne().where({
@@ -102,17 +130,22 @@ module.exports.getPCByPCID = function(pcID, callback) {
   }).exec(callback);
 };
 //  generate public access key
-module.exports.newPublicAccessKey = function(pcID, pc, callback) {
+module.exports.newPublicAccessKey = function(pcID, pc) {
+  return new Promise((resolve,reject)=>{
   const query = {
     _id: pcID,
   };
   const update = {
     publicAccessKey: pc.key,
   };
-  PC.findOneAndUpdate(query, update, option, callback);
+  PC.findOneAndUpdate(query, update, option, function (err , pc) {
+    resolve(pc);
+  });
+}).then(result=>{return result;});
 };
 //  update public access key access
-module.exports.updatePublicAccessStatus = function(pcID, pc, option, callback) {
+module.exports.updatePublicAccessStatus = function(pcID, pc, option) {
+return new Promise((resolve,reject)=>{
   const query = {
     _id: pcID,
   };
@@ -120,10 +153,14 @@ module.exports.updatePublicAccessStatus = function(pcID, pc, option, callback) {
     publicAccessStatus: pc.publicAccessStatus,
     publicAccessKey: pc.publicAccessKey,
   };
-  PC.findOneAndUpdate(query, update, option, callback);
+  PC.findOneAndUpdate(query, update, option, function (err , pc) {
+    resolve(pc);
+  });
+}).then(result=>{return result;});
 };
 //  update PC  online status
-module.exports.updatePcOnlineStatus = function(pcID, pc, option, callback) {
+module.exports.updatePcOnlineStatus = function(pcID, pc, option) {
+  return new Promise((resolve,reject)=>{
   const query = {
     _id: pcID,
   };
@@ -131,20 +168,28 @@ module.exports.updatePcOnlineStatus = function(pcID, pc, option, callback) {
     pcOnline: pc.pcOnline,
     pcSocketID: pc.pcSocketID,
   };
-  PC.findOneAndUpdate(query, update, option, callback);
+  PC.findOneAndUpdate(query, update, option, function (err , pc) {
+    resolve(pc);
+  });
+}).then(result=>{return result;});
 };
 //  update PC  socket ID
-module.exports.updatePcSocketID = function(pcID, pc, option, callback) {
+module.exports.updatePcSocketID = function(pcID, pc, option) { 
+  return  new Promise((resolve, reject) => {
   const query = {
     _id: pcID,
   };
   const update = {
     pcSocketID: pc.pcSocketID,
   };
-  PC.findOneAndUpdate(query, update, option, callback);
+  PC.findOneAndUpdate(query, update, option, function (err , pc) {
+    resolve(pc);
+  });
+}).then(result=>{return result;});  
 };
 // user app update auth from pc key
-module.exports.updateUserAuthApp = function(pcKey, pc, option, callback) {
+module.exports.updateUserAuthApp = function(pcKey, pc, option) {
+  return  new Promise((resolve, reject) => {
   const query = {
     pcKey: pcKey,
     userID: pc.id,
@@ -152,23 +197,30 @@ module.exports.updateUserAuthApp = function(pcKey, pc, option, callback) {
   const update = {
     authApp: pc.auth,
   };
-  /*    var update = {
-            authApp: user.auth, ioSocketID: user.ioSocketID,
-        }*/
-  //  console.log(update,query);
-  PC.findOneAndUpdate(query, update, option, callback);
+  PC.findOneAndUpdate(query, update, option, function (err , pc) {
+    resolve(pc);
+  });
+}).then(result=>{return result;});
 };
 // auth  App
-module.exports.authApp = function(id, auth, pcKey, callback) {
+module.exports.authApp = function(id, auth, pcKey) {
+  return  new Promise((resolve, reject) => {
   PC.findOne().where({
     'userID': id,
     'authApp': auth,
     'pcKey': pcKey,
-  }).exec(callback);
+  }).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
 };
 //  get  pc using public access key
-module.exports.getPCPublicKey = function(key, callback) {
-  PC.findOne().where('publicAccessKey', key).exec(callback);
+module.exports.getPCPublicKey = function(key) {
+  return  new Promise((resolve, reject) => {
+  PC.findOne().where('publicAccessKey', key).exec(function(err,result){
+    resolve(result);
+  });
+}).then(result=>{return result});
 };
 // all active   user
 module.exports.countPC = function(callback) {

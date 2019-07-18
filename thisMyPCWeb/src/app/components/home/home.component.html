@@ -39,8 +39,8 @@
           <p class="mb-md-5 mb-sm-3">Open Source Experimental Full Stack
             Project </p>
           <p><a href="ThisMyPC-win32-x64.zip" class="btn btn-primary px-4 py-3">Download
-              App</a><span class="ml-2 mouse" data-toggle="modal" data-target=".bd-example-modal-lg"> Release
-              Note</span>
+              App</a><span class="ml-2 mouse" > <a class="release_link" href="https://github.com/supunlakmal/thismypc/releases/" target="_blank">Release
+              Note</a></span>
           </p>
           <div class="row platform mt-5 mb-2">
             <div class="col-xl-1 col-lg-1 col-2 mb-2"><i class="fab fa-windows on-platform"></i>
@@ -407,8 +407,10 @@
                     {{error_message_text}}
                   </div>
                 </div>
-                <div class="col-xl-12 form-col"><input type="text" class="type-text" placeholder="Your Name"
-                    [(ngModel)]="name" name="name" required></div>
+                <div class="col-xl-12 form-col"><input type="text" class="type-text" placeholder="First Name"
+                    [(ngModel)]="firstName" name="firstName" required></div>
+                    <div class="col-xl-12 form-col"><input type="text" class="type-text" placeholder="Last Name"
+                      [(ngModel)]="lastName" name="lastName" required></div>
                 <div class="col-xl-12 form-col"><input type="text" class="type-text" placeholder="Email Address"
                     [(ngModel)]="email" name="email" required></div>
                 <div class="col-xl-12 form-col"><input type="password" class="type-text" placeholder="Password"
@@ -429,54 +431,15 @@
     </div>
   </div>
 </div>
-<!--<div id="helpUs"
-     class="helpUs">
-    <div class="alert alert-primary"
-         role="alert">
-        Need your Support.
-    </div>
-</div>-->
-<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
-  aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"> Release Note (0.1.1) (2019-04-14) </h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <h6>Instruction</h6>
-        <ul>
-          <li>Download (ThisMyPC-win32-x64.zip)</li>
-          <li>Unzip and run Thismypc.exe</li>
-          <li>Logging to app and website using same username and password</li>
-          <li>Browser Your pc from any devise :)</li>
-        </ul>
-        <h6>New Featured </h6>
-        <ul>
-          <li>Now You have Create Folder option</li>
-          <li>If Pc get disconnected it show in your PC List</li>
-        </ul>
-        <h6>Fixed </h6>
-        <ul>
-          <li>Increase app loading speed.</li>
-        </ul>
-        <p>We welcome your feedback <a href="mailto:supunlakmal61@gmail.com">supunlakmal61@gmail.com </a></p>
-      </div>
-    </div>
-  </div>
-</div>
 <!-- Side  alert-->
-<div class="ol-modal ol-beh-fade" id="contribute_alert" *ngIf="contribute_alert_show">
+<div class="ol-modal ol-beh-fade" id="contribute_alert">
   <aside class="featured-content-popup-interstitial">
     <div class="featured-content-popup-interstitial-chrome">
       <div class="featured-content-popup-interstitial-chrome-actions">
         <div class="featured-content-popup-interstitial-chrome-actions-action ol-close">
           <div class="featured-content-popup-interstitial-chrome-actions-action-media">
             <div class="featured-content-popup-interstitial-chrome-actions-action-media-object">
-              <i (click)="contribute_alert_close()" class="fas fa-times"></i>
+              <i class="fas fa-times" id="close_contribute_alert"></i>
             </div>
           </div>
         </div>
@@ -497,7 +460,7 @@
         <div class="featured-content-popup-interstitial-actions-action ol-confirm">
           <div class="featured-content-popup-interstitial-actions-action-label">
             <span class="featured-content-popup-interstitial-actions-action-label-title" data-toggle="modal"
-              data-target="#contribute_alert_Modal" (click)="contribute_alert_close()"><a
+              data-target="#contribute_alert_Modal"><a
                 href="https://github.com/supunlakmal/thismypc" target="_blank" class="side-alert-text p-0 nav-link"><i
                   class="fab fa-github" style="font-size: 20px;"></i> Github / thismypc</a></span>
           </div>

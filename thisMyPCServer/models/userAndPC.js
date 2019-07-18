@@ -4,7 +4,7 @@ const userAndPC = mongoose.Schema({
     type: String,
     required: true,
   },
-  pcKeyPublic: {
+  pcKeyPublic: { // Personal Computer public Access Key
     type: String,
     required: true,
   },
@@ -21,12 +21,18 @@ const userAndPC = mongoose.Schema({
 const UserAndPC = module.exports = mongoose.model('userAndPC', userAndPC);
 // create   User and pc public access
 module.exports.createNewUserAndPC = function(userPC, callback) {
+  return new Promise((resolve,reject)=>{
   UserAndPC.create({
     'userID': userPC.userID,
     'pcKeyPublic': userPC.pcKeyPublic,
   }, callback);
+});
 };
 //  get  pc  using pc key
-module.exports.getUserAndPCUsingKey = function(key, callback) {
-  UserAndPC.findOne().where('pcKeyPublic', key).exec(callback);
+module.exports.getUserAndPCUsingKey = function(key) {
+  return new Promise((resolve,reject)=>{
+  UserAndPC.findOne().where('pcKeyPublic', key).exec(function (err, result) {
+    resolve(result);
+        });
+    }).then(result=>{return result;});
 };

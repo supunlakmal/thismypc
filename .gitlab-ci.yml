@@ -13,10 +13,12 @@
     install_dependencies:
       stage: build
       script:
+        - git clone https://gitlab.com/supunlakmal/thismypc.git
+        - cd thismypc
         - cd thisMyPCWeb
         - npm i
         - npm i -g @angular/cli
-        - ng build
+        - ng build --prod --base-href /
         - cd ..
         - cd thisMyPCApp
         - npm i

@@ -16,10 +16,10 @@ let win;
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    height: 1000,
-    minHeight: 800,
-    minWidth: 800,
-    width: 1200,
+    height: 600,
+    minHeight: 500,
+    minWidth: 500,
+    width: 900,
     icon: 'assets/images/logo/logo-icon.png',
     show: false,
     /* , frame: false*/
@@ -27,7 +27,7 @@ function createWindow() {
   // and load the index.html of the app.
   win.loadFile('html/login.html');
   // Open the DevTools.
-  win.webContents.openDevTools();
+win.webContents.openDevTools();
 
   win.setMenu(null);
   win.once('ready-to-show', () => {

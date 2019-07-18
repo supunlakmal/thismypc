@@ -1,7 +1,7 @@
 {
   "name": "ThisMyPC",
-  "version": "0.1.2",
-  "description": "This is Electron JS , Node JS and  Angular    project (ThisMyPC)",
+  "version": "0.2.0",
+  "description": "This is Electron JS ,Node JS and Angular project (ThisMyPC)",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
