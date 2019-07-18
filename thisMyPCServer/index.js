@@ -6,12 +6,27 @@ const bodyParser = require('body-parser');
 const db = require('./config/db');
 // config  variables
 const config = require('./config/config');
-const fileUpload = require('express-fileupload');
+//const fileUpload = require('express-fileupload');
 // md5 encrypt
 const md5 = require('js-md5');
 const mongoose = require('mongoose');
 // validate inputs
 const validator = require('validator');
+
+let graphqlHTTP = require('express-graphql');
+let { buildSchema } = require('graphql');
+
+let  schema = buildSchema(`
+  type Query {
+    hello: String
+  }
+`);
+
+let root = { hello: () => 'Hello world!' };
+
+
+
+
 /**
  * components
  */
@@ -60,7 +75,21 @@ const UserAndPC = require('./models/userAndPC');
 const PcOwner = require('./models/PCOwner');
 app.use(bodyParser.json());
 app.disable('x-powered-by');
-app.use(fileUpload());
+
+
+
+
+
+app.use('/graphql', graphqlHTTP({
+  schema: schema,
+  rootValue: root,
+  graphiql: true,
+}));
+
+
+
+
+//app.use(fileUpload());
 // REST API output header
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
