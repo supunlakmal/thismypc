@@ -17,7 +17,7 @@
 [![Gitter](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/Thismypc/community)
 </div>
 
-ThisMyPC is a next-generation open source solution for remote computer. It's a full stack based project that starts as an experiment.
+> ThisMyPC is a next-generation open source solution for remote computer. It's a full stack based project that starts as an experiment.
 
 ## Demo - http://thismypc.com
 
