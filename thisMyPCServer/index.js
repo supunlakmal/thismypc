@@ -16,13 +16,6 @@ const validator = require('validator');
 let graphqlHTTP = require('express-graphql');
 let { buildSchema } = require('graphql');
 
-let  schema = buildSchema(`
-  type Query {
-    hello: String
-  }
-`);
-
-let root = { hello: () => 'Hello world!' };
 
 
 
@@ -78,7 +71,32 @@ app.disable('x-powered-by');
 
 
 
+/**
+ * GraphQL
+ */
 
+let  schema = buildSchema(`
+  type Query {
+    userDataSet(userID: String!) : UserData
+  }
+  
+  type UserData {
+
+    _id :String
+    name :String
+    lastName :String
+    email :String
+  }
+`);
+let  getUserData = async function(args){
+   let userID = args.userID;
+   return  await User.getUser(userID);
+}
+
+
+// Root resolver
+
+let root = { userDataSet: getUserData};
 
 app.use('/graphql', graphqlHTTP({
   schema: schema,
@@ -90,12 +108,7 @@ app.use('/graphql', graphqlHTTP({
 
 
 //app.use(fileUpload());
-// REST API output header
-app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,authentication_key ,userID');
-  next();
-});
+ 
 // server port ex-5000
 http.listen(process.env.PORT || config.port);
 logger.log(`Sever start on Port ${config.port}`);
