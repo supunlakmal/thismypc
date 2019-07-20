@@ -582,7 +582,7 @@ app.post('/api/v1/user/authentication', async (req, res)=> {
     res.json(respond(false, 'Invalid User', null));
   }
 });
-const isValidFoldersName = (function() {
+const isValidFoldersName = (()=> {
   const rg1 = /^[^\\/:\*\?"<>\|]+$/; // forbidden characters \ / : * ? " < > |
   const rg2 = /^\./; // cannot start with dot (.)
   const rg3 = /^(nul|prn|con|lpt[0-9]|com[0-9])(\.|$)/i; // forbidden file names
@@ -590,11 +590,11 @@ const isValidFoldersName = (function() {
     return rg1.test(fname) && !rg2.test(fname) && !rg3.test(fname);
   };
 })();
-io.on('connection', function(socket) {
+io.on('connection', (socket) =>{
   // TODO this user  login from app need to add few   function to  it
-  socket.on('loginPage', function() {});
+  socket.on('loginPage', ()=> {});
   // some  user  or  app get disconnected  from serve
-  socket.on('disconnect', async function() {
+  socket.on('disconnect', async () => {
     const pc = await PC.getPCSocketID(socket.id);
     if (pc) {
       const pcInfo = {};
