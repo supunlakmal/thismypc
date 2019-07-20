@@ -135,11 +135,20 @@ const getUserData = async (args, req)=> {
 };
 // Root resolver
 const root = {user: getUserData, userWebLogin: userWebLogin};
-app.use('/graphql', graphqlHTTP({
+app.use('/api/v1/graphql', graphqlHTTP({
   schema: schema,
   rootValue: root,
   graphiql: true,
 }));
+
+
+
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,authentication_key ,userID');
+  next();
+});
+
 // app.use(fileUpload());
 // server port ex-5000
 http.listen(process.env.PORT || config.port);
