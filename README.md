@@ -72,6 +72,9 @@ Android  | Developing
 #### Built With
 
 - [Node JS](https://nodejs.org/en/)
+- [GraphQL](http://graphql.org)
+- [Express JS](https://expressjs.com/)
+- [Socket IO](https://socket.io/)
 - [Angular](https://angularjs.org/)
 - [Electron JS](https://electronjs.org/)
 - [Mongodb](https://www.mongodb.com/)
