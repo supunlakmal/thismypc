@@ -1,3 +1,5 @@
+// md5 encrypt
+const md5 = require('js-md5');
 /**
  * User Module
  */
@@ -12,6 +14,9 @@ class UserComponent {
   }
   async getUserDataFunction(userID) {
     this.userDbObject = await User.getUser(userID);
+  }
+  setUserDataFunction(userData) {
+    this.userDbObject = userData;
   }
   allUserData() {
     return this.userDbObject;
@@ -28,23 +33,26 @@ class UserComponent {
   getUserLastName() {
     this.user.lastName = this.userDbObject.nameLast;
   }
-
   /**
  * User Email
  */
   getUserEmail() {
     this.user.email = this.userDbObject.email;
   }
-
   /**
  * User ID
  */
-
   getUserID() {
     this.user.userID = this.userDbObject._id;
   }
+  /**
+   * Return user Data
+   */
   userData() {
     return this.user;
+  }
+  getAuthentication() {
+    this.user.authentication_key = this.userDbObject.auth;
   }
 }
 module.exports = UserComponent;
