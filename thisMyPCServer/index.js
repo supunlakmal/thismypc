@@ -6,20 +6,14 @@ const bodyParser = require('body-parser');
 const db = require('./config/db');
 // config  variables
 const config = require('./config/config');
-//const fileUpload = require('express-fileupload');
+// const fileUpload = require('express-fileupload');
 // md5 encrypt
 const md5 = require('js-md5');
 const mongoose = require('mongoose');
 // validate inputs
 const validator = require('validator');
-
-let graphqlHTTP = require('express-graphql');
-let { buildSchema } = require('graphql');
-
-
-
-
-
+const graphqlHTTP = require('express-graphql');
+const {buildSchema} = require('graphql');
 /**
  * components
  */
@@ -54,6 +48,13 @@ function respond(type, msg, data) {
   return res;
 }
 /**
+ * Import Component
+ */
+/**
+  * User Component
+  */
+const userComponent = require('./components/user.components');
+/**
  * Mongo DB modules
  */
 // user module
@@ -68,67 +69,87 @@ const UserAndPC = require('./models/userAndPC');
 const PcOwner = require('./models/PCOwner');
 app.use(bodyParser.json());
 app.disable('x-powered-by');
-
-
-
 /**
  * GraphQL
  */
-
-let  schema = buildSchema(`
+const schema = buildSchema(`
   type Query {
-    userDataSet(userID: String!) : UserData
+    user(userID: String!) : UserData,
+    userWebLogin(email:String! , password:String!) : userWebLogin
   }
-  
-  type UserData {
 
-    _id :String
-    name :String
+  type userWebLogin {
+    userID :String
+    firstName :String
+    lastName :String
+    email :String
+    authentication_key:String
+  }
+
+  type UserData {
+    userID :String
+    firstName :String
     lastName :String
     email :String
   }
 `);
-let  getUserData = async function(args){
-   let userID = args.userID;
-   return  await User.getUser(userID);
-}
+
+/**
+ * User login
+ * 
+ * @param {Object} args 
+ */
+
+const userLWebLogin  =async ({email,password})=>
+{
 
 
+
+};
+
+
+/**
+ * User Information  by ID
+ * 
+ * @param {object} args 
+ */
+
+const getUserData = async (args)=> {
+  const userID = args.userID;
+  const userClass = new userComponent();
+  await userClass.getUserDataFunction(userID);
+  userClass.getUserEmail();
+  userClass.getUserFirstName();
+  userClass.getUserID();
+  userClass.getUserLastName();
+  return userClass.userData();
+};
 // Root resolver
-
-let root = { userDataSet: getUserData};
-
+const root = {user: getUserData ,  userWebLogin: userLWebLogin };
 app.use('/graphql', graphqlHTTP({
   schema: schema,
   rootValue: root,
   graphiql: true,
 }));
-
-
-
-
-//app.use(fileUpload());
- 
+// app.use(fileUpload());
 // server port ex-5000
 http.listen(process.env.PORT || config.port);
 logger.log(`Sever start on Port ${config.port}`);
-
 /**
  * REST API V1
  */
 /**
  * API main end point
  */
-app.get('/api/', async function(req, res) {
+app.get('/api/', async (req, res)=> {
   res.status(200).json(respond(true, 'REST API working', null));
 });
 /**
  *  API variation end point
  */
-app.get('/api/v1/', async function(req, res) {
+app.get('/api/v1/', async (req, res)=> {
   res.status(200).json(respond(true, 'REST API working', null));
 });
-
 /**
 * User information
 *
@@ -141,7 +162,7 @@ app.get('/api/v1/', async function(req, res) {
 * res<-
 */
 // TODO  authentication method
-app.get('/api/v1/user/:userID', async function(req, res) {
+app.get('/api/v1/user/:userID', async (req, res)=> {
 // authentication  key from  headers
   const authentication_key = req.headers.authentication_key;
   // user ID
@@ -174,7 +195,7 @@ app.get('/api/v1/user/:userID', async function(req, res) {
 * res<-
 */
 // TODO  authentication method
-app.get('/api/v1/user/:userID/computer/:computerKey', async function(req, res) {
+app.get('/api/v1/user/:userID/computer/:computerKey', async (req, res)=> {
   // authentication  key from  headers
   const authentication_key = req.headers.authentication_key;
   // user ID
@@ -207,7 +228,7 @@ app.get('/api/v1/user/:userID/computer/:computerKey', async function(req, res) {
  * res:Respond
  * res<-
  */
-app.post('/api/v1/user/register', async function(req, res) {
+app.post('/api/v1/user/register', async (req, res)=> {
   const email = req.body.email;
   const password = md5(req.body.password);
   req.body.password = password;
@@ -256,7 +277,7 @@ app.post('/api/v1/user/register', async function(req, res) {
  * res:Respond
  * res<-
  */
-app.post('/api/v1/user/login', async function(req, res) {
+app.post('/api/v1/user/login', async (req, res)=> {
   const email = req.body.email;
   const password = md5(req.body.password);
   req.body.password = password;
@@ -291,7 +312,7 @@ app.post('/api/v1/user/login', async function(req, res) {
  * res:Respond
  * res<-
  */
-app.post('/api/v1/user/password/edit', async function(req, res) {
+app.post('/api/v1/user/password/edit', async (req, res)=> {
 // authentication  key from  headers
   const authentication_key = req.headers.authentication_key;
   const userID = req.body.userID;
@@ -330,7 +351,7 @@ app.post('/api/v1/user/password/edit', async function(req, res) {
  * res:Respond
  * res<-
  */
-app.post('/api/v1/user/update', async function(req, res) {
+app.post('/api/v1/user/update', async (req, res)=> {
 // authentication  key from  headers
   const authentication_key = req.headers.authentication_key;
   const userID = req.body.userID;
@@ -357,7 +378,7 @@ app.post('/api/v1/user/update', async function(req, res) {
  * res:Respond
  * res<-
  */
-app.get('/api/v1/user/:userID/logout', async function(req, res) {
+app.get('/api/v1/user/:userID/logout', async (req, res)=> {
   const userID = req.params.userID;
   const authentication_key = req.headers.authentication_key;
   if (!await User.authUser(userID, authentication_key)) {
@@ -386,7 +407,7 @@ app.get('/api/v1/user/:userID/logout', async function(req, res) {
  * res:Respond
  * res<-
  */
-app.get('/api/v1/user/:userID/computer/logout', async function(req, res) {
+app.get('/api/v1/user/:userID/computer/logout', async (req, res)=> {
   const userID = req.params.userID;
   const authentication_key = req.headers.authentication_key;
   if (!await User.authApp(userID, authentication_key)) {
@@ -415,7 +436,7 @@ app.get('/api/v1/user/:userID/computer/logout', async function(req, res) {
  * res:Respond
  * res<-
  */
-app.post('/api/v1/user/computer/public/status/update', async function(req, res) {
+app.post('/api/v1/user/computer/public/status/update', async (req, res)=> {
   const authentication_key = req.headers.authentication_key;
   const computerKey = req.body.computerKey;
   const userID = req.body.userID;
@@ -436,15 +457,9 @@ app.post('/api/v1/user/computer/public/status/update', async function(req, res) 
   out.publicAccessStatus = publicAccessStatus;
   const computerClassData= await PC.updatePublicAccessStatus(computerKey, out, {new: true});
   if (computerClassData) {
-
-
-    
     const computerClassObject = new computerClass(computerClassData);
-
     computerClassObject.withPublicAccessStatus();
     computerClassObject.withPublicAccessKey();
-
-
     res.status(200);
     res.json(respond(true, 'Update Done', computerClassObject.get()));
   }
@@ -460,7 +475,7 @@ app.post('/api/v1/user/computer/public/status/update', async function(req, res) 
  * res:Respond
  * res<-
  */
-app.post('/api/v1/user/computer/public/key/update', async function(req, res) {
+app.post('/api/v1/user/computer/public/key/update', async (req, res)=> {
   const authentication_key = req.headers.authentication_key;
   const computerKey = req.body.computerKey;
   const userID = req.body.userID;
@@ -490,7 +505,7 @@ app.post('/api/v1/user/computer/public/key/update', async function(req, res) {
  * res:Respond
  * res<-
  */
-app.post('/api/v1/user/computer/online', async function(req, res) {
+app.post('/api/v1/user/computer/online', async (req, res)=> {
   const userID = req.body.userID;
   const authentication_key = req.headers.authentication_key;
   const user =await User.authUser(userID, authentication_key);
@@ -518,7 +533,7 @@ app.post('/api/v1/user/computer/online', async function(req, res) {
  * res:Respond
  * res<-
  */
-app.post('/api/v1/user/computer', async function(req, res) {
+app.post('/api/v1/user/computer', async (req, res)=> {
   const userID = req.body.userID;
   const authentication_key = req.headers.authentication_key;
   const user = await User.authUser(userID, authentication_key);
@@ -546,7 +561,7 @@ app.post('/api/v1/user/computer', async function(req, res) {
  * res:Respond
  * res<-
  */
-app.post('/api/v1/user/authentication', async function(req, res) {
+app.post('/api/v1/user/authentication', async (req, res)=> {
   const userID = req.body.userID;
   const authentication_key = req.headers.authentication_key;
   const user = await User.authUser(userID, authentication_key);
@@ -558,18 +573,14 @@ app.post('/api/v1/user/authentication', async function(req, res) {
     res.json(respond(false, 'Invalid User', null));
   }
 });
-
-let isValidFoldersName = (function () {
-    var rg1 = /^[^\\/:\*\?"<>\|]+$/; // forbidden characters \ / : * ? " < > |
-    var rg2 = /^\./; // cannot start with dot (.)
-    var rg3 = /^(nul|prn|con|lpt[0-9]|com[0-9])(\.|$)/i; // forbidden file names
-    return function isValidFoldersName(fname) {
-        return rg1.test(fname) && !rg2.test(fname) && !rg3.test(fname);
-    }
+const isValidFoldersName = (function() {
+  const rg1 = /^[^\\/:\*\?"<>\|]+$/; // forbidden characters \ / : * ? " < > |
+  const rg2 = /^\./; // cannot start with dot (.)
+  const rg3 = /^(nul|prn|con|lpt[0-9]|com[0-9])(\.|$)/i; // forbidden file names
+  return function isValidFoldersName(fname) {
+    return rg1.test(fname) && !rg2.test(fname) && !rg3.test(fname);
+  };
 })();
-
-
-
 io.on('connection', function(socket) {
   // TODO this user  login from app need to add few   function to  it
   socket.on('loginPage', function() {});
@@ -607,7 +618,7 @@ io.on('connection', function(socket) {
     const updateUserAuthApp = await PC.updateUserAuthApp(pcKey, input, {new: true} );
     return updateUserAuthApp;
   }
-  app.post('/api/v1/user/computer/login', async function(req, res) {
+  app.post('/api/v1/user/computer/login', async (req, res)=> {
     const email = req.body.email;
     const key = req.body.appKey;
     const password = md5(req.body.password);
@@ -637,7 +648,6 @@ io.on('connection', function(socket) {
           const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
           if (pcOwnerData) {
             const userInformation = await User.getUser(user._id);
-
             const computerClassData = await updateAppUserAuth(user, pcKey);
             const computerClassObject = new computerClass(computerClassData);
             computerClassObject.withAuthentication();
@@ -791,7 +801,6 @@ io.on('connection', function(socket) {
  */
   socket.on('hDDList', async function(input) {
     console.log(input);
-
     const userID = input.userID;
     const authentication_key = input.authentication_key;
     const computerKey = md5(input.computerKey);
@@ -878,7 +887,7 @@ io.on('connection', function(socket) {
   /**
    * User
    */
-  app.post('/api/v1/computer/public/access', async function(req, res) {
+  app.post('/api/v1/computer/public/access', async (req, res)=> {
     const authentication_key = req.headers.authentication_key;
     const userID = req.body.userID;
     const pcKeyPublic = req.body.pcKeyPublic;
@@ -904,7 +913,7 @@ io.on('connection', function(socket) {
     }
   });
   // validate folder name
-  app.post('/api/v1/user/computer/validateFolderName', async function(req, res) {
+  app.post('/api/v1/user/computer/validateFolderName', async (req, res)=> {
     const authentication_key = req.headers.authentication_key;
     const createFolderName = req.body.createFolderName;
     const userID = req.body.userID;
