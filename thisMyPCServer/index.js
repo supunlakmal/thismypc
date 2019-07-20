@@ -75,17 +75,15 @@ app.disable('x-powered-by');
 const schema = buildSchema(`
   type Query {
     user(userID: String!) : UserData,
-    userWebLogin(email:String! , password:String!) : userWebLogin
+    userWebLogin(email:String! , password:String!) : userWebLoginData
   }
-
-  type userWebLogin {
+  type userWebLoginData {
     userID :String
     firstName :String
     lastName :String
     email :String
     authentication_key:String
   }
-
   type UserData {
     userID :String
     firstName :String
@@ -93,28 +91,39 @@ const schema = buildSchema(`
     email :String
   }
 `);
-
 /**
  * User login
- * 
- * @param {Object} args 
+ *
+ * @param {Object} args
  */
-
-const userLWebLogin  =async ({email,password})=>
-{
-
-
-
+const userWebLogin =async ({email, password})=> {
+// convert   password to  md54
+  password = md5(password);
+  const userLogin = await User.loginUser(email, password);
+  if (!userLogin) {
+    throw new Error('Invalid  User');
+  }
+  const date = new Date();
+  userLogin.authentication_key = md5(userLogin._id + date);
+  const userClass = new userComponent();
+  await userClass.setUserDataFunction(await User.updateUserAuth(userLogin._id, userLogin, {new: true}));
+  userClass.getUserEmail();
+  userClass.getUserFirstName();
+  userClass.getUserID();
+  userClass.getUserLastName();
+  userClass.getAuthentication();
+  return userClass.userData();
 };
-
-
 /**
  * User Information  by ID
- * 
- * @param {object} args 
+ *
+ * @param {object} args
  */
-
-const getUserData = async (args)=> {
+const getUserData = async (args,req)=> {
+const authentication_key = req.headers.authentication_key;
+if (!await User.authUser(args.userID, authentication_key)) {
+  throw new Error('Unauthenticated');
+}
   const userID = args.userID;
   const userClass = new userComponent();
   await userClass.getUserDataFunction(userID);
@@ -125,7 +134,7 @@ const getUserData = async (args)=> {
   return userClass.userData();
 };
 // Root resolver
-const root = {user: getUserData ,  userWebLogin: userLWebLogin };
+const root = {user: getUserData, userWebLogin: userWebLogin};
 app.use('/graphql', graphqlHTTP({
   schema: schema,
   rootValue: root,
@@ -692,7 +701,7 @@ io.on('connection', function(socket) {
     }
   });
   // join user from  web
-  socket.on('joinFromWeb', async function(data) {
+  socket.on('joinFromWeb', async (data)=> {
   //  logger.log(data);
     const userID = data.data.userID;
     const authentication_key = data.data.authentication_key;
@@ -710,7 +719,7 @@ io.on('connection', function(socket) {
     }
   });
   // join user from  app
-  socket.on('joinFromApp', async function(data) {
+  socket.on('joinFromApp', async (data)=> {
     const authentication_key = data.data.authentication_key;
     const userID = data.data.userID;
     const pcKey = md5(data.data.pcKey);
@@ -728,7 +737,7 @@ io.on('connection', function(socket) {
       }
     }
   });
-  socket.on('pcAccessRequest', async function(input) {
+  socket.on('pcAccessRequest', async (input)=> {
     const authentication_key = input.authentication_key;
     const userID = input.userID;
     const pcID = input.pcID;
@@ -799,7 +808,7 @@ io.on('connection', function(socket) {
   /**
  * Request  Computer Hard drive list
  */
-  socket.on('hDDList', async function(input) {
+  socket.on('hDDList', async (input)=> {
     console.log(input);
     const userID = input.userID;
     const authentication_key = input.authentication_key;
@@ -817,7 +826,7 @@ io.on('connection', function(socket) {
   /**
    * Request  computer information
    */
-  socket.on('pcInfoRequest', async function(input) {
+  socket.on('pcInfoRequest', async (input)=> {
     const authentication_key = input.authentication_key;
     const userID = input.userID;
     const pcID = input.pcID;
@@ -841,7 +850,7 @@ io.on('connection', function(socket) {
   /**
    *
    */
-  socket.on('pcInfo', async function(input) {
+  socket.on('pcInfo', async (input)=> {
     const authentication_key = input.authentication_key;
     const userID = input.userID;
     const pcKey = md5(input.pcKey);
@@ -858,7 +867,7 @@ io.on('connection', function(socket) {
   /**
  * Request for open folder
  */
-  socket.on('openFolder', async function(input) {
+  socket.on('openFolder', async (input)=>{
     const authentication_key = input.authentication_key;
     const userID = input.userID;
     const pcKeyPublic = input.pcKeyPublic;
@@ -869,7 +878,7 @@ io.on('connection', function(socket) {
     }
   });
   // from  pc
-  socket.on('sendOpenFolderRequest', async function(input) {
+  socket.on('sendOpenFolderRequest', async (input)=> {
     const authentication_key = input.authentication_key;
     const userID = input.userID;
     const pcKey = md5(input.pcKey);
@@ -935,7 +944,7 @@ io.on('connection', function(socket) {
     }
   });
   // from  pc  send  information after create  folder
-  socket.on('folderCreateCallback', async function(input) {
+  socket.on('folderCreateCallback', async (input)=> {
     const authentication_key = input.authentication_key;
     const userID = input.userID;
     const computerKey = md5(input.computerKey);
