@@ -119,11 +119,11 @@ const userWebLogin =async ({email, password})=> {
  *
  * @param {object} args
  */
-const getUserData = async (args,req)=> {
-const authentication_key = req.headers.authentication_key;
-if (!await User.authUser(args.userID, authentication_key)) {
-  throw new Error('Unauthenticated');
-}
+const getUserData = async (args, req)=> {
+  const authentication_key = req.headers.authentication_key;
+  if (!await User.authUser(args.userID, authentication_key)) {
+    throw new Error('Unauthenticated');
+  }
   const userID = args.userID;
   const userClass = new userComponent();
   await userClass.getUserDataFunction(userID);
