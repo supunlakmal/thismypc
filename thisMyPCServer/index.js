@@ -75,6 +75,7 @@ app.use(function(req, res, next) {
  * User Component
  */
 const userComponent = require('./components/user.components');
+const computerComponent = require('./components/computer.components');
 /**
  * GraphQL
  */
@@ -189,7 +190,7 @@ app.get('/api/v1/user/:userID', async (req, res) => {
   }
   await userClass.getUserDataFromDB(userID);
   userClass.userID().userFirstName().userLastName().userEmail().getAuthenticationKey();
-  res.status(200).json(respond(true, 'User Information', userClass.userData()));
+  res.status(200).json(respond(true, 'User Information', userClass.getUser()));
 });
 /**
  * User information
@@ -210,10 +211,14 @@ app.get('/api/v1/user/:userID/computer/:computerKey', async (req, res) => {
   const userID = req.params.userID;
   const computerKey = md5(req.params.computerKey);
   const userClass = new userComponent();
-  if (!await PC.authApp(userID, authentication_key, computerKey)) {
-    res.status(401);
-    return res.json(respond(false, 'Invalid User', null));
+
+  const computerClass = new computerComponent();
+  const authentication = await computerClass.authentication(res, userID, authentication_key ,computerKey);
+  if (authentication) {
+    return res = authentication;
   }
+
+
   // user Information
   // user  class
   await userClass.getUserDataFromDB(userID);
