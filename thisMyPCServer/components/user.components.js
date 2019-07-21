@@ -3,7 +3,7 @@
  * User Module
  */
 const User = require('../models/user');
-const ApiComponent = require('../components/api.components');
+const ApiComponent = require('./api.components');
 /**
  * User Class
  */
