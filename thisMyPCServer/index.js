@@ -22,7 +22,6 @@ const logger = require('./components/logger');
 /**
 * User Resources
 */
-
 const computerClass= require('./components/class/computer.class');
 // MongoDB server connection
 mongoose.connect(`mongodb://${db.user}:${db.password}@${db.host}/${db.dbName}`, {
@@ -187,7 +186,6 @@ app.get('/api/v1/user/:userID', async (req, res)=> {
   if (authentication) {
     return res =authentication;
   }
-
   userClass.getUserDataFromDB(userID);
   userClass.userID();
   userClass.userFirstName();
@@ -215,16 +213,12 @@ app.get('/api/v1/user/:userID/computer/:computerKey', async (req, res)=> {
   const userID = req.params.userID;
   const computerKey = md5(req.params.computerKey);
   const userClass = new userComponent();
-
-
   if (!await PC.authApp(userID, authentication_key, computerKey)) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
   }
   // user Information
-
   // user  class
-
   userClass.getUserDataFromDB(userID);
   userClass.userID();
   userClass.userFirstName();
@@ -265,7 +259,6 @@ app.post('/api/v1/user/register', async (req, res)=> {
   const user = await User.searchEmailUser(email);
   if (!user) {
     const userClass = new userComponent();
-
     // create  room id
     const ioSocketID = md5(req.body.email + Date.now());
     userData.ioSocketID =ioSocketID;
@@ -273,8 +266,6 @@ app.post('/api/v1/user/register', async (req, res)=> {
     const newUser = await User.createUser(userData);
     if (newUser) {
       // user  class
-
-
       userClass.setUserDataToClass(newUser);
       userClass.userID();
       userClass.userFirstName();
@@ -311,23 +302,17 @@ app.post('/api/v1/user/login', async (req, res)=> {
   const userLogin = await User.loginUser(email, password);
   if (userLogin) {
     const userClass = new userComponent();
-
-
     const date = new Date();
     userLogin.authentication_key = md5(userLogin._id + date);
     const user = await User.updateUserAuth(userLogin._id, userLogin, {new: true});
-
-
     userClass.setUserDataToClass(user);
     userClass.userID();
     userClass.userFirstName();
     userClass.userLastName();
     userClass.userEmail();
     userClass.getAuthenticationKey();
-
-
     res.status(200);
-    res.json(respond(true, 'User login infromation', userClass.getUser()));
+    res.json(respond(true, 'User login information', userClass.getUser()));
   } else {
     res.status(401);
     res.json(respond(false, 'Invalid User', null));
@@ -665,8 +650,6 @@ io.on('connection', (socket) =>{
     const software = await Software.getActiveSoftware(key);
     if (software) {
       const userClass = new userComponent();
-
-
       const user =await User.loginUser(email, password);
       if (user) {
         //  set  if  user  got  new pc  key  or  update  if  got  old one
@@ -708,16 +691,12 @@ io.on('connection', (socket) =>{
             const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
             if (pcOwnerData) {
               const out = await updateAppUserAuth(user, pcKey);
-
-
               userClass.setUserDataToClass(out);
               userClass.userID();
               userClass.userFirstName();
               userClass.userLastName();
               userClass.userEmail();
               userClass.getAuthenticationKey();
-
-
               res.status(200);
               res.json(respond(true, 'Hello!', userClass.getUser()));
             }
