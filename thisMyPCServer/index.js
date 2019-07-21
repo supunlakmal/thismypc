@@ -15,14 +15,14 @@ const validator = require('validator');
 const graphqlHTTP = require('express-graphql');
 const {buildSchema} = require('graphql');
 /**
- * components
- */
+* components
+*/
 // logger
 const logger = require('./components/logger');
 /**
- * User Resources
- */
-const userClass= require('./components/class/user.class');
+* User Resources
+*/
+
 const computerClass= require('./components/class/computer.class');
 // MongoDB server connection
 mongoose.connect(`mongodb://${db.user}:${db.password}@${db.host}/${db.dbName}`, {
@@ -33,13 +33,13 @@ mongoose.Promise = Promise;
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 /**
- * REST api call  convert to  json object before send
- *
- * @param {object} type
- * @param {object} msg
- * @param {object} data
- * @return {object}
- */
+* REST api call  convert to  json object before send
+*
+* @param {object} type
+* @param {object} msg
+* @param {object} data
+* @return {object}
+*/
 function respond(type, msg, data) {
   const res = {};
   res.data = data;
@@ -48,15 +48,8 @@ function respond(type, msg, data) {
   return res;
 }
 /**
- * Import Component
- */
-/**
-  * User Component
-  */
-const userComponent = require('./components/user.components');
-/**
- * Mongo DB modules
- */
+* Mongo DB modules
+*/
 // user module
 const User = require('./models/user');
 // software module
@@ -69,35 +62,47 @@ const UserAndPC = require('./models/userAndPC');
 const PcOwner = require('./models/PCOwner');
 app.use(bodyParser.json());
 app.disable('x-powered-by');
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,authentication_key ,userID');
+  next();
+});
 /**
- * GraphQL
- */
+* Import Component
+*/
+/**
+* User Component
+*/
+const userComponent = require('./components/user.components');
+/**
+* GraphQL
+*/
 const schema = buildSchema(`
-  type Query {
-    user(userID: String!) : UserData,
-    userWebLogin(email:String! , password:String!) : userWebLoginData
-  }
-  type userWebLoginData {
-    userID :String
-    firstName :String
-    lastName :String
-    email :String
-    authentication_key:String
-  }
-  type UserData {
-    userID :String
-    firstName :String
-    lastName :String
-    email :String
-  }
+type Query {
+  user(userID: String!) : UserData,
+  userWebLogin(email:String! , password:String!) : userWebLoginData
+}
+type userWebLoginData {
+  userID :String
+  firstName :String
+  lastName :String
+  email :String
+  authentication_key:String
+}
+type UserData {
+  userID :String
+  firstName :String
+  lastName :String
+  email :String
+}
 `);
 /**
- * User login
- *
- * @param {Object} args
- */
+* User login
+*
+* @param {Object} args
+*/
 const userWebLogin =async ({email, password})=> {
-// convert   password to  md54
+  // convert   password to  md54
   password = md5(password);
   const userLogin = await User.loginUser(email, password);
   if (!userLogin) {
@@ -106,19 +111,19 @@ const userWebLogin =async ({email, password})=> {
   const date = new Date();
   userLogin.authentication_key = md5(userLogin._id + date);
   const userClass = new userComponent();
-  await userClass.setUserDataFunction(await User.updateUserAuth(userLogin._id, userLogin, {new: true}));
-  userClass.getUserEmail();
-  userClass.getUserFirstName();
-  userClass.getUserID();
-  userClass.getUserLastName();
-  userClass.getAuthentication();
+  await userClass.setUserDataToClass(await User.updateUserAuth(userLogin._id, userLogin, {new: true}));
+  userClass.userEmail();
+  userClass.userFirstName();
+  userClass.userID();
+  userClass.userLastName();
+  userClass.getAuthenticationKey();
   return userClass.userData();
 };
 /**
- * User Information  by ID
- *
- * @param {object} args
- */
+* User Information  by ID
+*
+* @param {object} args
+*/
 const getUserData = async (args, req)=> {
   const authentication_key = req.headers.authentication_key;
   if (!await User.authUser(args.userID, authentication_key)) {
@@ -126,11 +131,11 @@ const getUserData = async (args, req)=> {
   }
   const userID = args.userID;
   const userClass = new userComponent();
-  await userClass.getUserDataFunction(userID);
-  userClass.getUserEmail();
-  userClass.getUserFirstName();
-  userClass.getUserID();
-  userClass.getUserLastName();
+  await userClass.getUserDataFromDB(userID);
+  userClass.userEmail();
+  userClass.userFirstName();
+  userClass.userID();
+  userClass.userLastName();
   return userClass.userData();
 };
 // Root resolver
@@ -140,31 +145,22 @@ app.use('/api/v1/graphql', graphqlHTTP({
   rootValue: root,
   graphiql: true,
 }));
-
-
-
-app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept ,authentication_key ,userID');
-  next();
-});
-
 // app.use(fileUpload());
 // server port ex-5000
 http.listen(process.env.PORT || config.port);
 logger.log(`Sever start on Port ${config.port}`);
 /**
- * REST API V1
- */
+* REST API V1
+*/
 /**
- * API main end point
- */
+* API main end point
+*/
 app.get('/api/', async (req, res)=> {
   res.status(200).json(respond(true, 'REST API working', null));
 });
 /**
- *  API variation end point
- */
+*  API variation end point
+*/
 app.get('/api/v1/', async (req, res)=> {
   res.status(200).json(respond(true, 'REST API working', null));
 });
@@ -181,25 +177,24 @@ app.get('/api/v1/', async (req, res)=> {
 */
 // TODO  authentication method
 app.get('/api/v1/user/:userID', async (req, res)=> {
-// authentication  key from  headers
+  // authentication  key from  headers
   const authentication_key = req.headers.authentication_key;
   // user ID
   const userID = req.params.userID;
-  if (!await User.authUser(userID, authentication_key)) {
-    res.status(401);
-    return res.json(respond(false, 'Invalid User', null));
-  }
-  // user Information
-  const userInformation = await User.getUser(userID);
-  if (userInformation) {
   // user  class
-    const userClassData = new userClass(userInformation);
-    userClassData.userInformation();
-    userClassData.withAuthentication();
-    res.status(200).json(respond(true, 'User Information', userClassData.get()));
-  } else {
-    res.status(400).json(respond(fail, 'Invalid User Information', null));
+  const userClass = new userComponent();
+  const authentication = await userClass.authentication(res, userID, authentication_key);
+  if (authentication) {
+    return res =authentication;
   }
+
+  userClass.getUserDataFromDB(userID);
+  userClass.userID();
+  userClass.userFirstName();
+  userClass.userLastName();
+  userClass.userEmail();
+  userClass.getAuthenticationKey();
+  res.status(200).json(respond(true, 'User Information', userClass.userData()));
 });
 /**
 * User information
@@ -219,33 +214,36 @@ app.get('/api/v1/user/:userID/computer/:computerKey', async (req, res)=> {
   // user ID
   const userID = req.params.userID;
   const computerKey = md5(req.params.computerKey);
+  const userClass = new userComponent();
+
+
   if (!await PC.authApp(userID, authentication_key, computerKey)) {
     res.status(401);
     return res.json(respond(false, 'Invalid User', null));
   }
   // user Information
-  const userInformation = await User.getUser(userID);
-  if (userInformation) {
-    // user  class
-    const userClassData = new userClass(userInformation);
-    userClassData.userInformation();
-    userClassData.withAuthentication();
-    res.status(200).json(respond(true, 'User Information', userClassData.get()));
-  } else {
-    res.status(400).json(respond(fail, 'Invalid User Information', null));
-  }
+
+  // user  class
+
+  userClass.getUserDataFromDB(userID);
+  userClass.userID();
+  userClass.userFirstName();
+  userClass.userLastName();
+  userClass.userEmail();
+  userClass.getAuthenticationKey();
+  res.status(200).json(respond(true, 'User Information', userClass.getUser()));
 });
 /**
- * New user registration
- *
- * @param  {json} req
- * req : Request
- * req->
- *
- * @param  {json} res
- * res:Respond
- * res<-
- */
+* New user registration
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/api/v1/user/register', async (req, res)=> {
   const email = req.body.email;
   const password = md5(req.body.password);
@@ -266,18 +264,24 @@ app.post('/api/v1/user/register', async (req, res)=> {
   // search user by user name
   const user = await User.searchEmailUser(email);
   if (!user) {
-  // create  room id
+    const userClass = new userComponent();
+
+    // create  room id
     const ioSocketID = md5(req.body.email + Date.now());
     userData.ioSocketID =ioSocketID;
     userData.authentication_key = md5(ioSocketID);
     const newUser = await User.createUser(userData);
     if (newUser) {
       // user  class
-      const userClassData = new userClass(newUser);
-      userClassData.userInformation();
-      userClassData.withAuthentication();
-      res.status(200);
-      res.json(respond(true, 'User login infromation', userClassData.get()));
+
+
+      userClass.setUserDataToClass(newUser);
+      userClass.userID();
+      userClass.userFirstName();
+      userClass.userLastName();
+      userClass.userEmail();
+      userClass.getAuthenticationKey();
+      res.status(200).json(respond(true, 'User Information', userClass.getUser()));
     }
   } else {
     res.status(401);
@@ -285,16 +289,16 @@ app.post('/api/v1/user/register', async (req, res)=> {
   }
 });
 /**
- * User logging {async}
- *
- * @param  {json} req
- * req : Request
- * req->
- *
- * @param  {json} res
- * res:Respond
- * res<-
- */
+* User logging {async}
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/api/v1/user/login', async (req, res)=> {
   const email = req.body.email;
   const password = md5(req.body.password);
@@ -306,32 +310,42 @@ app.post('/api/v1/user/login', async (req, res)=> {
   // wait till the promise resolves (*)
   const userLogin = await User.loginUser(email, password);
   if (userLogin) {
+    const userClass = new userComponent();
+
+
     const date = new Date();
     userLogin.authentication_key = md5(userLogin._id + date);
     const user = await User.updateUserAuth(userLogin._id, userLogin, {new: true});
-    const userClassData = new userClass(user);
-    userClassData.userInformation();
-    userClassData.withAuthentication();
+
+
+    userClass.setUserDataToClass(user);
+    userClass.userID();
+    userClass.userFirstName();
+    userClass.userLastName();
+    userClass.userEmail();
+    userClass.getAuthenticationKey();
+
+
     res.status(200);
-    res.json(respond(true, 'User login infromation', userClassData.get()));
+    res.json(respond(true, 'User login infromation', userClass.getUser()));
   } else {
     res.status(401);
     res.json(respond(false, 'Invalid User', null));
   }
 });
 /**
- * Update user password
- *
- * @param  {json} req
- * req : Request
- * req->
- *
- * @param  {json} res
- * res:Respond
- * res<-
- */
+* Update user password
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/api/v1/user/password/edit', async (req, res)=> {
-// authentication  key from  headers
+  // authentication  key from  headers
   const authentication_key = req.headers.authentication_key;
   const userID = req.body.userID;
   const newPassword = md5(req.body.newPassword);
@@ -359,18 +373,18 @@ app.post('/api/v1/user/password/edit', async (req, res)=> {
   res.json(respond(true, 'Update Done', null));
 });
 /**
- * update user information
- *
- * @param  {json} req
- * req : Request
- * req->
- *
- * @param  {json} res
- * res:Respond
- * res<-
- */
+* update user information
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/api/v1/user/update', async (req, res)=> {
-// authentication  key from  headers
+  // authentication  key from  headers
   const authentication_key = req.headers.authentication_key;
   const userID = req.body.userID;
   if (!await User.authUser(userID, authentication_key)) {
@@ -386,16 +400,16 @@ app.post('/api/v1/user/update', async (req, res)=> {
   res.json(respond(true, 'Update Done', null));
 });
 /**
- * User logout from web
- *
- * @param  {json} req
- * req : Request
- * req->
- *
- * @param  {json} res
- * res:Respond
- * res<-
- */
+* User logout from web
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.get('/api/v1/user/:userID/logout', async (req, res)=> {
   const userID = req.params.userID;
   const authentication_key = req.headers.authentication_key;
@@ -415,16 +429,16 @@ app.get('/api/v1/user/:userID/logout', async (req, res)=> {
   }
 });
 /**
- * User logout from computer
- *
- * @param  {json} req
- * req : Request
- * req->
- *
- * @param  {json} res
- * res:Respond
- * res<-
- */
+* User logout from computer
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.get('/api/v1/user/:userID/computer/logout', async (req, res)=> {
   const userID = req.params.userID;
   const authentication_key = req.headers.authentication_key;
@@ -444,16 +458,16 @@ app.get('/api/v1/user/:userID/computer/logout', async (req, res)=> {
   }
 });
 /**
- * Update allow pubic access status
- *
- * @param  {json} req
- * req : Request
- * req->
- *
- * @param  {json} res
- * res:Respond
- * res<-
- */
+* Update allow pubic access status
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/api/v1/user/computer/public/status/update', async (req, res)=> {
   const authentication_key = req.headers.authentication_key;
   const computerKey = req.body.computerKey;
@@ -483,16 +497,16 @@ app.post('/api/v1/user/computer/public/status/update', async (req, res)=> {
   }
 });
 /**
- * Update user public key that allow to access other your computer.
- *
- * @param  {json} req
- * req : Request
- * req->
- *
- * @param  {json} res
- * res:Respond
- * res<-
- */
+* Update user public key that allow to access other your computer.
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/api/v1/user/computer/public/key/update', async (req, res)=> {
   const authentication_key = req.headers.authentication_key;
   const computerKey = req.body.computerKey;
@@ -513,16 +527,16 @@ app.post('/api/v1/user/computer/public/key/update', async (req, res)=> {
   }
 });
 /**
- * Get user all online computers list
- *
- * @param  {json} req
- * req : Request
- * req->
- *
- * @param  {json} res
- * res:Respond
- * res<-
- */
+* Get user all online computers list
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/api/v1/user/computer/online', async (req, res)=> {
   const userID = req.body.userID;
   const authentication_key = req.headers.authentication_key;
@@ -541,16 +555,16 @@ app.post('/api/v1/user/computer/online', async (req, res)=> {
   }
 });
 /**
- * Get all user computer names and IDs
- *
- * @param  {json} req
- * req : Request
- * req->
- *
- * @param  {json} res
- * res:Respond
- * res<-
- */
+* Get all user computer names and IDs
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/api/v1/user/computer', async (req, res)=> {
   const userID = req.body.userID;
   const authentication_key = req.headers.authentication_key;
@@ -569,16 +583,16 @@ app.post('/api/v1/user/computer', async (req, res)=> {
   }
 });
 /**
- * User authentications
- *
- * @param  {json} req
- * req : Request
- * req->
- *
- * @param  {json} res
- * res:Respond
- * res<-
- */
+* User authentications
+*
+* @param  {json} req
+* req : Request
+* req->
+*
+* @param  {json} res
+* res:Respond
+* res<-
+*/
 app.post('/api/v1/user/authentication', async (req, res)=> {
   const userID = req.body.userID;
   const authentication_key = req.headers.authentication_key;
@@ -623,11 +637,11 @@ io.on('connection', (socket) =>{
     }
   });
   /**
-   *
-   * @param {object} user  user information
-   * @param {*} pcKey  Computer key
-   * @return {object} new auth key
-   */
+  *
+  * @param {object} user  user information
+  * @param {*} pcKey  Computer key
+  * @return {object} new auth key
+  */
   async function updateAppUserAuth(user, pcKey) {
     const date = new Date();
     const input = {};
@@ -650,6 +664,9 @@ io.on('connection', (socket) =>{
     }
     const software = await Software.getActiveSoftware(key);
     if (software) {
+      const userClass = new userComponent();
+
+
       const user =await User.loginUser(email, password);
       if (user) {
         //  set  if  user  got  new pc  key  or  update  if  got  old one
@@ -691,11 +708,18 @@ io.on('connection', (socket) =>{
             const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
             if (pcOwnerData) {
               const out = await updateAppUserAuth(user, pcKey);
-              const userClassData = new userClass(out);
-              userClassData.userInformation();
-              userClassData.withAuthentication();
+
+
+              userClass.setUserDataToClass(out);
+              userClass.userID();
+              userClass.userFirstName();
+              userClass.userLastName();
+              userClass.userEmail();
+              userClass.getAuthenticationKey();
+
+
               res.status(200);
-              res.json(respond(true, 'Hello!', userClassData.get()));
+              res.json(respond(true, 'Hello!', userClass.getUser()));
             }
           }
         }
@@ -711,7 +735,7 @@ io.on('connection', (socket) =>{
   });
   // join user from  web
   socket.on('joinFromWeb', async (data)=> {
-  //  logger.log(data);
+    //  logger.log(data);
     const userID = data.data.userID;
     const authentication_key = data.data.authentication_key;
     const user =await User.authUser(userID, authentication_key);
@@ -752,13 +776,13 @@ io.on('connection', (socket) =>{
     const pcID = input.pcID;
     const user = await User.authUser(userID, authentication_key);
     if (user) {
-    // logger.log(user);
+      // logger.log(user);
       const userInfo = {};
       userInfo.pcID = pcID;
       await User.updateUserNowAccessPCID(userID, userInfo, {});
       const pc= await PC.getPCUsingID(pcID);
       if (pc) {
-      //  logger.log(pc);
+        //  logger.log(pc);
         const sendUserInfoToApp = {};
         sendUserInfoToApp.email = user.email;
         sendUserInfoToApp.name = user.name;
@@ -770,12 +794,12 @@ io.on('connection', (socket) =>{
     }
   });
   /**
- * get user socketID
- *
- * @param {object} pcData
- * @param {object} user
- * @param {callback} callback
- */
+  * get user socketID
+  *
+  * @param {object} pcData
+  * @param {object} user
+  * @param {callback} callback
+  */
   async function getUserSocketID(pcData, user) {
     const pc = await PC.getPC(pcData.pcKey);
     if (pc) {
@@ -794,12 +818,12 @@ io.on('connection', (socket) =>{
     }
   }
   /**
- * Get owner pc  socket id  or public key socket id
- *
- * @param {object} user  user information
- * @param {string} pcKeyPublic computer public access key
- * @param {callback} callback
- */
+  * Get owner pc  socket id  or public key socket id
+  *
+  * @param {object} user  user information
+  * @param {string} pcKeyPublic computer public access key
+  * @param {callback} callback
+  */
   async function getPCSocketID(user, pcKeyPublic, callback) {
     if (pcKeyPublic === '') {
       const userPC = await PC.getPCUsingID(user.userNowAccessPCID);
@@ -815,8 +839,8 @@ io.on('connection', (socket) =>{
     }
   }
   /**
- * Request  Computer Hard drive list
- */
+  * Request  Computer Hard drive list
+  */
   socket.on('hDDList', async (input)=> {
     console.log(input);
     const userID = input.userID;
@@ -826,15 +850,15 @@ io.on('connection', (socket) =>{
     if (pc) {
       const user = await User.getUser(userID);
       if (user) {
-      // to  web
+        // to  web
         const socketID = await getUserSocketID(pc, user);
         io.sockets.in(socketID).emit('hDDList', input.data);
       }
     }
   });
   /**
-   * Request  computer information
-   */
+  * Request  computer information
+  */
   socket.on('pcInfoRequest', async (input)=> {
     const authentication_key = input.authentication_key;
     const userID = input.userID;
@@ -857,8 +881,8 @@ io.on('connection', (socket) =>{
     }
   });
   /**
-   *
-   */
+  *
+  */
   socket.on('pcInfo', async (input)=> {
     const authentication_key = input.authentication_key;
     const userID = input.userID;
@@ -867,15 +891,15 @@ io.on('connection', (socket) =>{
     if (pc) {
       const user =await User.getUser(userID);
       if (user) {
-      // to  web
+        // to  web
         const socketID = await getUserSocketID(pc, user);
         io.sockets.in(socketID).emit('pcInfo', input.pcInfo);
       }
     }
   });
   /**
- * Request for open folder
- */
+  * Request for open folder
+  */
   socket.on('openFolder', async (input)=>{
     const authentication_key = input.authentication_key;
     const userID = input.userID;
@@ -903,8 +927,8 @@ io.on('connection', (socket) =>{
   });
   // get  access for  public pc key
   /**
-   * User
-   */
+  * User
+  */
   app.post('/api/v1/computer/public/access', async (req, res)=> {
     const authentication_key = req.headers.authentication_key;
     const userID = req.body.userID;
