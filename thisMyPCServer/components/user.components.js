@@ -3,11 +3,13 @@
  * User Module
  */
 const User = require('../models/user');
+const ApiComponent = require('../components/api.components');
 /**
  * User Class
  */
-class UserComponent {
+class UserComponent extends ApiComponent {
   constructor() {
+    super();
     this.userDbObject = {};
     this.user = {};
   }
@@ -16,15 +18,15 @@ class UserComponent {
    *
    * @param {String} userID
    */
-  async getUserDataFunction(userID) {
+  async getUserDataFromDB(userID) {
     this.userDbObject = await User.getUser(userID);
   }
   /**
-   * Get User data
+   * Set User data from out side to class
    *
    * @param {Object} userData
    */
-  setUserDataFunction(userData) {
+  setUserDataToClass(userData) {
     this.userDbObject = userData;
   }
   /**
@@ -36,38 +38,48 @@ class UserComponent {
   /**
  * User first name
  */
-  getUserFirstName() {
+ userFirstName() {
     this.user.firstName = this.userDbObject.name;
   }
   /**
  * User last name
  */
-  getUserLastName() {
+ userLastName() {
     this.user.lastName = this.userDbObject.nameLast;
   }
   /**
  * User Email
  */
-  getUserEmail() {
+  userEmail() {
     this.user.email = this.userDbObject.email;
   }
   /**
  * User ID
  */
-  getUserID() {
+  userID() {
     this.user.userID = this.userDbObject._id;
   }
   /**
-   * Return user Data
+   * Return constructed user Data
    */
-  userData() {
+  getUser() {
     return this.user;
   }
   /**
    * get authentication data
    */
-  getAuthentication() {
+  getAuthenticationKey() {
     this.user.authentication_key = this.userDbObject.auth;
+  }
+
+ async authentication(res,userID,authentication_key){
+    if (!await User.authUser(userID, authentication_key)) {
+      res.status(401);
+     return  res.json(this.respond(false, 'Invalid User', null));
+  
+    }
+
+
   }
 }
 module.exports = UserComponent;
