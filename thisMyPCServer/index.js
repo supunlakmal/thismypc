@@ -25,10 +25,13 @@ const logger = require('./components/logger');
  * User Resources
  */
 const computerClass = require('./components/class/computer.class');
-// MongoDB server connection
-mongoose.connect(`mongodb://${db.user}:${db.password}@${db.host}/${db.dbName}`, {
-  useNewUrlParser: true,
-});
+
+// MongoDB server connection Atlas
+ mongoose.connect(`${db}`, {
+   useNewUrlParser: true,
+ });
+
+
 // Set mongoose.Promise to any Promise implementation
 mongoose.Promise = Promise;
 const http = require('http').Server(app);
@@ -633,7 +636,7 @@ io.on('connection', (socket) => {
   }
   app.post('/api/v1/user/computer/login', async (req, res) => {
     const email = req.body.email;
-    const key = req.body.appKey;
+    //const key = req.body.appKey;
     const password = md5(req.body.password);
     const pcKey = md5(req.body.pcKey);
     const pcName = req.body.pcName;
@@ -643,8 +646,8 @@ io.on('connection', (socket) => {
       res.status(401);
       return res.json(respond(false, 'username/password required', null));
     }
-    const software = await Software.getActiveSoftware(key);
-    if (software) {
+    // const software = await Software.getActiveSoftware(key);
+    // if (software) {
       const userClass = new userComponent();
       const user = await User.loginUser(email, password);
       if (user) {
@@ -698,10 +701,10 @@ io.on('connection', (socket) => {
         res.status(401);
         res.json(respond(false, 'Invalid User', null));
       }
-    } else {
-      res.status(401);
-      res.json(respond(false, 'This  software version  no  longer  work', null));
-    }
+    // } else {
+    //   res.status(401);
+    //   res.json(respond(false, 'This  software version  no  longer  work', null));
+    // }
   });
   // join user from  web
   socket.on('joinFromWeb', async (data) => {
