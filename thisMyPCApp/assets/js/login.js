@@ -25,12 +25,9 @@ socket.on('loginPage', function() {
   console.log('on login page');
 });
 document.getElementById('submit-login').onclick = function() {
-  const appKey = '52ce36fd7b283c9f6ed245f50df602a2';
   const data = {};
   data['email'] = $('#inputEmail').val();
   data['password'] = $('#inputPassword').val();
-  //  app  key
-  data['appKey'] = appKey;
   data['pcKey'] = pcKey;
   data['pcName'] = pcUser.username;
   data['platform'] = platform;
@@ -60,7 +57,6 @@ document.getElementById('submit-login').onclick = function() {
           obj.firstName = response.data.firstName;
           obj.lastName = response.data.lastName;
           obj.authentication_key = response.data.authentication_key;
-          obj.applicationKey = appKey;
           const json = JSON.stringify(obj);
           fs.writeFile(dir + '\/thisMyPC.json', json, 'utf8', function() {});
           ipcRenderer.send('systemPage');
