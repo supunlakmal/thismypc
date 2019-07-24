@@ -8,13 +8,12 @@ class ApiComponent {
 
   }
 
-   respond(type, msg, data) {
+  respond(type, msg, data) {
     const res = {};
     res.data = data;
     res.message = msg;
     res.status = type;
     return res;
-   }
-  
+  }
 }
 module.exports = ApiComponent;
