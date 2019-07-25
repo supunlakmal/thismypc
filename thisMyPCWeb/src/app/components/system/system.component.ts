@@ -69,10 +69,8 @@ export class SystemComponent implements OnInit {
   pcSelect = false;
   //pc info 
   pcInfoData: any = [];
-
-
-    // post Header
-    headers: any = '';
+  // post Header
+  headers: any = '';
   /**
    *
    * param {HttpClient} http
@@ -130,11 +128,7 @@ export class SystemComponent implements OnInit {
     self.headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('authentication_key', sessionStorage.getItem('authentication_key') ? sessionStorage.getItem('authentication_key') : 'thismyPc');
-
-      
-      const headers = self.headers;
-
-
+    const headers = self.headers;
     self.http.post(`${config.url}${config.port}/api/v1/user/authentication`,
         JSON.stringify(sendData), {
           headers
@@ -148,10 +142,9 @@ export class SystemComponent implements OnInit {
         () => {
           console.log('The POST observable is now completed.');
         });
-    self.http.get(`${config.url}${config.port}/api/v1/user/${sendData['userID']}`,
-       {
-          headers
-        })
+    self.http.get(`${config.url}${config.port}/api/v1/user/${sendData['userID']}`, {
+        headers
+      })
       .subscribe(
         (val: any) => {
           self.user = val.data;
@@ -160,7 +153,6 @@ export class SystemComponent implements OnInit {
         response => {},
         () => {});
     // app start
-   
     const userID = sessionStorage.getItem('userID');
     const authentication_key = sessionStorage.getItem('authentication_key');
     self.socket.emit('joinFromWeb', {
@@ -242,7 +234,7 @@ export class SystemComponent implements OnInit {
     const pcKeyPublic = this.publicPcKey;
     this.openFolderName = fileName;
     this.breadcrumb(path);
-this.openFolderPath= path;
+    this.openFolderPath = path;
     const userID = sessionStorage.getItem('userID');
     const authentication_key = sessionStorage.getItem('authentication_key');
     this.folderList = [];
@@ -257,17 +249,14 @@ this.openFolderPath= path;
   fileOption(info) {
     this.folderInfo = info;
   }
-
-
   // logout System
   logout() {
-    const userID  = sessionStorage.getItem('userID');
-    const self =this;
+    const userID = sessionStorage.getItem('userID');
+    const self = this;
     const headers = self.headers;
-    self.http.get(`${config.url}${config.port}/api/v1/user/${userID}/computer/logout`,
-      {
-          headers
-        })
+    self.http.get(`${config.url}${config.port}/api/v1/user/${userID}/computer/logout`, {
+        headers
+      })
       .subscribe(
         (val: any) => {
           this.router.navigate(['/login']);
@@ -316,15 +305,12 @@ this.openFolderPath= path;
   }
   getAccessToPC() {
     this.processAlert(true);
-
-    const self =this;
+    const self = this;
     const headers = self.headers;
-
     const sendData = {};
     sendData['pcKeyPublic'] = this.publicPcKey;
     sendData['userID'] = sessionStorage.getItem('userID');
     console.log(JSON.stringify(sendData));
-
     this.http.post(`${config.url}${config.port}/api/v1/computer/public/access`,
         JSON.stringify(sendData), {
           headers
@@ -339,17 +325,15 @@ this.openFolderPath= path;
   propertyFunction(e) {
     this.property = e;
   }
-  
   validateFolder(e) {
     const sendData = {};
-    const self =this;
+    const self = this;
     const headers = self.headers;
     sendData['pcKeyPublic'] = self.publicPcKey;
     sendData['userID'] = sessionStorage.getItem('userID');
     sendData['createFolderName'] = self.createFolderName;
     sendData['path'] = self.openFolderPath;
     console.log(JSON.stringify(sendData));
-
     this.http.post(`${config.url}${config.port}/api/v1/user/computer/validateFolderName`,
         JSON.stringify(sendData), {
           headers
