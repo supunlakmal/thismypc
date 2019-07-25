@@ -92,11 +92,11 @@ class UserComponent extends ApiComponent {
     this.user.authentication_key = this.userDbObject.auth;
     return this;
   }
-/**
- * 
- * @param {Object} res 
- * @param {String} userID 
- * @param {String} authentication_key 
+  /**
+ *
+ * @param {Object} res
+ * @param {String} userID
+ * @param {String} authentication_key
  */
   async authentication(res, userID, authentication_key) {
     if (!await User.authUser(userID, authentication_key)) {

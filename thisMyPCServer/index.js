@@ -27,9 +27,9 @@ const logger = require('./components/logger');
 const computerClass = require('./components/class/computer.class');
 
 // MongoDB server connection Atlas
- mongoose.connect(`${db}`, {
-   useNewUrlParser: true,
- });
+mongoose.connect(`${db}`, {
+  useNewUrlParser: true,
+});
 
 
 // Set mongoose.Promise to any Promise implementation
@@ -216,7 +216,7 @@ app.get('/api/v1/user/:userID/computer/:computerKey', async (req, res) => {
   const userClass = new userComponent();
 
   const computerClass = new computerComponent();
-  const authentication = await computerClass.authentication(res, userID, authentication_key ,computerKey);
+  const authentication = await computerClass.authentication(res, userID, authentication_key, computerKey);
   if (authentication) {
     return res = authentication;
   }
@@ -636,7 +636,7 @@ io.on('connection', (socket) => {
   }
   app.post('/api/v1/user/computer/login', async (req, res) => {
     const email = req.body.email;
-    //const key = req.body.appKey;
+    // const key = req.body.appKey;
     const password = md5(req.body.password);
     const pcKey = md5(req.body.pcKey);
     const pcName = req.body.pcName;
@@ -648,59 +648,59 @@ io.on('connection', (socket) => {
     }
     // const software = await Software.getActiveSoftware(key);
     // if (software) {
-      const userClass = new userComponent();
-      const user = await User.loginUser(email, password);
-      if (user) {
-        //  set  if  user  got  new pc  key  or  update  if  got  old one
-        const pc = await PC.getPCByUserIDAndPCKey(pcKey, user._id);
-        if (pc) {
-          const pcInfo = {};
-          pcInfo.pcOnline = 1;
-          pcInfo.pcSocketID = socket.id;
-          await PC.updatePcOnlineStatus(pc._id, pcInfo, {});
+    const userClass = new userComponent();
+    const user = await User.loginUser(email, password);
+    if (user) {
+      //  set  if  user  got  new pc  key  or  update  if  got  old one
+      const pc = await PC.getPCByUserIDAndPCKey(pcKey, user._id);
+      if (pc) {
+        const pcInfo = {};
+        pcInfo.pcOnline = 1;
+        pcInfo.pcSocketID = socket.id;
+        await PC.updatePcOnlineStatus(pc._id, pcInfo, {});
+        const pcOwner = {};
+        pcOwner.pcID = pc._id;
+        pcOwner.pcKey = pcKey;
+        pcOwner.userID = user._id;
+        const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
+        if (pcOwnerData) {
+          const userInformation = await User.getUser(user._id);
+          const computerClassData = await updateAppUserAuth(user, pcKey);
+          const computerClassObject = new computerClass(computerClassData);
+          computerClassObject.withAuthentication();
+          computerClassObject.withUserInformation(userInformation);
+          res.status(200);
+          res.json(respond(true, 'Hello!', computerClassObject.get()));
+        }
+      } else {
+        const pc = {};
+        pc.pcKey = pcKey;
+        pc.pcName = pcName;
+        pc.pcOnline = 1;
+        pc.pcSocketID = socket.id;
+        pc.platform = platform;
+        pc.publicAccessKey = md5(pcKey + Date.now());
+        pc.userID = user._id;
+        const pcData = await PC.createNewPC(pc);
+        if (pcData) {
           const pcOwner = {};
-          pcOwner.pcID = pc._id;
+          pcOwner.pcID = pcData._id;
           pcOwner.pcKey = pcKey;
           pcOwner.userID = user._id;
           const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
           if (pcOwnerData) {
-            const userInformation = await User.getUser(user._id);
-            const computerClassData = await updateAppUserAuth(user, pcKey);
-            const computerClassObject = new computerClass(computerClassData);
-            computerClassObject.withAuthentication();
-            computerClassObject.withUserInformation(userInformation);
+            const out = await updateAppUserAuth(user, pcKey);
+            userClass.setUserDataToClass(out).userID().userFirstName().userLastName().userEmail().getAuthenticationKey();
             res.status(200);
-            res.json(respond(true, 'Hello!', computerClassObject.get()));
-          }
-        } else {
-          const pc = {};
-          pc.pcKey = pcKey;
-          pc.pcName = pcName;
-          pc.pcOnline = 1;
-          pc.pcSocketID = socket.id;
-          pc.platform = platform;
-          pc.publicAccessKey = md5(pcKey + Date.now());
-          pc.userID = user._id;
-          const pcData = await PC.createNewPC(pc);
-          if (pcData) {
-            const pcOwner = {};
-            pcOwner.pcID = pcData._id;
-            pcOwner.pcKey = pcKey;
-            pcOwner.userID = user._id;
-            const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
-            if (pcOwnerData) {
-              const out = await updateAppUserAuth(user, pcKey);
-              userClass.setUserDataToClass(out).userID().userFirstName().userLastName().userEmail().getAuthenticationKey();
-              res.status(200);
-              res.json(respond(true, 'Hello!', userClass.getUser()));
-            }
+            res.json(respond(true, 'Hello!', userClass.getUser()));
           }
         }
-        socket.join(user.ioSocketID);
-      } else {
-        res.status(401);
-        res.json(respond(false, 'Invalid User', null));
       }
+      socket.join(user.ioSocketID);
+    } else {
+      res.status(401);
+      res.json(respond(false, 'Invalid User', null));
+    }
     // } else {
     //   res.status(401);
     //   res.json(respond(false, 'This  software version  no  longer  work', null));
