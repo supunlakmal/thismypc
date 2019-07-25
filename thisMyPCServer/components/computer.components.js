@@ -9,7 +9,25 @@ const UserComponent = require('./user.components');
 class ComputerComponent extends UserComponent {
   constructor() {
     super();
+    this.computerDbObject ={};
+    this.computer={}
   }
+
+
+ deconstructionComputerObject(){
+  this.computerDbObject ={};
+  this.computer={}
+ }
+
+
+  async getComputerDataFromDBUsingUserID(userID) {
+    this.deconstructionComputerObject();
+
+    this.computerDbObject = await PC.getUser(userID);
+
+    return this;
+  }
+
   /**
    * Get computer  Key
    */

@@ -63,7 +63,7 @@ module.exports.createNewPC = function(pc) {
       }).then(result=>{return result;});
 };
 //  get  pc using _id
-module.exports.getPCUsingID = function(key, callback) {
+module.exports.getPCUsingID = function(key) {
   return new Promise((resolve,reject)=>{
   PC.findOne().where('_id', key).exec(function (err, pc) {
     resolve(pc);
@@ -90,7 +90,7 @@ module.exports.getPCSocketID = function(pcSocketID) {
     }).then(result=>{return result;});
 };
 //  get  pc using pcKey and user ID
-module.exports.getPCByUserIDAndPCKey = function(key, userID, callback) {
+module.exports.getPCByUserIDAndPCKey = function(key, userID) {
   return new Promise((resolve,reject)=>{
   PC.findOne().where({
     'pcKey': key,
