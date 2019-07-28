@@ -21,17 +21,11 @@ const {
  */
 // logger
 const logger = require('./components/logger');
-/**
- * User Resources
- */
-const computerClass = require('./components/class/computer.class');
 
 // MongoDB server connection Atlas
 mongoose.connect(`${db}`, {
   useNewUrlParser: true,
 });
-
-
 // Set mongoose.Promise to any Promise implementation
 mongoose.Promise = Promise;
 const http = require('http').Server(app);
@@ -214,14 +208,11 @@ app.get('/api/v1/user/:userID/computer/:computerKey', async (req, res) => {
   const userID = req.params.userID;
   const computerKey = md5(req.params.computerKey);
   const userClass = new userComponent();
-
   const computerClass = new computerComponent();
   const authentication = await computerClass.authentication(res, userID, authentication_key, computerKey);
   if (authentication) {
     return res = authentication;
   }
-
-
   // user Information
   // user  class
   await userClass.getUserDataFromDB(userID);
@@ -469,11 +460,13 @@ app.post('/api/v1/user/computer/public/status/update', async (req, res) => {
     new: true,
   });
   if (computerClassData) {
-    const computerClassObject = new computerClass(computerClassData);
-    computerClassObject.withPublicAccessStatus();
-    computerClassObject.withPublicAccessKey();
+    const computerClass = new computerComponent();
+
+    computerClass.setComputer(computerClassData);
+    computerClass.getComputerAuthentication();
+    computerClass.getPublicAccessKey();
     res.status(200);
-    res.json(respond(true, 'Update Done', computerClassObject.get()));
+    res.json(respond(true, 'Update Done', computerClass.getComputer()));
   }
 });
 /**
@@ -596,6 +589,7 @@ const isValidFoldersName = (() => {
   };
 })();
 io.on('connection', (socket) => {
+  logger.log( socket.id);
   // TODO this user  login from app need to add few   function to  it
   socket.on('loginPage', () => {});
   // some  user  or  app get disconnected  from serve
@@ -648,7 +642,7 @@ io.on('connection', (socket) => {
     }
     // const software = await Software.getActiveSoftware(key);
     // if (software) {
-    const userClass = new userComponent();
+    const computerClass = new computerComponent();
     const user = await User.loginUser(email, password);
     if (user) {
       //  set  if  user  got  new pc  key  or  update  if  got  old one
@@ -665,12 +659,11 @@ io.on('connection', (socket) => {
         const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
         if (pcOwnerData) {
           const userInformation = await User.getUser(user._id);
-          const computerClassData = await updateAppUserAuth(user, pcKey);
-          const computerClassObject = new computerClass(computerClassData);
-          computerClassObject.withAuthentication();
-          computerClassObject.withUserInformation(userInformation);
+          await computerClass.updateAppUserAuth(user, pcKey);
+          computerClass.getComputerAuthentication();
+          await computerClass.getComputerUserInformation(user._id);
           res.status(200);
-          res.json(respond(true, 'Hello!', computerClassObject.get()));
+          res.json(respond(true, 'Hello!', computerClass.getComputer()));
         }
       } else {
         const pc = {};
@@ -689,10 +682,11 @@ io.on('connection', (socket) => {
           pcOwner.userID = user._id;
           const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
           if (pcOwnerData) {
-            const out = await updateAppUserAuth(user, pcKey);
-            userClass.setUserDataToClass(out).userID().userFirstName().userLastName().userEmail().getAuthenticationKey();
+            await computerClass.updateAppUserAuth(user, pcKey);
+            computerClass.getComputerAuthentication();
+            await computerClass.getComputerUserInformation(user._id);
             res.status(200);
-            res.json(respond(true, 'Hello!', userClass.getUser()));
+            res.json(respond(true, 'Hello!', computerClass.getComputer()));
           }
         }
       }
@@ -762,6 +756,7 @@ io.on('connection', (socket) => {
         sendUserInfoToApp.nameLast = user.nameLast;
         sendUserInfoToApp.status = true;
         sendUserInfoToApp.userID = user._id;
+        logger.log(pc.pcSocketID);
         io.sockets.to(pc.pcSocketID).emit('pcAccessRequest', sendUserInfoToApp);
       }
     }

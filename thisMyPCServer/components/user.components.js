@@ -1,4 +1,3 @@
-
 /**
  * User Module
  */
@@ -13,7 +12,6 @@ class UserComponent extends ApiComponent {
     this.userDbObject = {};
     this.user = {};
   }
-
   /**
  * Deconstruction user and  class object
  */
@@ -29,9 +27,7 @@ class UserComponent extends ApiComponent {
    */
   async getUserDataFromDB(userID) {
     this.deconstructionUserObject();
-
     this.userDbObject = await User.getUser(userID);
-
     return this;
   }
   /**
@@ -42,7 +38,6 @@ class UserComponent extends ApiComponent {
   setUserDataToClass(userData) {
     this.deconstructionUserObject();
     this.userDbObject = userData;
-
     return this;
   }
   /**
@@ -54,36 +49,38 @@ class UserComponent extends ApiComponent {
   /**
  * User first name
  */
-  userFirstName() {
+  userFirstName(type=false) {
     this.user.firstName = this.userDbObject.name;
-    return this;
+    return type?this.userDbObject.name: this;
   }
   /**
  * User last name
  */
-  userLastName() {
+  userLastName(type=false) {
     this.user.lastName = this.userDbObject.nameLast;
-    return this;
+    return type?this.userDbObject.nameLast:this;
   }
   /**
  * User Email
  */
-  userEmail() {
+  userEmail(type=false) {
     this.user.email = this.userDbObject.email;
-    return this;
+    return type? this.userDbObject.email:this;
   }
   /**
  * User ID
  */
-  userID() {
+  userID(type=false) {
     this.user.userID = this.userDbObject._id;
-    return this;
+    return type? this.userDbObject._id:this;
   }
   /**
    * Return constructed user Data
    */
   getUser() {
-    return this.user;
+    const userInformation = this.user;
+    this.user ={};
+    return userInformation;
   }
   /**
    * get authentication data
