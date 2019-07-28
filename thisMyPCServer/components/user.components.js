@@ -58,27 +58,27 @@ class UserComponent extends ApiComponent {
  */
   userLastName(type=undefined) {
     this.user.lastName = this.userDbObject.nameLast;
-    return  type?this.userDbObject.nameLast:this;
+    return type?this.userDbObject.nameLast:this;
   }
   /**
  * User Email
  */
   userEmail(type=undefined) {
     this.user.email = this.userDbObject.email;
-    return  type? this.userDbObject.email:this;
+    return type? this.userDbObject.email:this;
   }
   /**
  * User ID
  */
   userID(type=undefined) {
     this.user.userID = this.userDbObject._id;
-    return  type? this.userDbObject._id:this;
+    return type? this.userDbObject._id:this;
   }
   /**
    * Return constructed user Data
    */
   getUser() {
-    let userInformation = this.user;
+    const userInformation = this.user;
     this.user ={};
     return userInformation;
   }

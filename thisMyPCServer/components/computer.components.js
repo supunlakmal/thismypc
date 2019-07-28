@@ -12,28 +12,28 @@ class ComputerComponent extends UserComponent {
   constructor() {
     super();
     this.computerDbObject ={};
-    this.computer={}
+    this.computer={};
   }
- deconstructionComputerObject(){
-  this.computerDbObject ={};
-  this.computer={}
- }
+  deconstructionComputerObject() {
+    this.computerDbObject ={};
+    this.computer={};
+  }
   async getComputerDataFromDBUsingUserID(userID) {
     this.deconstructionComputerObject();
     this.computerDbObject = await PC.getUser(userID);
     return this;
   }
-/**
+  /**
  * Get Computer information user ID and  computer Key
  */
-async getComputerDataFromDBUsingUserIdAndComputerKey(userID, computerKey){
-  this.deconstructionComputerObject();
-  this.computerDbObject =  PC.getPCByUserIDAndPCKey(computerKey , userID);
-  return this;
-}
-  /**
-   * Get computer  Key
-   */
+  async getComputerDataFromDBUsingUserIdAndComputerKey(userID, computerKey) {
+    this.deconstructionComputerObject();
+    this.computerDbObject = PC.getPCByUserIDAndPCKey(computerKey, userID);
+    return this;
+  }
+ /**
+  * Get computer  Key
+  */
   getComputerKey() {
     this.computer.computerKey = this.computerDbObject.pcKey;
     return this;
@@ -46,10 +46,8 @@ async getComputerDataFromDBUsingUserIdAndComputerKey(userID, computerKey){
    * Computer  public access key that  alow to other user can use computer
    */
   getPublicAccessKey() {
-
     this.computer.publicAccessKey = this.computerDbObject.publicAccessKey;
     return this;
-
   }
   /**
    * Public access status
@@ -74,18 +72,18 @@ async getComputerDataFromDBUsingUserIdAndComputerKey(userID, computerKey){
     this.computer.authentication_key = this.computerDbObject.authApp;
     return this;
   }
-/**
+  /**
  * Get  computer  user  information
  */
-async getComputerUserInformation(userID){
- let userInformation =  new UserComponent();
-await  userInformation.getUserDataFromDB(userID);
-this.computer.userID = userInformation.userID('get');
- this.computer.firstName = userInformation.userFirstName('get');
-this.computer.lastName = userInformation.userLastName('get');
- this.computer.email = userInformation.userEmail('get');
-return  this;
-}
+  async getComputerUserInformation(userID) {
+    const userInformation = new UserComponent();
+    await userInformation.getUserDataFromDB(userID);
+    this.computer.userID = userInformation.userID('get');
+    this.computer.firstName = userInformation.userFirstName('get');
+    this.computer.lastName = userInformation.userLastName('get');
+    this.computer.email = userInformation.userEmail('get');
+    return this;
+  }
   /**
    *
    * @param {Object} res
@@ -105,7 +103,7 @@ return  this;
    * @param {*} pcKey  Computer key
    * @return {object} new auth key
    */
-  async  updateAppUserAuth(user, pcKey) {
+  async updateAppUserAuth(user, pcKey) {
     this.deconstructionComputerObject();
     const date = new Date();
     const input = {};
@@ -114,22 +112,21 @@ return  this;
     const updateUserAuthApp = await PC.updateUserAuthApp(pcKey, input, {
       new: true,
     });
-    this.computerDbObject =  updateUserAuthApp;
+    this.computerDbObject = updateUserAuthApp;
   }
   /**
    * Get computer information
    */
-  getComputer(){
-    return  this.computer;
+  getComputer() {
+    return this.computer;
   }
 
- /**
+  /**
    * Get computer information
    */
-  setComputer(data){
+  setComputer(data) {
     this.deconstructionComputerObject();
-    this.computerDbObject  = data;
+    this.computerDbObject = data;
   }
-
 }
 module.exports = ComputerComponent;

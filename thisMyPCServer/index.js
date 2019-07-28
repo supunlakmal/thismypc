@@ -460,12 +460,11 @@ app.post('/api/v1/user/computer/public/status/update', async (req, res) => {
     new: true,
   });
   if (computerClassData) {
-
     const computerClass = new computerComponent();
 
-  computerClass.setComputer(computerClassData);
-  computerClass.getComputerAuthentication();
-  computerClass.getPublicAccessKey();
+    computerClass.setComputer(computerClassData);
+    computerClass.getComputerAuthentication();
+    computerClass.getPublicAccessKey();
     res.status(200);
     res.json(respond(true, 'Update Done', computerClass.getComputer()));
   }
@@ -590,7 +589,7 @@ const isValidFoldersName = (() => {
   };
 })();
 io.on('connection', (socket) => {
-logger.log( socket.id);
+  logger.log( socket.id);
   // TODO this user  login from app need to add few   function to  it
   socket.on('loginPage', () => {});
   // some  user  or  app get disconnected  from serve
@@ -660,9 +659,9 @@ logger.log( socket.id);
         const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
         if (pcOwnerData) {
           const userInformation = await User.getUser(user._id);
- await computerClass.updateAppUserAuth(user, pcKey);
- computerClass.getComputerAuthentication();
-       await   computerClass.getComputerUserInformation(user._id);
+          await computerClass.updateAppUserAuth(user, pcKey);
+          computerClass.getComputerAuthentication();
+          await computerClass.getComputerUserInformation(user._id);
           res.status(200);
           res.json(respond(true, 'Hello!', computerClass.getComputer()));
         }
@@ -683,9 +682,9 @@ logger.log( socket.id);
           pcOwner.userID = user._id;
           const pcOwnerData = await PcOwner.pcAndOwner(pcOwner);
           if (pcOwnerData) {
-         await  computerClass.updateAppUserAuth(user,pcKey);
-         computerClass.getComputerAuthentication();
-         await   computerClass.getComputerUserInformation(user._id);
+            await computerClass.updateAppUserAuth(user, pcKey);
+            computerClass.getComputerAuthentication();
+            await computerClass.getComputerUserInformation(user._id);
             res.status(200);
             res.json(respond(true, 'Hello!', computerClass.getComputer()));
           }
