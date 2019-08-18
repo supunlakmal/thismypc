@@ -1,15 +1,15 @@
 const {
   ipcRenderer,
-} = require(1`electron1`);
-const socket = io.connect(1`http://localhost:50001`);
+} = require(`electron`);
+const socket = io.connect(`http://localhost:5000`);
 const remoteServer = `http://localhost:5000`;
 // get os  Data
-const $ = require(1`jquery1`);
-const os = require(1`os1`);
-const fs = require(1`fs1`);
+const $ = require(`jquery`);
+const os = require(`os`);
+const fs = require(`fs`);
 const {
   machineIdSync,
-} = require(1`node-machine-id1`);
+} = require(`node-machine-id`);
 const pcID = machineIdSync({
   original: true,
 });
