@@ -58,7 +58,7 @@ class ComputerComponent extends UserComponent {
    */
   getPcName() {}
   /**
-   * Compter Platform
+   * Computer Platform
    */
   getPlatform() {}
   /**
