@@ -124,9 +124,10 @@ html {
   border-radius: 5px;
   border: 1px solid #f1f1f1;
   color: rgba(3, 27, 78, 0.7);
-  height: 48px;
+  font-size: 1rem;
+  line-height: 1.5;
   max-width: 100%;
-  padding: 0 16px;
+  padding: .375rem .75rem;
   position: relative;
   transition: all cubic-bezier(0.645, 0.045, 0.355, 1) 0.25s;
   width: 100%;
