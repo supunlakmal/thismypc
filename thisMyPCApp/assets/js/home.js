@@ -3,16 +3,19 @@ const socket = io.connect(`http://localhost:5000`);
 const remoteServer = `http://localhost:5000`;
 const {
   ipcRenderer,
-} = require('electron');
-const os = require('os');
-const fse = require('fs-extra');
-const fs = require('fs');
+} = require(`electron`);
+const os = require(`os`);
+const fse = require(`fs-extra`);
+const fs = require(`fs`);
 /* const splitFile = requi;re('split-file')*/
-const $ = window.jQuery = require('jquery');
-const hddSpace = require('hdd-space');
+const $ = window.jQuery = require(`jquery`);
+const hddSpace = require(`hdd-space`);
 const {
   machineIdSync,
-} = require('node-machine-id');
+} = require(`node-machine-id`);
+
+const path = require("path");
+
 const computerID = machineIdSync({
   original: true,
 });
@@ -26,9 +29,9 @@ let applicationKey='';
 const desiredMode = 0o2775;
 const homedir = os.homedir();
 let userInfo = {};
-const dir = homedir + '\/.thisMyPC';
-fs.readFile(dir + '\/thisMyPC.json',
-    'utf8',
+const dir = `${homedir}/.thisMyPC`;
+fs.readFile(`${dir}/thisMyPC.json`,
+    `utf8`,
     /**
    * @param  {object} err
    * @param  {object} data
@@ -66,22 +69,22 @@ fs.readFile(dir + '\/thisMyPC.json',
           fileSize(bytes, si) {
             const thresh = si ? 1000 : 1024;
             if (Math.abs(bytes) < thresh) {
-              return bytes + ' B';
+              return `${bytes} B`;
             }
-            const units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+            const units = si ? [`kB`, `MB`, `GB`, `TB`, `PB`, `EB`, `ZB`, `YB`] : [`KiB`, `MiB`, `GiB`, `TiB`, `PiB`, `EiB`, `ZiB`, `YiB`];
             let u = -1;
             do {
               bytes /= thresh;
               ++u;
             } while (Math.abs(bytes) >= thresh && u < units.length - 1);
-            return bytes.toFixed(1) + ' ' + units[u];
+            return `${bytes.toFixed(1)} ${units[u]}`;
           }
           /**
          * @param  {object} t
          * @return {string}
          */
           timeStampToDateTimeText(t) {
-            return t.getFullYear() + '-' + t.getMonth() + '-' + t.getDay() + ' ' + t.getHours() + ':' + t.getMinutes();
+            return `${t.getFullYear()}-${t.getMonth()}-${t.getDay()} ${t.getHours() }:${ t.getMinutes()}`;
           }
           /**
          * @param  {string} pathFile
@@ -96,13 +99,20 @@ fs.readFile(dir + '\/thisMyPC.json',
             property.modified = this.timeStampToDateTimeText(info.mtime);
             return property;
           }
+
+
+          fileInfoByPath(pathFile) {
+            const info = fs.statSync(pathFile);
+            info.filename = path.basename(pathFile);
+            return info;
+          }
           /**
          * @param  {object} callback
          */
           getHDDList() {
             return new Promise((resolve)=>{
               hddSpace({
-                format: 'auto',
+                format: `auto`,
               }, function(info) {
                 resolve(info);
               });
@@ -118,7 +128,7 @@ fs.readFile(dir + '\/thisMyPC.json',
          * get user  info
          */
           getUserInfo() {
-            fetch(remoteServer + `/api/v1/user/${userID}/computer/${computerKey}`, {
+            fetch( `${remoteServer}/api/v1/user/${userID}/computer/${computerKey}`, {
               method: 'GET', // *GET, POST, PUT, DELETE, etc.
               mode: 'cors', // no-cors, cors, *same-origin
               headers: {
@@ -127,7 +137,7 @@ fs.readFile(dir + '\/thisMyPC.json',
               }})
                 .then((response) => response.json()).then(function(response) {
                   if (response.status) {
-                    $('#userName').text(response.data.firstName + ' ' + response.data.lastName);
+                    $('#userName').text(`${response.data.firstName} ${response.data.lastName}`);
                   }
                 });
           }
@@ -307,9 +317,42 @@ fs.readFile(dir + '\/thisMyPC.json',
             }
           });
         });
+
+/**
+ *  User Request File that need to send as array buffer
+ */
+
+   
+      socket.on('downloadFileRequestToPC', function(data){
+        let block_size =524288;
+        let buffer = fs.readFileSync(data.path);
+        const fileInfoGet = homeClass.fileInfoByPath(data.path);
+        let  chunks = parseInt(fileInfoGet.size/block_size)-1;
+        fileInfoGet.chunks = chunks > 0 ? chunks : 0;
+        
+        socket.emit('downloadFileInfoRequestCallBack', {
+          userID: userID,
+          authentication_key: authentication_key,
+          computerKey: computerKey,
+          data:fileInfoGet,
+        });
+      
+        for (let i = 0; i < buffer.length; i += block_size) {
+
+          let block = buffer.slice(i, i + block_size) // cut buffer into blocks of 16
+          socket.emit('sendFileChunksToServer', {
+            userID: userID,
+            authentication_key: authentication_key,
+            computerKey: computerKey,
+            data:block,
+          });
+        }
+      });
+
+
         $('#submit-logout').click(function name(params) {
           ipcRenderer.send('loginPage');
-          fetch(remoteServer + `/api/v1/user/${userID}/computer/logout`, {
+          fetch( `${remoteServer}/api/v1/user/${userID}/computer/logout`, {
             method: 'GET', // *GET, POST, PUT, DELETE, etc.
             mode: 'cors', // no-cors, cors, *same-origin
             headers: {

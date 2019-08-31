@@ -1,14 +1,15 @@
 const {
   ipcRenderer,
-} = require('electron');
-const socket = io.connect('http://localhost:5000');
+} = require(`electron`);
+const socket = io.connect(`http://localhost:5000`);
+const remoteServer = `http://localhost:5000`;
 // get os  Data
-const $ = require('jquery');
-const os = require('os');
-const fs = require('fs');
+const $ = require(`jquery`);
+const os = require(`os`);
+const fs = require(`fs`);
 const {
   machineIdSync,
-} = require('node-machine-id');
+} = require(`node-machine-id`);
 const pcID = machineIdSync({
   original: true,
 });
@@ -31,7 +32,7 @@ document.getElementById('submit-login').onclick = function() {
   data['pcKey'] = pcKey;
   data['pcName'] = pcUser.username;
   data['platform'] = platform;
-  fetch('http://localhost:5000/api/v1/user/computer/login', {
+  fetch(`${remoteServer}/api/v1/user/computer/login`, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, cors, *same-origin
     headers: {
@@ -47,7 +48,7 @@ document.getElementById('submit-login').onclick = function() {
                                          </div>`);
         }
         if (response.status) {
-          const dir = homedir + '\/.thisMyPC';
+          const dir = `${homedir}/.thisMyPC`;
           if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
           }
@@ -58,8 +59,8 @@ document.getElementById('submit-login').onclick = function() {
           obj.lastName = response.data.lastName;
           obj.authentication_key = response.data.authentication_key;
           const json = JSON.stringify(obj);
-          fs.writeFile(dir + '\/thisMyPC.json', json, 'utf8', function() {});
-          ipcRenderer.send('systemPage');
+          fs.writeFile(`${dir}/thisMyPC.json`, json, 'utf8', function() {});
+          ipcRenderer.send(`systemPage`);
         }
       });
 };
