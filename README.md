@@ -72,6 +72,9 @@ Android  | Developing
 #### Built With
 
 - [Node JS](https://nodejs.org/en/)
+- [GraphQL](http://graphql.org)
+- [Express JS](https://expressjs.com/)
+- [Socket IO](https://socket.io/)
 - [Angular](https://angularjs.org/)
 - [Electron JS](https://electronjs.org/)
 - [Mongodb](https://www.mongodb.com/)
@@ -138,12 +141,18 @@ npm i
 
 Run `npm node index.js` to start node server
 
+## Graphql
+
+ URL |
+ ------------- |
+ /api/v1/graphql |
+
 ## REST  API
 
 ### API Reference
 
 - PC - Personal Computer
-- thismypc.com:5000 - This is Thismypc web site API url. You can use your own localhost erver link instead default Link.
+- thismypc.com:5000 - This is Thismypc web site API url. You can use your own localhost server link instead default Link.
 - ":userID" -  User ID
 - ":computerKey" - Computer Key
 

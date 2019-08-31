@@ -110,7 +110,7 @@
       </div>
     </div>
     <div class="row justify-content-between" *ngIf="(folderList | json) != '[]'">
-      <div class="col-xl-1 text-right">
+      <div class="col-xl-1 text-left">
         <div class="dropdown">
           <i class="fas fa-cog mouse" id="folderMianDropDown" data-toggle="dropdown" aria-haspopup="true"
             aria-expanded="false"></i>
@@ -146,6 +146,12 @@
                       <div (click)="propertyFunction(folder)" class="dropdown-item mouse " data-toggle="modal"
                         data-target="#fileOrFolderProperty">Property
                       </div>
+
+                      
+                      <div (click)="downloadFile(folder)" class="dropdown-item mouse " *ngIf="folder.file"  >Download
+                      
+                      </div>
+                      
                     </div>
                   </div>
              

@@ -69,10 +69,18 @@ export class SystemComponent implements OnInit {
   pcSelect = false;
   //pc info 
   pcInfoData: any = [];
+  // post Header
+  headers: any = '';
+
+  // file  download option
+  startDownload =false;
+  downloadFileSize=0;
+  fileChunkStart =0;
+  fileChunk=0;
+  fileName='';
+  fileDataArray = [];
 
 
-    // post Header
-    headers: any = '';
   /**
    *
    * param {HttpClient} http
@@ -121,6 +129,13 @@ export class SystemComponent implements OnInit {
       self.breadcrumbObject.push(customPath)
     });
   }
+
+
+  // calculate download percentage
+  downloadPercentage (total, now) {
+    return  (now/total)*100;
+  }
+
   ngOnInit() {
     const self = this;
     // send  user auth and  test
@@ -130,11 +145,7 @@ export class SystemComponent implements OnInit {
     self.headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('authentication_key', sessionStorage.getItem('authentication_key') ? sessionStorage.getItem('authentication_key') : 'thismyPc');
-
-      
-      const headers = self.headers;
-
-
+    const headers = self.headers;
     self.http.post(`${config.url}${config.port}/api/v1/user/authentication`,
         JSON.stringify(sendData), {
           headers
@@ -148,10 +159,9 @@ export class SystemComponent implements OnInit {
         () => {
           console.log('The POST observable is now completed.');
         });
-    self.http.get(`${config.url}${config.port}/api/v1/user/${sendData['userID']}`,
-       {
-          headers
-        })
+    self.http.get(`${config.url}${config.port}/api/v1/user/${sendData['userID']}`, {
+        headers
+      })
       .subscribe(
         (val: any) => {
           self.user = val.data;
@@ -160,7 +170,6 @@ export class SystemComponent implements OnInit {
         response => {},
         () => {});
     // app start
-   
     const userID = sessionStorage.getItem('userID');
     const authentication_key = sessionStorage.getItem('authentication_key');
     self.socket.emit('joinFromWeb', {
@@ -211,6 +220,50 @@ export class SystemComponent implements OnInit {
       console.log(data);
       self.processAlert(false);
     });
+
+    self.socket.on('downloadFileInfoSendToWeb', function (data) {
+ 
+    self.fileChunkStart =0;
+    self.fileDataArray = [];
+    self.startDownload =true;
+    self.downloadFileSize =data.size;
+    self.fileChunk =data.chunks;
+    self.fileName = data.filename;
+
+    self.alert.openAlert = true;
+    self.alert.class = 'alert-primary';
+    self.alert.massage = ` <strong> <i class="fas fa-sync-alt fa-spin"></i> Download processing.. </strong> `;
+
+    });
+
+
+
+    self.socket.on('sendFileChunksToWeb', function (data) {
+      if(self.startDownload ){
+let percentageCount = self.downloadPercentage( self.fileChunk, self.fileChunkStart);
+        self.alert.openAlert = true;
+        self.alert.class = 'alert-success';
+        self.alert.massage = ` <strong> <i class="fas fa-sync-alt fa-spin"></i> ${parseInt(percentageCount,10)}%  Downloading.. </strong> `;
+
+        self.fileDataArray.push(data);
+          if(self.fileChunk ==self.fileChunkStart){
+            var a = document.createElement("a");
+            document.body.appendChild(a);
+          // a.style = "display: none";
+            var blob = new Blob(self.fileDataArray);
+            var url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = self.fileName;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            self.fileChunkStart =0;
+            self.startDownload =false;
+            self.fileDataArray = [];
+            self.alert.openAlert = false;
+            }
+        self.fileChunkStart++;
+      }
+    });
   }
   /**
    *
@@ -242,7 +295,7 @@ export class SystemComponent implements OnInit {
     const pcKeyPublic = this.publicPcKey;
     this.openFolderName = fileName;
     this.breadcrumb(path);
-this.openFolderPath= path;
+    this.openFolderPath = path;
     const userID = sessionStorage.getItem('userID');
     const authentication_key = sessionStorage.getItem('authentication_key');
     this.folderList = [];
@@ -257,17 +310,14 @@ this.openFolderPath= path;
   fileOption(info) {
     this.folderInfo = info;
   }
-
-
   // logout System
   logout() {
-    const userID  = sessionStorage.getItem('userID');
-    const self =this;
+    const userID = sessionStorage.getItem('userID');
+    const self = this;
     const headers = self.headers;
-    self.http.get(`${config.url}${config.port}/api/v1/user/${userID}/computer/logout`,
-      {
-          headers
-        })
+    self.http.get(`${config.url}${config.port}/api/v1/user/${userID}/computer/logout`, {
+        headers
+      })
       .subscribe(
         (val: any) => {
           this.router.navigate(['/login']);
@@ -316,15 +366,12 @@ this.openFolderPath= path;
   }
   getAccessToPC() {
     this.processAlert(true);
-
-    const self =this;
+    const self = this;
     const headers = self.headers;
-
     const sendData = {};
     sendData['pcKeyPublic'] = this.publicPcKey;
     sendData['userID'] = sessionStorage.getItem('userID');
     console.log(JSON.stringify(sendData));
-
     this.http.post(`${config.url}${config.port}/api/v1/computer/public/access`,
         JSON.stringify(sendData), {
           headers
@@ -339,17 +386,15 @@ this.openFolderPath= path;
   propertyFunction(e) {
     this.property = e;
   }
-  
   validateFolder(e) {
     const sendData = {};
-    const self =this;
+    const self = this;
     const headers = self.headers;
     sendData['pcKeyPublic'] = self.publicPcKey;
     sendData['userID'] = sessionStorage.getItem('userID');
     sendData['createFolderName'] = self.createFolderName;
     sendData['path'] = self.openFolderPath;
     console.log(JSON.stringify(sendData));
-
     this.http.post(`${config.url}${config.port}/api/v1/user/computer/validateFolderName`,
         JSON.stringify(sendData), {
           headers
@@ -362,4 +407,20 @@ this.openFolderPath= path;
         response => {},
         () => {});
   }
+
+// Request File to Download
+  downloadFile(folder){
+    //this.processAlert(true);
+    const pcKeyPublic = this.publicPcKey;
+    const userID = sessionStorage.getItem('userID');
+    const authentication_key = sessionStorage.getItem('authentication_key');
+    this.socket.emit('downloadFileRequest', {
+      path: folder.path,
+      authentication_key: authentication_key,
+      userID: userID,
+      pcKeyPublic: pcKeyPublic
+    });
+  }
+
+
 }
