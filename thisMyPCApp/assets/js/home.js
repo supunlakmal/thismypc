@@ -325,19 +325,11 @@ fs.readFile(`${dir}/thisMyPC.json`,
    
       socket.on('downloadFileRequestToPC', function(data){
         let block_size =524288;
-        let buffer = fs.readFileSync(data.path)
-        let lines = [];
-
-console.log(homeClass.fileInfoByPath(data.path));
-
-const fileInfoGet = homeClass.fileInfoByPath(data.path);
-
-let  chunks = parseInt(fileInfoGet.size/block_size)-1;
-
-
-fileInfoGet.chunks = chunks > 0 ? chunks : 0;
-
-
+        let buffer = fs.readFileSync(data.path);
+        const fileInfoGet = homeClass.fileInfoByPath(data.path);
+        let  chunks = parseInt(fileInfoGet.size/block_size)-1;
+        fileInfoGet.chunks = chunks > 0 ? chunks : 0;
+        
         socket.emit('downloadFileInfoRequestCallBack', {
           userID: userID,
           authentication_key: authentication_key,
@@ -347,36 +339,14 @@ fileInfoGet.chunks = chunks > 0 ? chunks : 0;
       
         for (let i = 0; i < buffer.length; i += block_size) {
 
-
           let block = buffer.slice(i, i + block_size) // cut buffer into blocks of 16
-
-
-
-        socket.emit('sendFileChunksToServer', {
-          userID: userID,
-          authentication_key: authentication_key,
-          computerKey: computerKey,
-          data:block,
-        });
-        
-      
-        // lines.push(block);
-
-          console.log(block);
+          socket.emit('sendFileChunksToServer', {
+            userID: userID,
+            authentication_key: authentication_key,
+            computerKey: computerKey,
+            data:block,
+          });
         }
-
-
-      
-
-        // socket.emit('downloadFileRequestCallBack', {
-        //   userID: userID,
-        //   authentication_key: authentication_key,
-        //   computerKey: computerKey,
-        //   data:lines,
-        // });
-        
-
-        // console.log(lines);
       });
 
 
