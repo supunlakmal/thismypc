@@ -13,6 +13,9 @@ const hddSpace = require(`hdd-space`);
 const {
   machineIdSync,
 } = require(`node-machine-id`);
+
+const path = require("path");
+
 const computerID = machineIdSync({
   original: true,
 });
@@ -95,6 +98,13 @@ fs.readFile(`${dir}/thisMyPC.json`,
             property.accessed = this.timeStampToDateTimeText(info.atime);
             property.modified = this.timeStampToDateTimeText(info.mtime);
             return property;
+          }
+
+
+          fileInfoByPath(pathFile) {
+            const info = fs.statSync(pathFile);
+            info.filename = path.basename(pathFile);
+            return info;
           }
           /**
          * @param  {object} callback
@@ -307,6 +317,69 @@ fs.readFile(`${dir}/thisMyPC.json`,
             }
           });
         });
+
+/**
+ *  User Request File that need to send as array buffer
+ */
+
+   
+      socket.on('downloadFileRequestToPC', function(data){
+        let block_size =524288;
+        let buffer = fs.readFileSync(data.path)
+        let lines = [];
+
+console.log(homeClass.fileInfoByPath(data.path));
+
+const fileInfoGet = homeClass.fileInfoByPath(data.path);
+
+let  chunks = parseInt(fileInfoGet.size/block_size)-1;
+
+
+fileInfoGet.chunks = chunks > 0 ? chunks : 0;
+
+
+        socket.emit('downloadFileInfoRequestCallBack', {
+          userID: userID,
+          authentication_key: authentication_key,
+          computerKey: computerKey,
+          data:fileInfoGet,
+        });
+      
+        for (let i = 0; i < buffer.length; i += block_size) {
+
+
+          let block = buffer.slice(i, i + block_size) // cut buffer into blocks of 16
+
+
+
+        socket.emit('sendFileChunksToServer', {
+          userID: userID,
+          authentication_key: authentication_key,
+          computerKey: computerKey,
+          data:block,
+        });
+        
+      
+        // lines.push(block);
+
+          console.log(block);
+        }
+
+
+      
+
+        // socket.emit('downloadFileRequestCallBack', {
+        //   userID: userID,
+        //   authentication_key: authentication_key,
+        //   computerKey: computerKey,
+        //   data:lines,
+        // });
+        
+
+        // console.log(lines);
+      });
+
+
         $('#submit-logout').click(function name(params) {
           ipcRenderer.send('loginPage');
           fetch( `${remoteServer}/api/v1/user/${userID}/computer/logout`, {

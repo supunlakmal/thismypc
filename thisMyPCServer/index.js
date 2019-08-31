@@ -1,3 +1,6 @@
+/*
+! TODO Do not send user auth key and other information to client side app
+*/
 'use strict';
 // https://javascript.info/async-await
 const app = require('express')();
@@ -958,4 +961,52 @@ io.on('connection', (socket) => {
       }
     }
   });
+  
+  
+  // Download file request
+  socket.on('downloadFileRequest',async (input) => {
+    const authentication_key = input.authentication_key;
+    const userID = input.userID;
+    const pcKeyPublic = input.pcKeyPublic;
+    const user = await User.authUser(userID, authentication_key);
+    if (user) {
+      const socket = await getPCSocketID(user, pcKeyPublic);
+      io.sockets.to(socket).emit('downloadFileRequestToPC', input);
+    }
+  });
+
+
+    // Download file request
+    socket.on('downloadFileInfoRequestCallBack',async (input) => {
+      const authentication_key = input.authentication_key;
+      const userID = input.userID;
+      const computerKey = md5(input.computerKey);
+      const computer = await PC.authApp(userID, authentication_key, computerKey);
+      if (computer) {
+        const user = await User.getUser(userID);
+        if (user) {
+          const socketID = await getUserSocketID(computer, user);
+          io.sockets.in(socketID).emit('downloadFileInfoSendToWeb', input.data);
+        }
+      }
+    });
+
+    //get data from app and send to web
+    socket.on('sendFileChunksToServer',async (input) => {
+      const authentication_key = input.authentication_key;
+      const userID = input.userID;
+      const computerKey = md5(input.computerKey);
+      const computer = await PC.authApp(userID, authentication_key, computerKey);
+      if (computer) {
+        const user = await User.getUser(userID);
+        if (user) {
+          const socketID = await getUserSocketID(computer, user);
+          io.sockets.in(socketID).emit('sendFileChunksToWeb', input.data);
+        }
+      }
+    });
+
+  
+
+  
 });

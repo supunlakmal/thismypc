@@ -71,6 +71,16 @@ export class SystemComponent implements OnInit {
   pcInfoData: any = [];
   // post Header
   headers: any = '';
+
+  // file  download option
+  startDownload =false;
+  downloadFileSize=0;
+  fileChunkStart =0;
+  fileChunk=0;
+  fileName='';
+  fileDataArray = [];
+
+
   /**
    *
    * param {HttpClient} http
@@ -202,6 +212,39 @@ export class SystemComponent implements OnInit {
       self.pcInfoData = data;
       console.log(data);
       self.processAlert(false);
+    });
+
+    self.socket.on('downloadFileInfoSendToWeb', function (data) {
+ 
+    self.fileChunkStart =0;
+    self.fileDataArray = [];
+    self.startDownload =true;
+    self.downloadFileSize =data.size;
+    self.fileChunk =data.chunks;
+    self.fileName = data.filename;
+    });
+
+
+
+    self.socket.on('sendFileChunksToWeb', function (data) {
+      if(self.startDownload ){
+        self.fileDataArray.push(data);
+          if(self.fileChunk ==self.fileChunkStart){
+            var a = document.createElement("a");
+            document.body.appendChild(a);
+          // a.style = "display: none";
+            var blob = new Blob(self.fileDataArray);
+            var url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = self.fileName;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            self.fileChunkStart =0;
+            self.startDownload =false;
+            self.fileDataArray = [];
+            }
+        self.fileChunkStart++;
+      }
     });
   }
   /**
@@ -346,4 +389,20 @@ export class SystemComponent implements OnInit {
         response => {},
         () => {});
   }
+
+// Request File to Download
+  downloadFile(folder){
+    //this.processAlert(true);
+    const pcKeyPublic = this.publicPcKey;
+    const userID = sessionStorage.getItem('userID');
+    const authentication_key = sessionStorage.getItem('authentication_key');
+    this.socket.emit('downloadFileRequest', {
+      path: folder.path,
+      authentication_key: authentication_key,
+      userID: userID,
+      pcKeyPublic: pcKeyPublic
+    });
+  }
+
+
 }
