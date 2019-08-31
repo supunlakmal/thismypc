@@ -133,10 +133,8 @@ export class SystemComponent implements OnInit {
 
   // calculate download percentage
   downloadPercentage (total, now) {
-
-
     return  (now/total)*100;
-}
+  }
 
   ngOnInit() {
     const self = this;
