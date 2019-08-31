@@ -129,6 +129,15 @@ export class SystemComponent implements OnInit {
       self.breadcrumbObject.push(customPath)
     });
   }
+
+
+  // calculate download percentage
+  downloadPercentage (total, now) {
+
+
+    return  (now/total)*100;
+}
+
   ngOnInit() {
     const self = this;
     // send  user auth and  test
@@ -222,12 +231,22 @@ export class SystemComponent implements OnInit {
     self.downloadFileSize =data.size;
     self.fileChunk =data.chunks;
     self.fileName = data.filename;
+
+    self.alert.openAlert = true;
+    self.alert.class = 'alert-primary';
+    self.alert.massage = ` <strong> <i class="fas fa-sync-alt fa-spin"></i> Download processing.. </strong> `;
+
     });
 
 
 
     self.socket.on('sendFileChunksToWeb', function (data) {
       if(self.startDownload ){
+let percentageCount = self.downloadPercentage( self.fileChunk, self.fileChunkStart);
+        self.alert.openAlert = true;
+        self.alert.class = 'alert-success';
+        self.alert.massage = ` <strong> <i class="fas fa-sync-alt fa-spin"></i> ${parseInt(percentageCount,10)}%  Downloading.. </strong> `;
+
         self.fileDataArray.push(data);
           if(self.fileChunk ==self.fileChunkStart){
             var a = document.createElement("a");
@@ -242,6 +261,7 @@ export class SystemComponent implements OnInit {
             self.fileChunkStart =0;
             self.startDownload =false;
             self.fileDataArray = [];
+            self.alert.openAlert = false;
             }
         self.fileChunkStart++;
       }
