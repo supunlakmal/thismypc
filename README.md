@@ -17,7 +17,9 @@
 [![Gitter](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/Thismypc/community)
 </div>
 
-> ThisMyPC is a next-generation open source solution for remote computer. It's a full stack based project that starts as an experiment.
+> ThisMyPC provides a neat web interface that can be used for browsing your desktop drives from any device in your browser itself. With the help of NodeJs, the file details are displayed in JSON format that can then we easily displayed in web browsers.
+
+> The source code is open so that you can download the source code and set it up with ease if you would like to have your own exclusive environment.
 
 ## Demo - http://thismypc.com
 
