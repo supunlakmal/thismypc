@@ -387,35 +387,6 @@ fs.readFile(
           });
 
         });
-
-
-
-
-
-
-        // screenshot().then((img) => {
-        //   // img: Buffer filled with jpg goodness
-        //   // ...
-
-
-
-
-
-        //   var base64data = Buffer.from(img).toString('base64');
-
-        // // console.log(base64data);
-
-        //   socket.emit("sendScreenShotToServer", {
-        //     userID: userID,
-        //     authentication_key: authentication_key,
-        //     computerKey: computerKey,
-        //     data: base64data
-        //   });
-
-
-        // }).catch((err) => {
-        //   // ...
-        // })
         
       })
 
