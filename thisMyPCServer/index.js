@@ -1006,7 +1006,52 @@ io.on('connection', (socket) => {
       }
     });
 
+
+    //requestScreenShot
+
+
+    socket.on('requestScreenShot',async (input) => {
+
+   
+      const authentication_key = input.authentication_key;
+      const userID = input.userID;
+      const pcKeyPublic = '';
+      const user = await User.authUser(userID, authentication_key);
+
+
+
+      if (user) {
+        const socket = await getPCSocketID(user, pcKeyPublic);
+
+
+        io.sockets.to(socket).emit('requestScreenShotFromPC', input);
+      }
+    });
+
+    //sendScreenShotToServer
+
+    socket.on('sendScreenShotToServer',async (input) => {
   
 
+    //  console.log(input.authentication_key,input.userID,input.computerKey);
+      const authentication_key = input.authentication_key;
+      const userID = input.userID;
+      const pcKey = md5(input.computerKey);
+
+   
+      const pc = await PC.authApp(userID, authentication_key, pcKey);
+      if (pc) {
+
+      //  console.log(pc)
+        const user = await User.getUser(userID);
+        if (user) {
+          // to  web
+
+        //  console.log(user)
+          const socketID = await getUserSocketID(pc, user);
+          io.sockets.in(socketID).emit('sendScreenShotToWeb', input.data);
+        }
+      }
+    });
   
 });

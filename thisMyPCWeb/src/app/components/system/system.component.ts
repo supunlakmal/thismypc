@@ -73,11 +73,11 @@ export class SystemComponent implements OnInit {
   headers: any = '';
 
   // file  download option
-  startDownload =false;
-  downloadFileSize=0;
-  fileChunkStart =0;
-  fileChunk=0;
-  fileName='';
+  startDownload = false;
+  downloadFileSize = 0;
+  fileChunkStart = 0;
+  fileChunk = 0;
+  fileName = '';
   fileDataArray = [];
 
 
@@ -132,8 +132,8 @@ export class SystemComponent implements OnInit {
 
 
   // calculate download percentage
-  downloadPercentage (total, now) {
-    return  (now/total)*100;
+  downloadPercentage(total, now) {
+    return (now / total) * 100;
   }
 
   ngOnInit() {
@@ -147,11 +147,11 @@ export class SystemComponent implements OnInit {
       .set('authentication_key', sessionStorage.getItem('authentication_key') ? sessionStorage.getItem('authentication_key') : 'thismyPc');
     const headers = self.headers;
     self.http.post(`${config.url}${config.port}/api/v1/user/authentication`,
-        JSON.stringify(sendData), {
-          headers
-        })
+      JSON.stringify(sendData), {
+      headers
+    })
       .subscribe(
-        (val: any) => {},
+        (val: any) => { },
         response => {
           // if offline
           self.router.navigate(['/login']);
@@ -160,15 +160,15 @@ export class SystemComponent implements OnInit {
           console.log('The POST observable is now completed.');
         });
     self.http.get(`${config.url}${config.port}/api/v1/user/${sendData['userID']}`, {
-        headers
-      })
+      headers
+    })
       .subscribe(
         (val: any) => {
           self.user = val.data;
           console.log(val);
         },
-        response => {},
-        () => {});
+        response => { },
+        () => { });
     // app start
     const userID = sessionStorage.getItem('userID');
     const authentication_key = sessionStorage.getItem('authentication_key');
@@ -193,17 +193,38 @@ export class SystemComponent implements OnInit {
       self.alert.class = 'alert-success';
       self.alert.massage = ` <strong> Paste Done </strong> `;
     });
+    //get data from pc
+    self.socket.on('sendScreenShotToWeb', function (data) {
+      console.log(data);
+
+      let html = "";
+      let count = 1;
+      data.forEach(function (entry) {
+        html += `<td>
+
+<h4>Screen ${count}</h4><br>
+<img style="width:100%" src="data:image/png;base64,${entry}" alt="Screen Shot" /></td>`
+
+        count++;
+      });
+
+      let myWindow = window.open("", "newWindow", "width=1300");
+      myWindow.document.write(`<table><tr>${html}</tr></table>`);
+
+    });
+
+
     self.http.post(`${config.url}${config.port}/api/v1/user/computer/online`,
-        JSON.stringify(sendData), {
-          headers
-        })
+      JSON.stringify(sendData), {
+      headers
+    })
       .subscribe(
         (val: any) => {
           self.pcs = val.data;
           console.log(val);
         },
-        response => {},
-        () => {});
+        response => { },
+        () => { });
     self.socket.on('folderCreateCallbackToWeb', function (data) {
       self.alert.openAlert = true;
       if (data.status) {
@@ -222,45 +243,45 @@ export class SystemComponent implements OnInit {
     });
 
     self.socket.on('downloadFileInfoSendToWeb', function (data) {
- 
-    self.fileChunkStart =0;
-    self.fileDataArray = [];
-    self.startDownload =true;
-    self.downloadFileSize =data.size;
-    self.fileChunk =data.chunks;
-    self.fileName = data.filename;
 
-    self.alert.openAlert = true;
-    self.alert.class = 'alert-primary';
-    self.alert.massage = ` <strong> <i class="fas fa-sync-alt fa-spin"></i> Download processing.. </strong> `;
+      self.fileChunkStart = 0;
+      self.fileDataArray = [];
+      self.startDownload = true;
+      self.downloadFileSize = data.size;
+      self.fileChunk = data.chunks;
+      self.fileName = data.filename;
+
+      self.alert.openAlert = true;
+      self.alert.class = 'alert-primary';
+      self.alert.massage = ` <strong> <i class="fas fa-sync-alt fa-spin"></i> Download processing.. </strong> `;
 
     });
 
 
 
     self.socket.on('sendFileChunksToWeb', function (data) {
-      if(self.startDownload ){
-let percentageCount = self.downloadPercentage( self.fileChunk, self.fileChunkStart);
+      if (self.startDownload) {
+        let percentageCount = self.downloadPercentage(self.fileChunk, self.fileChunkStart);
         self.alert.openAlert = true;
         self.alert.class = 'alert-success';
-        self.alert.massage = ` <strong> <i class="fas fa-sync-alt fa-spin"></i> ${parseInt(percentageCount,10)}%  Downloading.. </strong> `;
+        self.alert.massage = ` <strong> <i class="fas fa-sync-alt fa-spin"></i> ${percentageCount}%  Downloading.. </strong> `;
 
         self.fileDataArray.push(data);
-          if(self.fileChunk ==self.fileChunkStart){
-            var a = document.createElement("a");
-            document.body.appendChild(a);
+        if (self.fileChunk == self.fileChunkStart) {
+          var a = document.createElement("a");
+          document.body.appendChild(a);
           // a.style = "display: none";
-            var blob = new Blob(self.fileDataArray);
-            var url = window.URL.createObjectURL(blob);
-            a.href = url;
-            a.download = self.fileName;
-            a.click();
-            window.URL.revokeObjectURL(url);
-            self.fileChunkStart =0;
-            self.startDownload =false;
-            self.fileDataArray = [];
-            self.alert.openAlert = false;
-            }
+          var blob = new Blob(self.fileDataArray);
+          var url = window.URL.createObjectURL(blob);
+          a.href = url;
+          a.download = self.fileName;
+          a.click();
+          window.URL.revokeObjectURL(url);
+          self.fileChunkStart = 0;
+          self.startDownload = false;
+          self.fileDataArray = [];
+          self.alert.openAlert = false;
+        }
         self.fileChunkStart++;
       }
     });
@@ -316,8 +337,8 @@ let percentageCount = self.downloadPercentage( self.fileChunk, self.fileChunkSta
     const self = this;
     const headers = self.headers;
     self.http.get(`${config.url}${config.port}/api/v1/user/${userID}/computer/logout`, {
-        headers
-      })
+      headers
+    })
       .subscribe(
         (val: any) => {
           this.router.navigate(['/login']);
@@ -373,16 +394,29 @@ let percentageCount = self.downloadPercentage( self.fileChunk, self.fileChunkSta
     sendData['userID'] = sessionStorage.getItem('userID');
     console.log(JSON.stringify(sendData));
     this.http.post(`${config.url}${config.port}/api/v1/computer/public/access`,
-        JSON.stringify(sendData), {
-          headers
-        })
+      JSON.stringify(sendData), {
+      headers
+    })
       .subscribe(
         (val: any) => {
           console.log(val);
         },
-        response => {},
-        () => {});
+        response => { },
+        () => { });
   }
+  // get screen shot  of pc
+  getPCScreenShot() {
+    const userID = sessionStorage.getItem('userID');
+    const authentication_key = sessionStorage.getItem('authentication_key');
+    const pcID = this.selectedPC_ID;
+    this.socket.emit('requestScreenShot', {
+      pcID: pcID,
+      authentication_key: authentication_key,
+      userID: userID
+    });
+  }
+
+
   propertyFunction(e) {
     this.property = e;
   }
@@ -396,20 +430,20 @@ let percentageCount = self.downloadPercentage( self.fileChunk, self.fileChunkSta
     sendData['path'] = self.openFolderPath;
     console.log(JSON.stringify(sendData));
     this.http.post(`${config.url}${config.port}/api/v1/user/computer/validateFolderName`,
-        JSON.stringify(sendData), {
-          headers
-        })
+      JSON.stringify(sendData), {
+      headers
+    })
       .subscribe(
         (val: any) => {
           console.log(val);
           this.createFolderNameErrorMsg = val.message;
         },
-        response => {},
-        () => {});
+        response => { },
+        () => { });
   }
 
-// Request File to Download
-  downloadFile(folder){
+  // Request File to Download
+  downloadFile(folder) {
     //this.processAlert(true);
     const pcKeyPublic = this.publicPcKey;
     const userID = sessionStorage.getItem('userID');
