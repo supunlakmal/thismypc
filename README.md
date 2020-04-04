@@ -21,7 +21,6 @@
 
 > The source code is open so that you can download the source code and set it up with ease if you would like to have your own exclusive environment.
 
-## Demo - http://thismypc.com
 
 ![Web Site System](doc/gifAnimations/web_site_system.gif)
 
