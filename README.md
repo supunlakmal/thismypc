@@ -36,7 +36,6 @@ Desktop App  Login         |  Desktop App Open | Web App  computer  hard drives 
     ├── .github/ISSUE_TEMPLATE
     ├── doc                          # All Api doc and gif files
     ├── thisMyPCApp                  # Electron JS app folder
-    ├── thisMyPCMobileApp            # React Native Mobile App folder
     ├── thisMyPCServer               # Node JS MongoDB and Express JS server folder
     ├── thisMyPCWeb                  # Angular website folder
     ├── .gitignore
