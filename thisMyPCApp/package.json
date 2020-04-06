@@ -23,7 +23,7 @@
     "socket.io-client": "^2.2.0"
   },
   "dependencies": {
-    "electron-reload": "^1.4.0",
+    "electron-reload": "^1.5.0",
     "electron-updater": "^4.0.6",
     "file-api": "^0.10.4",
     "fs-extra": "^7.0.1",
@@ -32,6 +32,7 @@
     "junk": "^2.1.0",
     "node-fetch": "^2.4.1",
     "node-machine-id": "^1.1.10",
+    "screenshot-desktop": "^1.10.0",
     "socket.io-stream": "^0.9.1",
     "split-file": "^2.1.1"
   },
