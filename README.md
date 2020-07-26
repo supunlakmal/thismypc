@@ -2,7 +2,7 @@
 
 <div align="center">
     <a href="http://thismypc.com/">
-        <img src="thisMyPCWeb/src/assets/images/logo/logo-mini.png">
+        <img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/logo/logo-mini.png">
     </a>
 </div>
 
@@ -22,13 +22,13 @@
 > The source code is open so that you can download the source code and set it up with ease if you would like to have your own exclusive environment.
 
 
-![Web Site System](doc/gifAnimations/web_site_system.gif)
+![Web Site System](https://raw.githubusercontent.com/supunlakmal/thismypc/master/doc/gifAnimations/web_site_system.gif)
 
 ## App Screenshots
 
 Desktop App  Login         |  Desktop App Open | Web App  computer  hard drives       |  Web App computer hard drives Open
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
-<img src="thisMyPCWeb/src/assets/images/screen/app-login.PNG" title="Desktop App  Login " width="100%"> |<img src="thisMyPCWeb/src/assets/images/screen/app-home.PNG" title="Desktop App Open" width="100%">|<img src="thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%"> |<img src="thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%">
+<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/app-login.PNG" title="Desktop App  Login " width="100%"> |<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/app-home.PNG" title="Desktop App Open" width="100%">|<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%"> |<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%">
 
 ## Folder Structure
 
@@ -36,7 +36,6 @@ Desktop App  Login         |  Desktop App Open | Web App  computer  hard drives 
     ├── .github/ISSUE_TEMPLATE
     ├── doc                          # All Api doc and gif files
     ├── thisMyPCApp                  # Electron JS app folder
-    ├── thisMyPCMobileApp            # React Native Mobile App folder
     ├── thisMyPCServer               # Node JS MongoDB and Express JS server folder
     ├── thisMyPCWeb                  # Angular website folder
     ├── .gitignore
@@ -86,7 +85,7 @@ Android  | Developing
 ```shell
 git clone https://github.com/supunlakmal/thismypc.git
 ```
-![git clone https://github.com/supunlakmal/thismypc.git](doc/gifAnimations/gitClone.gif)
+![git clone https://github.com/supunlakmal/thismypc.git](https://raw.githubusercontent.com/supunlakmal/thismypc/master/doc/gifAnimations/gitClone.gif)
 
 This Command  will copy a full  project  to your local  environment
 
@@ -99,7 +98,7 @@ This Command  will copy a full  project  to your local  environment
     npm i
 ```
 
-![Setting up Angular Project](doc/gifAnimations/angularSetup.gif)
+![Setting up Angular Project](https://raw.githubusercontent.com/supunlakmal/thismypc/master/doc/gifAnimations/angularSetup.gif)
 
 `cd thisMyPCWeb` Move into angular Project Folder
 `npm i` install all  dependency.
@@ -117,7 +116,7 @@ cd thisMyPCApp
 npm i
 ```
 
-![ Setting up Electron Project](doc/gifAnimations/electronSetup.gif)
+![ Setting up Electron Project](https://raw.githubusercontent.com/supunlakmal/thismypc/master/doc/gifAnimations/electronSetup.gif)
 
 `cd thisMyPCWeb` Move into  Electron  Project Folder
 `npm i` install all  dependency.
