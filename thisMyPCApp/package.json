@@ -28,7 +28,7 @@
     "file-api": "^0.10.4",
     "fs-extra": "^7.0.1",
     "hdd-space": "^1.2.0",
-    "jquery": "^3.4.0",
+    "jquery": "^3.5.0",
     "junk": "^2.1.0",
     "node-fetch": "^2.4.1",
     "node-machine-id": "^1.1.10",
