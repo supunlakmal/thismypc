@@ -17,7 +17,7 @@
 [![Gitter](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/Thismypc/community)
 </div>
 
-> ThisMyPC provides a neat web interface that can be used for browsing your desktop drives from any device in your browser itself. With the help of NodeJs, the file details are displayed in JSON format that can then we easily displayed in web browsers.
+> ThisMyPC provides a neat web interface that can be used for browsing your desktop drives from any device in your browser itself. With the help of NodeJs, the file details are displayed in JSON format that can then be easily displayed in web browsers.
 
 > The source code is open so that you can download the source code and set it up with ease if you would like to have your own exclusive environment.
 
@@ -46,17 +46,17 @@ Desktop App  Login         |  Desktop App Open | Web App  computer  hard drives 
 
 ## What (This my pc) ?
 
-The concept behind thismypc app was transferred your computer folder and file information trough nodeJS server to web end as a json data.  
+The concept behind thismypc app was transferred your computer folder and file information through nodeJS server to web end as a json data.  
 
 ## Why (This my pc) ?
 
-- The app's responsive web interface helps you to browse file in any resolution device
-- You can use sours code for your own projects.
+- The app's responsive web interface helps you to browse file in any resolution device.
+- You can use source code for your own projects.
 - It works well in low bandwidth environments.
 
 ## How to (Wiki) ?
 
-All usage instruction and information update on [Github Wiki](https://github.com/supunlakmal/thismypc/wiki)
+All usage instruction and information update on [Github Wiki](https://github.com/supunlakmal/thismypc/wiki).
 
 ## Developing
 
