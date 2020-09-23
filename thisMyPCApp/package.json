@@ -30,7 +30,7 @@
     "hdd-space": "^1.2.0",
     "jquery": "^3.5.0",
     "junk": "^2.1.0",
-    "node-fetch": "^2.4.1",
+    "node-fetch": "^2.6.1",
     "node-machine-id": "^1.1.10",
     "screenshot-desktop": "^1.10.0",
     "socket.io-stream": "^0.9.1",
