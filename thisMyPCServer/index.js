@@ -2,6 +2,7 @@
 ! TODO Do not send user auth key and other information to client side app
 */
 "use strict";
+require("dotenv").config();
 // https://javascript.info/async-await
 const app = require("express")();
 const bodyParser = require("body-parser");
