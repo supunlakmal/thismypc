@@ -10,7 +10,7 @@
 
 # production
 /build
-/UI-test
+/AdminLTE-3.1.0/node_modules
 
 # misc
 .DS_Store
