@@ -2,7 +2,7 @@
 
 <div align="center">
     <a href="http://thismypc.com/">
-        <img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/logo/logo-mini.png">
+        <img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/angular-deprecated/src/assets/images/logo/logo-mini.png">
     </a>
 </div>
 
@@ -15,20 +15,20 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5b677e607def4466b8084eb76be4f0d7)](https://app.codacy.com/app/supunlakmal/thismypc?utm_source=github.com&utm_medium=referral&utm_content=supunlakmal/thismypc&utm_campaign=Badge_Grade_Dashboard)
 ![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/supunlakmal/thismypc/graphs/commit-activity) [![Website thismypc.com](https://img.shields.io/website-up-down-green-red/http/shields.io.svg)](http://thismypc.com/) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/supunlakmal/thismypc/blob/master/LICENSE)
 [![Gitter](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/Thismypc/community)
+
 </div>
 
 > ThisMyPC provides a neat web interface that can be used for browsing your desktop drives from any device in your browser itself. With the help of NodeJs, the file details are displayed in JSON format that can then be easily displayed in web browsers.
 
 > The source code is open so that you can download the source code and set it up with ease if you would like to have your own exclusive environment.
 
-
 ![Web Site System](https://raw.githubusercontent.com/supunlakmal/thismypc/master/doc/gifAnimations/web_site_system.gif)
 
 ## App Screenshots
 
-Desktop App  Login         |  Desktop App Open | Web App  computer  hard drives       |  Web App computer hard drives Open
-:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
-<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/app-login.PNG" title="Desktop App  Login " width="100%"> |<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/app-home.PNG" title="Desktop App Open" width="100%">|<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%"> |<img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%">
+|                                                                                    Desktop App Login                                                                                     |                                                                                   Desktop App Open                                                                                   |                                                                                Web App computer hard drives                                                                                |                                                                             Web App computer hard drives Open                                                                              |
+| :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| <img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/angular-deprecated/src/assets/images/screen/app-login.PNG" title="Desktop App  Login " width="100%"> | <img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/angular-deprecated/src/assets/images/screen/app-home.PNG" title="Desktop App Open" width="100%"> | <img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/angular-deprecated/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%"> | <img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/angular-deprecated/src/assets/images/screen/web-system.PNG" title="Web App  PC  Drivers" width="100%"> |
 
 ## Folder Structure
 
@@ -46,7 +46,7 @@ Desktop App  Login         |  Desktop App Open | Web App  computer  hard drives 
 
 ## What (This my pc) ?
 
-The concept behind thismypc app was transferred your computer folder and file information through nodeJS server to web end as a json data.  
+The concept behind thismypc app was transferred your computer folder and file information through nodeJS server to web end as a json data.
 
 ## Why (This my pc) ?
 
@@ -62,12 +62,12 @@ All usage instruction and information update on [Github Wiki](https://github.com
 
 ### Platforms
 
-Platform| Status
------------- | -------------
-Microsoft Windows | Developing
-Linux  | Pending
-Mac os | Pending
-Android  | Developing
+| Platform          | Status     |
+| ----------------- | ---------- |
+| Microsoft Windows | Developing |
+| Linux             | Pending    |
+| Mac os            | Pending    |
+| Android           | Developing |
 
 #### Built With
 
@@ -85,9 +85,10 @@ Android  | Developing
 ```shell
 git clone https://github.com/supunlakmal/thismypc.git
 ```
+
 ![git clone https://github.com/supunlakmal/thismypc.git](https://raw.githubusercontent.com/supunlakmal/thismypc/master/doc/gifAnimations/gitClone.gif)
 
-This Command  will copy a full  project  to your local  environment
+This Command will copy a full project to your local environment
 
 ## Angular Project
 
@@ -101,7 +102,7 @@ This Command  will copy a full  project  to your local  environment
 ![Setting up Angular Project](https://raw.githubusercontent.com/supunlakmal/thismypc/master/doc/gifAnimations/angularSetup.gif)
 
 `cd thisMyPCWeb` Move into angular Project Folder
-`npm i` install all  dependency.
+`npm i` install all dependency.
 
 ### Run Angular Project
 
@@ -118,10 +119,10 @@ npm i
 
 ![ Setting up Electron Project](https://raw.githubusercontent.com/supunlakmal/thismypc/master/doc/gifAnimations/electronSetup.gif)
 
-`cd thisMyPCWeb` Move into  Electron  Project Folder
-`npm i` install all  dependency.
+`cd thisMyPCWeb` Move into Electron Project Folder
+`npm i` install all dependency.
 
-### Run Electron  Project
+### Run Electron Project
 
 Run `npm run start` start electron app in debug mode
 
@@ -134,74 +135,74 @@ cd thisMyPCServer
 npm i
 ```
 
-`cd thisMyPCServer` Move into  Node  Project Folder
-`npm i` install all  dependency.
+`cd thisMyPCServer` Move into Node Project Folder
+`npm i` install all dependency.
 
-### Run Node  Project
+### Run Node Project
 
 Run `npm node index.js` to start node server
 
 ## Graphql
 
- URL |
- ------------- |
- /api/v1/graphql |
+| URL             |
+| --------------- |
+| /api/v1/graphql |
 
-## REST  API
+## REST API
 
 ### API Reference
 
 - PC - Personal Computer
 - thismypc.com:5000 - This is Thismypc web site API url. You can use your own localhost server link instead default Link.
-- ":userID" -  User ID
+- ":userID" - User ID
 - ":computerKey" - Computer Key
 
 ### Web API
 
-Web API| URL | Description
------------- | ------------- | -------------
-User Register| /api/v1/user/register | -
-User Login | /api/v1/user/login | -
-User Logout | /api/v1/user/:userID/logout | -
-User Auth | /api/v1/user/authentication | -
-User Info | /api/v1/user/:userID | -
-User Online PC List| /api/v1/user/computer/online | -
-Public PC Access | /api/v1/computer/public/access | -
-User PC List | /api/v1/user/computer | -
-Update User Account | /api/v1/user/update | -
-Update User Password | /api/v1/user/password/edit | -
-Update User PC Public status | /api/v1/user/computer/public/status/update | -
-Update User PC Public Key | /api/v1/user/computer/public/key/update | -
+| Web API                      | URL                                        | Description |
+| ---------------------------- | ------------------------------------------ | ----------- |
+| User Register                | /api/v1/user/register                      | -           |
+| User Login                   | /api/v1/user/login                         | -           |
+| User Logout                  | /api/v1/user/:userID/logout                | -           |
+| User Auth                    | /api/v1/user/authentication                | -           |
+| User Info                    | /api/v1/user/:userID                       | -           |
+| User Online PC List          | /api/v1/user/computer/online               | -           |
+| Public PC Access             | /api/v1/computer/public/access             | -           |
+| User PC List                 | /api/v1/user/computer                      | -           |
+| Update User Account          | /api/v1/user/update                        | -           |
+| Update User Password         | /api/v1/user/password/edit                 | -           |
+| Update User PC Public status | /api/v1/user/computer/public/status/update | -           |
+| Update User PC Public Key    | /api/v1/user/computer/public/key/update    | -           |
 
 ### Web socket IO
 
-Socket Name| Socket | Type | Description
------------- | ------------- |------------- | -------------
-Join Socket from Web | joinFromWeb | emit | -
-Folder or Driver  Open Request   | openFolder | emit | -
-PC access  Requests  | pcAccessRequest | emit | -
-Get Hard Drive List | hDDList | on | -
-Folder or  hard drive open data   | openFolderRequestToWeb | on | -
+| Socket Name                    | Socket                 | Type | Description |
+| ------------------------------ | ---------------------- | ---- | ----------- |
+| Join Socket from Web           | joinFromWeb            | emit | -           |
+| Folder or Driver Open Request  | openFolder             | emit | -           |
+| PC access Requests             | pcAccessRequest        | emit | -           |
+| Get Hard Drive List            | hDDList                | on   | -           |
+| Folder or hard drive open data | openFolderRequestToWeb | on   | -           |
 
 ### App API
 
-APP API| URL | Description
------------- | ------------- | -------------
-User Login From App | /api/v1/user/computer/login | -
-User Info | /api/v1/user/:userID/computer/:computerKey | -
-User Logout | /api/v1/user/:userID/computer/logout | -
+| APP API             | URL                                        | Description |
+| ------------------- | ------------------------------------------ | ----------- |
+| User Login From App | /api/v1/user/computer/login                | -           |
+| User Info           | /api/v1/user/:userID/computer/:computerKey | -           |
+| User Logout         | /api/v1/user/:userID/computer/logout       | -           |
 
 ### App socket IO
 
-Socket Name| Socket | Type | Description
------------- | ------------- |------------- | -------------
-Join Socket from APP | joinFromApp | emit | -
-Send Hard Drive List   | hDDList | emit | -
-Send Data inside Folder or  Hard Drive  | sendOpenFolderRequest | emit | -
-Send callback  of Folder Create Function  | folderCreateCallback | emit | -
-PC access user and data | pcAccessRequest | on | -
-Folder or Hard drive  open request   | openFolderRequest | on | -
-Folder Validation   | validateFolderName | on | -
+| Socket Name                             | Socket                | Type | Description |
+| --------------------------------------- | --------------------- | ---- | ----------- |
+| Join Socket from APP                    | joinFromApp           | emit | -           |
+| Send Hard Drive List                    | hDDList               | emit | -           |
+| Send Data inside Folder or Hard Drive   | sendOpenFolderRequest | emit | -           |
+| Send callback of Folder Create Function | folderCreateCallback  | emit | -           |
+| PC access user and data                 | pcAccessRequest       | on   | -           |
+| Folder or Hard drive open request       | openFolderRequest     | on   | -           |
+| Folder Validation                       | validateFolderName    | on   | -           |
 
 ## Database
 
