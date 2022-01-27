@@ -46,7 +46,7 @@
 
 ## What (This my pc) ?
 
-The concept behind thismypc app was transferred your computer folder and file information through nodeJS server to web end as a json data.
+The concept behind thismypc app was to transfer your computer folder and file information through a nodeJS server to the web end as JSON data.
 
 ## Why (This my pc) ?
 
