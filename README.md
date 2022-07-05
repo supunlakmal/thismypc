@@ -2,7 +2,7 @@
 
 <div align="center">
     <a href="http://thismypc.com/">
-        <img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/angular-deprecated/src/assets/images/logo/logo-mini.png">
+        <img src="https://raw.githubusercontent.com/supunlakmal/thismypc/master/thisMyPCWeb/angular-deprecated/src/assets/images/logo/logo-mini.png" crossorigin>
     </a>
 </div>
 
