@@ -1,0 +1,50 @@
+main:
+  - any: ['*']
+
+github_action:
+  - any: ['.github/**/*']
+
+components:
+  - any: ['web-and-server/components/**/*']
+
+container:
+  - any: ['web-and-server/container/**/*']
+
+pages:
+  - any: ['web-and-server/pages/**/*']
+
+stories:
+  - any: ['web-and-server/stories/**/*']
+
+.storybook:
+  - any: ['web-and-server/.storybook/**/*']
+
+styles:
+  - any: ['web-and-server/styles/**/*']
+
+utils:
+  - any: ['web-and-server/utils/**/*']
+
+public:
+  - any: ['web-and-server/public/**/*']
+
+package.json:
+  - any: ['web-and-server/package.json']
+
+tailwind.config.js:
+  - any: ['web-and-server/tailwind.config.js']
+
+postcss.config.js:
+  - any: ['web-and-server/postcss.config.js']
+
+next.config.js:
+  - any: ['web-and-server/next.config.js']
+
+.gitignore:
+  - any: ['web-and-server/.gitignore']
+
+README.md:
+  - any: ['web-and-server/README.md']
+
+yarn.lock:
+  - any: ['web-and-server/yarn.lock']
