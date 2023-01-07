@@ -1,0 +1,19 @@
+name: Build and Test Next js (That working on my Computer 🫡)
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build and Test
+    steps:
+      - uses: actions/checkout@v2
+        name: Check out repository
+      - uses: actions/setup-node@v1
+        name: Set up Node.js
+        with:
+          node-version: 14
+      - run: |
+          cd web-and-server
+          yarn
+          yarn build
+        name: Build and Test
