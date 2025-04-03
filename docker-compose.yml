@@ -1,0 +1,22 @@
+version: "3.8" # Specifies the docker-compose version
+
+services:
+  mongo-db: # The name of our service
+    image: mongo:latest # Use the official MongoDB image (latest version)
+    container_name: thismypc_mongo_dev # A specific name for the container
+    restart: unless-stopped # Restart policy
+    environment:
+      # Define environment variables for the database
+      MONGO_INITDB_ROOT_USERNAME: devuser # Username for the root user
+      MONGO_INITDB_ROOT_PASSWORD: devpassword # Password for the root user
+    ports:
+      # Map the container's port 27017 to the host machine's port 27017
+      - "27017:27017"
+    volumes:
+      # Persist database data on the host machine in a Docker volume
+      - mongo_data:/data/db
+
+volumes:
+  # Define the Docker volume for data persistence
+  mongo_data:
+    driver: local
